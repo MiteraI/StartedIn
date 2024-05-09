@@ -1,6 +1,7 @@
 ﻿using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace DataAccessLayer.Context;
 
@@ -10,7 +11,23 @@ public class AppDbContext : IdentityDbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
-    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseNpgsql(GetConnectionString());
+        }
+    }
+    public string GetConnectionString()
+    {
+        IConfiguration config = new ConfigurationBuilder()
+             .SetBasePath(Directory.GetCurrentDirectory())
+             .AddJsonFile("appsettings.json", true, true)
+             .Build();
+        var strConn = config["ConnectionStrings:StartedInDB"];
+        return strConn;
+    }
+
     public DbSet<Account> Accounts { get; set; }
     public DbSet<Post> Posts { get; set; }
     public DbSet<PostImage> PostImages { get; set; }

@@ -11,7 +11,7 @@ namespace Repositories.BaseRepository
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         private readonly AppDbContext _context;
-        private DbSet<T> _dbSet;
+        public DbSet<T> _dbSet;
 
         public BaseRepository()
         {
@@ -19,49 +19,38 @@ namespace Repositories.BaseRepository
             _dbSet = _context.Set<T>();
         }
 
-        public bool Add(T entity)
+        public async Task Add(T entity)
         {
-            try
-            {
-                _dbSet.Add(entity);
-                _context.SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            await _dbSet.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(T entity)
+        public Task Delete(T entity)
         {
             _dbSet.Remove(entity);
-            _context.SaveChanges();
+            return _context.SaveChangesAsync();
         }
 
-        public virtual IQueryable<T> GetAll()
+        public IQueryable<T> GetAll()
         {
             return _dbSet.AsNoTracking();
         }
 
-        public bool Update(T entity)
+        public async Task Update(T entity)
         {
-            try
-            {
-                _dbSet.Update(entity);
-                _context.SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-
+            _dbSet.Update(entity);
+            await _context.SaveChangesAsync();
         }
 
         public AppDbContext GetContext()
         {
             return _context;
         }
+
+        public async Task<T> GetById(string id)
+        {
+            return await _dbSet.FindAsync(id);
+        }
+
     }
 }
