@@ -7,35 +7,30 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace StartedIn.Migrations
 {
     /// <inheritdoc />
-    public partial class _202405081545 : Migration
+    public partial class _130520241039 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Accounts",
+                name: "Interactions",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    Password = table.Column<string>(type: "text", nullable: false),
-                    Role = table.Column<string>(type: "text", nullable: false),
-                    profilePicture = table.Column<string>(type: "text", nullable: false),
-                    coverPhoto = table.Column<string>(type: "text", nullable: false),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    Bio = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastUpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    InteractionType = table.Column<int>(type: "integer", nullable: false),
+                    CreatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastUpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Accounts", x => x.Id);
+                    table.PrimaryKey("PK_Interactions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetRoles",
+                name: "Roles",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -45,46 +40,7 @@ namespace StartedIn.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Interactions",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    InteractionType = table.Column<int>(type: "integer", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastUpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Interactions", x => x.Id);
+                    table.PrimaryKey("PK_Roles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -95,8 +51,11 @@ namespace StartedIn.Migrations
                     TeamName = table.Column<string>(type: "text", nullable: false),
                     TeamLeaderId = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastUpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastUpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -104,29 +63,39 @@ namespace StartedIn.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Posts",
+                name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    AccountId = table.Column<string>(type: "text", nullable: false),
-                    Content = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastUpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    createdTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    lastUpdatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    profilePicture = table.Column<string>(type: "text", nullable: true),
+                    coverPhoto = table.Column<string>(type: "text", nullable: true),
+                    content = table.Column<string>(type: "text", nullable: true),
+                    bio = table.Column<string>(type: "text", nullable: true),
+                    status = table.Column<int>(type: "integer", nullable: false),
+                    Verified = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Posts", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Posts_Accounts_AccountId",
-                        column: x => x.AccountId,
-                        principalTable: "Accounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetRoleClaims",
+                name: "RoleClaims",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -137,96 +106,11 @@ namespace StartedIn.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
+                    table.PrimaryKey("PK_RoleClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
+                        name: "FK_RoleClaims_Roles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    ClaimType = table.Column<string>(type: "text", nullable: true),
-                    ClaimValue = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
-                columns: table => new
-                {
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    ProviderKey = table.Column<string>(type: "text", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
-                    UserId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserRoles",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    RoleId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "AspNetRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUserTokens",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "text", nullable: false),
-                    LoginProvider = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Value = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
+                        principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -244,8 +128,11 @@ namespace StartedIn.Migrations
                     ActualCost = table.Column<decimal>(type: "numeric", nullable: false),
                     Progress = table.Column<float>(type: "real", nullable: false),
                     TeamId = table.Column<string>(type: "text", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastUpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastUpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -259,25 +146,158 @@ namespace StartedIn.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TeamAccount",
+                name: "Posts",
                 columns: table => new
                 {
-                    AccountsId = table.Column<string>(type: "text", nullable: false),
-                    TeamsId = table.Column<string>(type: "text", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false),
+                    CreatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastUpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TeamAccount", x => new { x.AccountsId, x.TeamsId });
+                    table.PrimaryKey("PK_Posts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TeamAccount_Accounts_AccountsId",
-                        column: x => x.AccountsId,
-                        principalTable: "Accounts",
+                        name: "FK_Posts_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TeamAccount",
+                columns: table => new
+                {
+                    TeamsId = table.Column<string>(type: "text", nullable: false),
+                    UsersId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TeamAccount", x => new { x.TeamsId, x.UsersId });
                     table.ForeignKey(
                         name: "FK_TeamAccount_Teams_TeamsId",
                         column: x => x.TeamsId,
                         principalTable: "Teams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TeamAccount_Users_UsersId",
+                        column: x => x.UsersId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserClaims",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserClaims", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserClaims_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserLogins",
+                columns: table => new
+                {
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    ProviderKey = table.Column<string>(type: "text", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserLogins", x => new { x.LoginProvider, x.ProviderKey });
+                    table.ForeignKey(
+                        name: "FK_UserLogins_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserRoles",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserRoles", x => new { x.UserId, x.RoleId });
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserRoles_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserTokens",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.ForeignKey(
+                        name: "FK_UserTokens_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Phases",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    PhaseName = table.Column<string>(type: "text", nullable: false),
+                    ProjectId = table.Column<string>(type: "text", nullable: false),
+                    CreatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastUpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Phases", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Phases_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -287,25 +307,28 @@ namespace StartedIn.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    AccountId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
                     CommentContent = table.Column<string>(type: "text", nullable: false),
                     PostId = table.Column<string>(type: "text", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastUpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastUpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Comments_Accounts_AccountId",
-                        column: x => x.AccountId,
-                        principalTable: "Accounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Comments_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Comments_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -317,8 +340,11 @@ namespace StartedIn.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     PostId = table.Column<string>(type: "text", nullable: false),
                     ImageLink = table.Column<string>(type: "text", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastUpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastUpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -356,28 +382,6 @@ namespace StartedIn.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Phases",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    PhaseName = table.Column<string>(type: "text", nullable: false),
-                    ProjectId = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastUpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Phases", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Phases_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MajorTasks",
                 columns: table => new
                 {
@@ -385,8 +389,11 @@ namespace StartedIn.Migrations
                     PhaseId = table.Column<string>(type: "text", nullable: false),
                     TaskTitle = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastUpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastUpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -406,8 +413,11 @@ namespace StartedIn.Migrations
                     Id = table.Column<string>(type: "text", nullable: false),
                     PhaseId = table.Column<string>(type: "text", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastUpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastUpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -429,8 +439,11 @@ namespace StartedIn.Migrations
                     Description = table.Column<string>(type: "text", nullable: false),
                     MajorTaskId = table.Column<string>(type: "text", nullable: false),
                     TaskboardId = table.Column<string>(type: "text", nullable: true),
-                    CreatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    LastUpdatedTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    LastUpdatedTime = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastUpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -449,51 +462,14 @@ namespace StartedIn.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetRoleClaims_RoleId",
-                table: "AspNetRoleClaims",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "RoleNameIndex",
-                table: "AspNetRoles",
-                column: "NormalizedName",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserClaims_UserId",
-                table: "AspNetUserClaims",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserLogins_UserId",
-                table: "AspNetUserLogins",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUserRoles_RoleId",
-                table: "AspNetUserRoles",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "AspNetUsers",
-                column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "AspNetUsers",
-                column: "NormalizedUserName",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comments_AccountId",
-                table: "Comments",
-                column: "AccountId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Comments_PostId",
                 table: "Comments",
                 column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_UserId",
+                table: "Comments",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MajorTasks_PhaseId",
@@ -526,9 +502,9 @@ namespace StartedIn.Migrations
                 column: "PostsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Posts_AccountId",
+                name: "IX_Posts_UserId",
                 table: "Posts",
-                column: "AccountId");
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_TeamId",
@@ -536,34 +512,56 @@ namespace StartedIn.Migrations
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RoleClaims_RoleId",
+                table: "RoleClaims",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "RoleNameIndex",
+                table: "Roles",
+                column: "NormalizedName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Taskboards_PhaseId",
                 table: "Taskboards",
                 column: "PhaseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamAccount_TeamsId",
+                name: "IX_TeamAccount_UsersId",
                 table: "TeamAccount",
-                column: "TeamsId");
+                column: "UsersId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserClaims_UserId",
+                table: "UserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserLogins_UserId",
+                table: "UserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserRoles_RoleId",
+                table: "UserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "Users",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "Users",
+                column: "NormalizedUserName",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AspNetRoleClaims");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserClaims");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserLogins");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserRoles");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUserTokens");
-
             migrationBuilder.DropTable(
                 name: "Comments");
 
@@ -577,13 +575,22 @@ namespace StartedIn.Migrations
                 name: "PostInteraction");
 
             migrationBuilder.DropTable(
+                name: "RoleClaims");
+
+            migrationBuilder.DropTable(
                 name: "TeamAccount");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "UserClaims");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "UserLogins");
+
+            migrationBuilder.DropTable(
+                name: "UserRoles");
+
+            migrationBuilder.DropTable(
+                name: "UserTokens");
 
             migrationBuilder.DropTable(
                 name: "MajorTasks");
@@ -598,10 +605,13 @@ namespace StartedIn.Migrations
                 name: "Posts");
 
             migrationBuilder.DropTable(
+                name: "Roles");
+
+            migrationBuilder.DropTable(
                 name: "Phases");
 
             migrationBuilder.DropTable(
-                name: "Accounts");
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Projects");

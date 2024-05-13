@@ -19,10 +19,20 @@ namespace Repositories.BaseRepository
             _dbSet = _context.Set<T>();
         }
 
-        public async Task Add(T entity)
+        public async Task<bool> Add(T entity)
         {
-            await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            try 
+            {
+                await _dbSet.AddAsync(entity);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+            
+           
         }
 
         public Task Delete(T entity)

@@ -3,6 +3,7 @@ using System;
 using DataAccessLayer.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace StartedIn.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240513045524_130520241039")]
+    partial class _130520241039
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -332,44 +335,6 @@ namespace StartedIn.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("DataAccessLayer.Models.RefreshToken", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("CreatedTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTimeOffset>("Expires")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LastUpdatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("LastUpdatedTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshTokens");
-                });
-
             modelBuilder.Entity("DataAccessLayer.Models.RoleEntity", b =>
                 {
                     b.Property<string>("Id")
@@ -476,21 +441,9 @@ namespace StartedIn.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Bio")
-                        .HasColumnType("text");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
-
-                    b.Property<string>("Content")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CoverPhoto")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("CreatedTime")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -498,9 +451,6 @@ namespace StartedIn.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("LastUpdatedTime")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -525,12 +475,6 @@ namespace StartedIn.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("ProfilePicture")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("boolean");
 
@@ -540,6 +484,27 @@ namespace StartedIn.Migrations
 
                     b.Property<DateTimeOffset?>("Verified")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("bio")
+                        .HasColumnType("text");
+
+                    b.Property<string>("content")
+                        .HasColumnType("text");
+
+                    b.Property<string>("coverPhoto")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("createdTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("lastUpdatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("profilePicture")
+                        .HasColumnType("text");
+
+                    b.Property<int>("status")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -778,17 +743,6 @@ namespace StartedIn.Migrations
                         .IsRequired();
 
                     b.Navigation("Team");
-                });
-
-            modelBuilder.Entity("DataAccessLayer.Models.RefreshToken", b =>
-                {
-                    b.HasOne("DataAccessLayer.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DataAccessLayer.Models.Taskboard", b =>

@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Repositories.Interface;
@@ -15,20 +16,27 @@ namespace Services.Extensions
     public class TokenService : ITokenService
     {
         private readonly IConfiguration _configuration;
-        public TokenService(IConfiguration configuration) 
+        private readonly UserManager<User> _userManager;
+        public TokenService(IConfiguration configuration, UserManager<User> userManager)
         {
             _configuration = configuration;
+            _userManager = userManager;
         }
-        public string CreateTokenForAccount(Account account)
+        public string CreateTokenForAccount(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            
+
             var claims = new List<Claim>
             {
-                new(ClaimTypes.Role, account.Role),
-                new(ClaimTypes.Email,account.Email),
-                new("userId", account.Id)
+                new(ClaimTypes.Email,user.Email),
+                new("userId", user.Id)
             };
+
+            var roles = _userManager.GetRolesAsync(user);
+            foreach (var role in roles.Result)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var securityKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(
@@ -45,6 +53,14 @@ namespace Services.Extensions
                 signingCredentials: credential);
 
             return tokenHandler.WriteToken(token);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[64];
+            using var rng = System.Security.Cryptography.RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
     }
 }

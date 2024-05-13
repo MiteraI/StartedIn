@@ -1,16 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using DataAccessLayer.BaseEntity;
+using DataAccessLayer.BaseEntities;
 
 namespace DataAccessLayer.Models;
 
-public class Comment : Entity
+public class Comment : BaseAuditEntity
 {
-    [ForeignKey(nameof(Account))]
-    public string AccountId { get; set; }
+    [ForeignKey(nameof(User))]
+    public string UserId { get; set; }
     public string CommentContent { get; set; }
     [ForeignKey(nameof(Post))]
     public string PostId { get; set; }
     
     public Post Post { get; set; } = null!;
-    public Account Account { get; set; } = null!;
+    public User User { get; set; } = null!;
 }
