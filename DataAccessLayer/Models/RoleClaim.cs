@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Models
 {
-    public class RoleClaimEntity : IdentityRoleClaim<string>
+    public class RoleClaim : IdentityRoleClaim<string>
     {
 
     }

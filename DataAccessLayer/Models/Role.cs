@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Models
 {
-    public class RoleEntity : IdentityRole
+    public class Role : IdentityRole
     {
-        public RoleEntity() {
+        public Role() {
             Id = Guid.NewGuid().ToString("N");
         }
         [NotMapped]

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Models
 {
-    public class UserRoleEntity : IdentityUserRole<string>
+    public class UserRole : IdentityUserRole<string>
     {
     }
 }

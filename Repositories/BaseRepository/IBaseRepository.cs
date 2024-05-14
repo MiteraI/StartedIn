@@ -9,7 +9,7 @@ namespace Repositories.BaseRepository
     public interface IBaseRepository<T>
     {
         IQueryable<T> GetAll();
-        Task<bool> Add(T entity);
+        Task Add(T entity);
         Task Update(T entity);
         Task Delete(T entity);
         Task<T> GetById (string id);

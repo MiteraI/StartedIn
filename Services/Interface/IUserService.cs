@@ -12,6 +12,6 @@ namespace Services.Interface
     {
         Task<LoginResponseDTO<string>> Login(LoginDTO loginDto);
 
-        //Task<ResponseDTO<string>> Register(RegisterDTO registerDto);
+        Task<ResponseDTO<string>> Register(RegisterDTO registerDto);
     }
 }

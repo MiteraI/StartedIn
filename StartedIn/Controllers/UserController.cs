@@ -30,15 +30,15 @@ namespace StartedIn.Controllers
             return StatusCode(res.StatusCode, res.Message);
         }
 
-        //[HttpPost("register")]
-        //public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
-        //{
-        //    var res = await _userService.Register(registerDto);
-        //    if (res.StatusCode == 200)
-        //    {
-        //        return Ok("Register successful");
-        //    }
-        //    return StatusCode(res.StatusCode, res.Message);
-        //}
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
+        {
+            var res = await _userService.Register(registerDto);
+            if (res.StatusCode == 200)
+            {
+                return Ok("Register successful");
+            }
+            return StatusCode(res.StatusCode, res.Message);
+        }
     }
 }

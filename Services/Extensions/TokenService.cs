@@ -32,11 +32,11 @@ namespace Services.Extensions
                 new("userId", user.Id)
             };
 
-            var roles = _userManager.GetRolesAsync(user);
-            foreach (var role in roles.Result)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, role));
-            }
+            //var roles = _userManager.GetRolesAsync(user);
+            //foreach (var role in roles.Result)
+            //{
+            //    claims.Add(new Claim(ClaimTypes.Role, role));
+            //}
 
             var securityKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(

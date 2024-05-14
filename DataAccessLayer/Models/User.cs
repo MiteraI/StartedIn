@@ -20,6 +20,8 @@ public class User : IdentityUser
     public string? Bio { get; set; }
     public AccountStatus Status { get; set; }
     public DateTimeOffset? Verified { get; set; }
+    public string? RefreshToken { get; set; }
+    public DateTimeOffset? RefreshTokenExpiry { get; set; }
     public bool IsActive => EmailConfirmed && AccessFailedCount < 5;
     public override bool EmailConfirmed => Verified.HasValue;
     [NotMapped]

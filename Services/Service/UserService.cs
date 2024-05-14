@@ -4,6 +4,7 @@ using DataAccessLayer.DTOs.ResponseDTO;
 using DataAccessLayer.Enum;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json.Linq;
 using Repositories.Interface;
 using Services.Interface;
 using System.Data;
@@ -18,7 +19,6 @@ namespace Services.Service
         private readonly ITokenService _tokenService;
         private readonly UserManager<User> _userManager;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IRefreshTokenRepository _refreshTokenRepository;
 
         public UserService(IUserRepository accountRepository, IMapper mapper, ITokenService tokenService,
             UserManager<User> userManager, IUnitOfWork unitOfWork)
@@ -45,14 +45,9 @@ namespace Services.Service
             var jwtToken = _tokenService.CreateTokenForAccount(loginUser);
             var refreshToken = _tokenService.GenerateRefreshToken();
             var user = _accountRepository.GetById(loginUser.Id).Result;
-            RefreshToken token = new RefreshToken
-            {
-                UserId = user.Id,
-                Token = refreshToken,
-                Expires = DateTime.UtcNow.AddHours(3)
-            };
-            _refreshTokenRepository.Add(token);
-
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiry = DateTimeOffset.UtcNow.AddHours(3);
+            await _accountRepository.Update(user);
             return new LoginResponseDTO<string>
             {
                 StatusCode = 200,
@@ -62,55 +57,57 @@ namespace Services.Service
             };
         }
 
-        //public async Task<ResponseDTO<string>> Register(RegisterDTO registerDto)
-        //{
-        //    _unitOfWork.BeginTransaction();
-        //    var user = new User
-        //    {
-        //        UserName = registerDto.UserName,
-        //        Email = registerDto.Email,
-        //    };
-        //    var result = await _userManager.CreateAsync(user, registerDto.Password);
-        //    switch (registerDto.Role)
-        //    {
-        //        case Role.Admin:
-        //            await _userManager.AddToRoleAsync(user, "Admin");
-        //            break;
 
-        //        case Role.User:
-        //            await _userManager.AddToRoleAsync(user, "User");
-        //            break;
-        //    }
-        //    if (result.Succeeded)
-        //    {
-        //        var newAccount = new Account
-        //        {
-        //            Id = user.Id,
-        //            Name = registerDto.Name,
-        //            Email = registerDto.Email,
-        //            Status = AccountStatus.Active,
-        //        };
-        //        await _accountRepository.Add(newAccount);
-        //        await _unitOfWork.CommitAsync();
-        //        return new ResponseDTO<string>
-        //        {
-        //            StatusCode = 200,
-        //            Message = "Register successful",
-        //        };
+        public async Task<ResponseDTO<string>> Register(RegisterDTO registerDto)
+        {
+            _unitOfWork.BeginTransaction();
+            var user = new User
+            {
+                UserName = registerDto.UserName,
+                Email = registerDto.Email,
+            };
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            //switch (registerDto.Role)
+            //{
+            //    case Role.Admin:
+            //        await _userManager.AddToRoleAsync(user, "Admin");
+            //        break;
 
-        //    }
-        //    else
-        //    {
-        //        await _unitOfWork.RollbackAsync();
-        //        await _userManager.DeleteAsync(user);
-        //        return new ResponseDTO<string>
-        //        {
-        //            StatusCode = 400,
-        //            Message = "Register failed",
-        //        };
+            //    case Role.User:
+            //        await _userManager.AddToRoleAsync(user, "User");
+            //        break;
+            //}
+            if (result.Succeeded)
+            {
+                var User = new User
+                {
+                    Id = user.Id,
+                    NormalizedUserName = registerDto.Name,
+                    NormalizedEmail = registerDto.Email,
+                    Email = registerDto.Email,
+                    Status = AccountStatus.Active,
+                };
+                await _accountRepository.Add(user);
+                await _unitOfWork.CommitAsync();
+                return new ResponseDTO<string>
+                {
+                    StatusCode = 200,
+                    Message = "Register successful",
+                };
 
-        //    }
-        //}
+            }
+            else
+            {
+                await _unitOfWork.RollbackAsync();
+                await _userManager.DeleteAsync(user);
+                return new ResponseDTO<string>
+                {
+                    StatusCode = 400,
+                    Message = "Register failed",
+                };
+
+            }
+        }
 
     }
 }

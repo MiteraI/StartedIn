@@ -57,9 +57,9 @@ builder.Services.AddIdentityCore<User>(opt =>
     opt.User.RequireUniqueEmail = true;
 })
     .AddDefaultTokenProviders()
-    .AddRoles<RoleEntity>()
+    .AddRoles<Role>()
     .AddEntityFrameworkStores<AppDbContext>()
-    .AddRoleManager<RoleManager<RoleEntity>>();
+    .AddRoleManager<RoleManager<Role>>();
 
 
 var app = builder.Build();
@@ -99,7 +99,7 @@ app.UseCors(x => x
 var appScope = app.Services.CreateScope();
 var appContext = appScope.ServiceProvider.GetRequiredService<AppDbContext>();
 var userManager = appScope.ServiceProvider.GetRequiredService<UserManager<User>>();
-var roleManager = appScope.ServiceProvider.GetRequiredService<RoleManager<RoleEntity>>();
+var roleManager = appScope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
 
 app.UseSession();
 app.UseHttpsRedirection();

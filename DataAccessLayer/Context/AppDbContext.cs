@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace DataAccessLayer.Context;
 
-public class AppDbContext : IdentityDbContext<User,RoleEntity,string>
+public class AppDbContext : IdentityDbContext<User,Role,string>
 {
     public AppDbContext() { }
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
@@ -37,7 +37,6 @@ public class AppDbContext : IdentityDbContext<User,RoleEntity,string>
     public DbSet<Taskboard> Taskboards { get; set; }
     public DbSet<MajorTask> MajorTasks { get; set; }
     public DbSet<MinorTask> MinorTasks { get; set; }
-    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
