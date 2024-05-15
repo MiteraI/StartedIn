@@ -1,11 +1,12 @@
 ﻿using DataAccessLayer.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace DataAccessLayer.Context;
 
-public class AppDbContext : IdentityDbContext<User,Role,string>
+public class AppDbContext : IdentityDbContext<User>
 {
     public AppDbContext() { }
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)

@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using DataAccessLayer.Enum;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,14 +11,14 @@ namespace DataAccessLayer.DTOs.RequestDTO
 {
     public class RegisterDTO
     {
+        [Required(ErrorMessage = "User Name is required")]
         public string UserName { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Name {  get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string? ProfilePicture { get; set; }
-        public string? CoverPhoto { get; set; }
-        public string? Content { get; set; }
-        public string? Bio { get; set; }
+        [EmailAddress]
+        [Required(ErrorMessage = "Email is required")]
+        public string? Email { get; set; }
+        [Required(ErrorMessage = "Password is required")]
+        public string? Password { get; set; }
+        public string Role { get; set; }
+
     }
 }

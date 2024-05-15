@@ -1,8 +1,8 @@
 using DataAccessLayer.Context;
+using DataAccessLayer.Data;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Repositories.Interface;
 using Repositories.Repository;
 using Services.Extensions;
@@ -51,17 +51,7 @@ builder.Services.AddTransient<ITokenService, Services.Extensions.TokenService>()
 
 
 builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<User>().AddEntityFrameworkStores<AppDbContext>();
-builder.Services.AddIdentityCore<User>(opt =>
-{
-    opt.User.RequireUniqueEmail = true;
-})
-    .AddDefaultTokenProviders()
-    .AddRoles<Role>()
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddRoleManager<RoleManager<Role>>();
-
-
+builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -86,8 +76,6 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.MapIdentityApi<User>();
-
 app.UseStaticFiles();
 
 app.UseCors(x => x
@@ -99,8 +87,15 @@ app.UseCors(x => x
 var appScope = app.Services.CreateScope();
 var appContext = appScope.ServiceProvider.GetRequiredService<AppDbContext>();
 var userManager = appScope.ServiceProvider.GetRequiredService<UserManager<User>>();
-var roleManager = appScope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
-
+var roleManager = appScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+try
+{
+    await DBInitializer.Initialize(appContext, userManager, roleManager);
+}
+catch (Exception ex)
+{
+    throw new Exception(ex.InnerException?.ToString());
+}
 app.UseSession();
 app.UseHttpsRedirection();
 
