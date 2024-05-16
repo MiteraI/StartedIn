@@ -16,6 +16,7 @@ var config = builder.Configuration;
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 builder.Services.AddJwtAuthenticationService(config);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddEndpointsApiExplorer();
@@ -51,7 +52,7 @@ builder.Services.AddTransient<ITokenService, Services.Extensions.TokenService>()
 
 
 builder.Services.AddAuthorization();
-builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
+
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -101,7 +102,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

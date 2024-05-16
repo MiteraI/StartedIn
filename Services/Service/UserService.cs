@@ -8,7 +8,14 @@ using Newtonsoft.Json.Linq;
 using Repositories.Interface;
 using Services.Interface;
 using System.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Principal;
+using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Role = DataAccessLayer.Enum.Role;
 
 namespace Services.Service
@@ -21,9 +28,11 @@ namespace Services.Service
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IConfiguration _configuration;
 
         public UserService(IUserRepository userRepository, IMapper mapper, ITokenService tokenService,
-            UserManager<User> userManager, IUnitOfWork unitOfWork, RoleManager<IdentityRole> roleManager)
+            UserManager<User> userManager, IUnitOfWork unitOfWork, RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration)
         {
             _userRepository = userRepository;
             _mapper = mapper;
@@ -31,6 +40,7 @@ namespace Services.Service
             _userManager = userManager;
             _unitOfWork = unitOfWork;
             _roleManager = roleManager;
+            _configuration = configuration;
         }
 
         public async Task<LoginResponseDTO<string>> Login(LoginDTO loginDto)
@@ -156,6 +166,62 @@ namespace Services.Service
             
             
         }
+        
+        public ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
+        {
+            var validation = new TokenValidationParameters
+            {
+                ValidateLifetime = false,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
+                    (_configuration["jwt:secret"])),
+                ValidIssuer = _configuration["jwt:issuer"],
+                ValidAudience = _configuration["jwt:audience"]
+            };
+            return new JwtSecurityTokenHandler().ValidateToken(token, validation, out _);
+        }
 
+        public async Task<LoginResponseDTO<string>> Refresh(RefreshTokenDTO refreshTokenDto)
+        {
+            var principal = GetPrincipalFromExpiredToken(refreshTokenDto.JwtToken);
+            var user = await _userManager.FindByNameAsync(principal.Identity.Name);
+            var jwtToken = _tokenService.CreateTokenForAccount(user);
+            return new LoginResponseDTO<string>
+            {
+                StatusCode = 200,
+                Message = "Refresh successful",
+                JwtToken = jwtToken,
+                RefreshToken = refreshTokenDto.RefreshToken
+            };
+            
+        }
+
+        public async Task<ResponseDTO<string>> Revoke(string userName)
+        {
+            if (userName == null)
+            {
+                return new ResponseDTO<string>()
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized"
+                };
+            }
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return new ResponseDTO<string>()
+                {
+                    StatusCode = 401,
+                    Message = "Unauthorized"
+                };
+            }
+            user.RefreshToken = null;
+            user.RefreshTokenExpiry = null;
+            await _userManager.UpdateAsync(user);
+            return new ResponseDTO<string>()
+            {
+                StatusCode = 200,
+                Message = "Revoke successful"
+            };
+        }
     }
 }
