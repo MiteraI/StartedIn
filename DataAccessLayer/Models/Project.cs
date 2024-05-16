@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using DataAccessLayer.BaseEntity;
+using DataAccessLayer.BaseEntities;
 
 namespace DataAccessLayer.Models;
 
-public class Project : Entity
+public class Project : BaseAuditEntity
 {
     public string ProjectName { get; set; }
     public DateTime StartDate { get; set; }

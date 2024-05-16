@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using DataAccessLayer.BaseEntity;
+﻿using DataAccessLayer.BaseEntities;
+using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace DataAccessLayer.Models;
 
-public class Taskboard : Entity
+public class Taskboard : BaseAuditEntity
 {
     [ForeignKey(nameof(Phase))]
     public string PhaseId { get; set; }

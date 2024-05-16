@@ -1,15 +1,17 @@
 ﻿using DataAccessLayer.Models;
 using Repositories.BaseRepository;
+using Repositories.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repositories.Interface
+namespace Repositories.Repository
 {
-    public interface IAccountRepository : IBaseRepository<Account>
+    public class UserRepository : BaseRepository<User>, IUserRepository
     {
-        Task<Account?> Login (string email, string password);
+        
     }
 }

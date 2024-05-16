@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using DataAccessLayer.BaseEntity;
+using DataAccessLayer.BaseEntities;
 
 namespace DataAccessLayer.Models;
 
-public class Team : Entity
+public class Team : BaseAuditEntity
 {
     public string TeamName { get; set; }
-    [ForeignKey(nameof(Account))]
+    [ForeignKey(nameof(User))]
     public string TeamLeaderId { get; set; }
     public string Description { get; set; }
     
     public IEnumerable<Project> Projects { get; set; }
-    public IEnumerable<Account> Accounts { get; set; }
+    public IEnumerable<User> Users { get; set; }
 }

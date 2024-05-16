@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using DataAccessLayer.BaseEntity;
+using DataAccessLayer.BaseEntities;
 
 namespace DataAccessLayer.Models;
 
-public class PostImage : Entity
+public class PostImage : BaseAuditEntity
 {
     [ForeignKey(nameof(Post))]
     public string PostId { get; set; }

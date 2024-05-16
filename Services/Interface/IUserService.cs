@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace Services.Interface
 {
-    public interface IAccountService
+    public interface IUserService
     {
-        Task<ResponseDTO<string>> Login(LoginDTO loginDto);
+        Task<LoginResponseDTO<string>> Login(LoginDTO loginDto);
+
+        Task<ResponseDTO<string>> Register(RegisterDTO registerDto);
     }
 }

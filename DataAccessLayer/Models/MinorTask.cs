@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using DataAccessLayer.BaseEntity;
+using DataAccessLayer.BaseEntities;
 
 namespace DataAccessLayer.Models;
 
-public class MinorTask : Entity
+public class MinorTask : BaseAuditEntity
 {
     public string TaskTitle { get; set; }
     public string Description { get; set; }

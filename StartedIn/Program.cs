@@ -1,6 +1,5 @@
-
-
 using DataAccessLayer.Context;
+using DataAccessLayer.Data;
 using DataAccessLayer.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -40,19 +39,19 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder => builder.MigrationsAssembly("StartedIn"));
 });
 
-builder.Services.AddTransient<IAccountRepository, AccountRepository>();
+builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddTransient<IUserService, UserService>();
 
 builder.Services.AddTransient<ITokenService, Services.Extensions.TokenService>();
 
 
 
 
+
 builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<IdentityUser>().AddEntityFrameworkStores<AppDbContext>();
-
-
+builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
@@ -77,8 +76,6 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.MapIdentityApi<IdentityUser>();
-
 app.UseStaticFiles();
 
 app.UseCors(x => x
@@ -87,6 +84,18 @@ app.UseCors(x => x
         .AllowAnyHeader()
 );
 
+var appScope = app.Services.CreateScope();
+var appContext = appScope.ServiceProvider.GetRequiredService<AppDbContext>();
+var userManager = appScope.ServiceProvider.GetRequiredService<UserManager<User>>();
+var roleManager = appScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+try
+{
+    await DBInitializer.Initialize(appContext, userManager, roleManager);
+}
+catch (Exception ex)
+{
+    throw new Exception(ex.InnerException?.ToString());
+}
 app.UseSession();
 app.UseHttpsRedirection();
 
