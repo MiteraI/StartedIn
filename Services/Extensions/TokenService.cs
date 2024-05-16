@@ -29,7 +29,8 @@ namespace Services.Extensions
             var claims = new List<Claim>
             {
                 new(ClaimTypes.Email,user.Email),
-                new("userId", user.Id)
+                new("userId", user.Id),
+                new(ClaimTypes.Name, user.UserName)
             };
 
             //var roles = _userManager.GetRolesAsync(user);
@@ -49,7 +50,7 @@ namespace Services.Extensions
                 _configuration["jwt:issuer"],
                 _configuration["jwt:audience"],
                 claims,
-                expires: DateTime.UtcNow.AddDays(7),
+                expires: DateTime.UtcNow.AddMinutes(20),
                 signingCredentials: credential);
 
             return tokenHandler.WriteToken(token);

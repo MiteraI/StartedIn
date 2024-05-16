@@ -16,7 +16,11 @@ public static class JwtAuthenticationService
 {
     public static void AddJwtAuthenticationService(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+        services.AddAuthentication(options => {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;}
+            ).AddJwtBearer(options =>
         {
             options.RequireHttpsMetadata = false;
             options.SaveToken = true;
