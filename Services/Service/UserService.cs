@@ -135,7 +135,11 @@ namespace Services.Service
             {
                 Email = registerDto.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = registerDto.UserName
+                UserName = registerDto.Email,
+                PhoneNumber = registerDto.PhoneNumber,
+                FullName = registerDto.FullName,
+                IsActive = false,
+                AccessFailedCount = 0
             };
             if (await _roleManager.RoleExistsAsync(registerDto.Role)) 
             {
