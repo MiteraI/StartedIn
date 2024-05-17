@@ -13,8 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 builder.Services.AddJwtAuthenticationService(config);
@@ -23,22 +23,36 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerService();
 
-// Add session
-builder.Services.AddControllersWithViews(); // This registers ITempDataDictionaryFactory and other services
-builder.Services.AddDistributedMemoryCache(); // Adds a default in-memory implementation of IDistributedCache
-builder.Services.AddSession(options =>
+var envDatabaseUrl = builder.Configuration.GetValue<string>("DATABASE_URL");
+if (!string.IsNullOrEmpty(envDatabaseUrl))
 {
-    options.Cookie.Name = "EXE201";
-    options.IdleTimeout = new TimeSpan(0, 30, 0);
-});
+    string connectionString = envDatabaseUrl.Replace("postgres://", "")
+    .Replace("@", " ")
+    .Replace(":", " ")
+    .Replace("/", " ");
 
+    string[] parts = connectionString.Split(' ');
+    string userId = parts[0];
+    string password = parts[1];
+    string host = parts[2];
+    string port = parts[3];
+    string database = parts[4];
 
-
-builder.Services.AddDbContext<AppDbContext>(options =>
+    string formattedConnectionString = $"Server={host};Port={port};Database={database};User Id={userId};Password={password};";
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    {
+        options.UseNpgsql(formattedConnectionString);
+        options.UseNpgsql(builder => builder.MigrationsAssembly("StartedIn"));
+    });
+}
+else
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("StartedInDB"));
-    options.UseNpgsql(builder => builder.MigrationsAssembly("StartedIn"));
-});
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    {
+        options.UseNpgsql(builder.Configuration.GetConnectionString("StartedInDB"));
+        options.UseNpgsql(builder => builder.MigrationsAssembly("StartedIn"));
+    });
+}
 
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
@@ -46,10 +60,6 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<IUserService, UserService>();
 
 builder.Services.AddTransient<ITokenService, Services.Extensions.TokenService>();
-
-
-
-
 
 builder.Services.AddAuthorization();
 
@@ -61,7 +71,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<AppDbContext>();
-        //context.Database.Migrate(); // Apply pending migrations
+        context.Database.Migrate(); // Apply pending migrations
     }
     catch (Exception ex)
     {
@@ -75,9 +85,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-
-app.UseStaticFiles();
 
 app.UseCors(x => x
         .AllowAnyOrigin()
@@ -97,8 +104,6 @@ catch (Exception ex)
 {
     throw new Exception(ex.InnerException?.ToString());
 }
-app.UseSession();
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
