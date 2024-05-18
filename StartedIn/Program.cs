@@ -34,11 +34,7 @@ builder.Services.AddSession(options =>
 
 
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    options.UseNpgsql(builder.Configuration.GetConnectionString("StartedInDB"));
-    options.UseNpgsql(builder => builder.MigrationsAssembly("StartedIn"));
-});
+builder.Services.AddDbContext<AppDbContext>();
 
 builder.Services.AddTransient<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
