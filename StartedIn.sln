@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartedIn", "StartedIn\StartedIn.csproj", "{7761E86B-49E7-48C7-9B61-EF82C9C7918F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StartedIn", "StartedIn\StartedIn.csproj", "{7761E86B-49E7-48C7-9B61-EF82C9C7918F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayer", "DataAccessLayer\DataAccessLayer.csproj", "{A7233CFC-932E-4D58-9D47-1DB29B0C7C66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{A7233CFC-932E-4D58-9D47-1DB29B0C7C66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories", "Repositories\Repositories.csproj", "{65E6F2FF-C36D-434A-B712-9A81883E07D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repositories", "Repositories\Repositories.csproj", "{65E6F2FF-C36D-434A-B712-9A81883E07D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{5BFC3A90-B3C2-41AC-887B-92B3DEEAE36C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{5BFC3A90-B3C2-41AC-887B-92B3DEEAE36C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

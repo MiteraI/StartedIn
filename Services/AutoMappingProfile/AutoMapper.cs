@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using DataAccessLayer.DTOs.RequestDTO;
-using DataAccessLayer.Models;
+using Domain.DTOs.RequestDTO;
+using Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

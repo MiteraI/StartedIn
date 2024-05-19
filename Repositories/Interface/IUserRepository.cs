@@ -1,4 +1,4 @@
-﻿using DataAccessLayer.Models;
+﻿using Domain.Models;
 using Repositories.BaseRepository;
 using System;
 using System.Collections.Generic;

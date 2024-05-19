@@ -1,5 +1,5 @@
-﻿using DataAccessLayer.DTOs.RequestDTO;
-using DataAccessLayer.DTOs.ResponseDTO;
+﻿using Domain.DTOs.RequestDTO;
+using Domain.DTOs.ResponseDTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;

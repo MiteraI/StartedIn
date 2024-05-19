@@ -1,6 +1,6 @@
-using DataAccessLayer.Context;
-using DataAccessLayer.Data;
-using DataAccessLayer.Models;
+using Domain.Context;
+using Domain.Data;
+using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Repositories.Interface;
