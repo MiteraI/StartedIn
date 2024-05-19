@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using DataAccessLayer.DTOs.RequestDTO;
-using DataAccessLayer.DTOs.ResponseDTO;
-using DataAccessLayer.Enum;
-using DataAccessLayer.Models;
+using Domain.DTOs.RequestDTO;
+using Domain.DTOs.ResponseDTO;
+using Domain.Enum;
+using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json.Linq;
 using Repositories.Interface;
@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Role = DataAccessLayer.Enum.Role;
+using Role = Domain.Enum.Role;
 
 namespace Services.Service
 {

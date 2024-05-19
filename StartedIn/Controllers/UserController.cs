@@ -1,9 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using DataAccessLayer.DTOs.RequestDTO;
-using DataAccessLayer.DTOs.ResponseDTO;
-using DataAccessLayer.Models;
+using Domain.DTOs.RequestDTO;
+using Domain.DTOs.ResponseDTO;
+using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
