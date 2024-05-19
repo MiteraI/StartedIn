@@ -3,31 +3,36 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Domain.Context;
 
 public class AppDbContext : IdentityDbContext<User>
 {
-    public AppDbContext() { }
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    private readonly IConfiguration _config;
+    private readonly ILogger<AppDbContext> _logger;
+    public AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration config, ILogger<AppDbContext> logger) : base(options)
     {
+        _config = config;
+        _logger = logger;
     }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
+        var envDatabaseUrl = _config.GetValue<string>("DATABASE_URL");
+        if (!string.IsNullOrEmpty(envDatabaseUrl))
         {
-            optionsBuilder.UseNpgsql(GetConnectionString());
+            var databaseUri = new Uri(envDatabaseUrl);
+            var userInfo = databaseUri.UserInfo.Split(':');
+            optionsBuilder.UseNpgsql(
+                               $"Host={databaseUri.Host};Port={databaseUri.Port};Database={databaseUri.LocalPath.Substring(1)};Username={userInfo[0]};Password={userInfo[1]};Trust Server Certificate=true"
+                                          );
+        }
+        else
+        {
+            optionsBuilder.UseNpgsql(_config.GetConnectionString("StartedInDB"));
         }
     }
-    public string GetConnectionString()
-    {
-        IConfiguration config = new ConfigurationBuilder()
-             .SetBasePath(Directory.GetCurrentDirectory())
-             .AddJsonFile("appsettings.json", true, true)
-             .Build();
-        var strConn = config["ConnectionStrings:StartedInDB"];
-        return strConn;
-    }
+
     public DbSet<Post> Posts { get; set; }
     public DbSet<PostImage> PostImages { get; set; }
     public DbSet<Comment> Comments { get; set; }
@@ -47,7 +52,7 @@ public class AppDbContext : IdentityDbContext<User>
             .HasMany(x => x.Interactions)
             .WithMany(y => y.Posts)
             .UsingEntity(z => z.ToTable("PostInteraction"));
-        
+
         modelBuilder.Entity<Team>()
             .HasMany(x => x.Users)
             .WithMany(y => y.Teams)

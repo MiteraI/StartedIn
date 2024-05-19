@@ -13,9 +13,9 @@ namespace Repositories.BaseRepository
         private readonly AppDbContext _context;
         public DbSet<T> _dbSet;
 
-        public BaseRepository()
+        public BaseRepository(AppDbContext context)
         {
-            _context = new AppDbContext();
+            _context = context;
             _dbSet = _context.Set<T>();
         }
 

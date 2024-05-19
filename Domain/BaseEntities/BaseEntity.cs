@@ -8,6 +8,6 @@ public class BaseEntity
     {
         Id = Guid.NewGuid().ToString("N");
     }
-    [Key]
+    [Key]   
     public string Id { get; set; }
 }
