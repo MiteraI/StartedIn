@@ -38,11 +38,6 @@ builder.Services.AddAuthorization();
 builder.Host.UseSerilog((ctx,config) =>
 {
     config.WriteTo.Console().MinimumLevel.Information();
-    config.WriteTo.File(
-    path: AppDomain.CurrentDomain.BaseDirectory + "/logs/log-.txt",
-    rollingInterval: RollingInterval.Day,
-    rollOnFileSizeLimit: true,
-    formatter: new JsonFormatter()).MinimumLevel.Information();
 });
 var app = builder.Build();
 
