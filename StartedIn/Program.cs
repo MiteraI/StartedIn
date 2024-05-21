@@ -6,9 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Repositories.Interface;
 using Repositories.Repository;
 using Serilog;
+using Serilog.Formatting.Json;
 using Services.Extensions;
 using Services.Interface;
 using Services.Service;
+using System.Runtime.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -33,7 +35,19 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddAuthorization();
 
+builder.Host.UseSerilog((ctx,config) =>
+{
+    config.WriteTo.Console().MinimumLevel.Information();
+    config.WriteTo.File(
+    path: AppDomain.CurrentDomain.BaseDirectory + "/logs/log-.txt",
+    rollingInterval: RollingInterval.Day,
+    rollOnFileSizeLimit: true,
+    formatter: new JsonFormatter()).MinimumLevel.Information();
+});
 var app = builder.Build();
+
+app.UseSerilogRequestLogging();
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
