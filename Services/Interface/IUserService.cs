@@ -20,5 +20,6 @@ namespace Services.Interface
         Task<LoginResponseDTO<string>> Refresh(RefreshTokenDTO refreshTokenDto);
 
         Task<ResponseDTO<string>> Revoke(string userName);
+        Task<ResponseDTO<string>> ActivateUser(string userId);
     }
 }

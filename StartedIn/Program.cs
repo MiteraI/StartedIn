@@ -1,8 +1,10 @@
 using Domain.Context;
 using Domain.Data;
+using Domain.DTOs.Email;
 using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Repositories.Interface;
 using Repositories.Repository;
 using Serilog;
@@ -14,7 +16,7 @@ using System.Runtime.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
-
+EmailSettingModel.Instance = config.GetSection("EmailSettings").Get<EmailSettingModel>();
 // Add services to the container.
 builder.Services.AddSerilog();
 builder.Services.AddControllers();
@@ -32,6 +34,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddAuthorization();
 
