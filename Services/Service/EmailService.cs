@@ -56,7 +56,7 @@ namespace Services.Service
                 {
 
                     Subject = "",
-                    Body = $"https://localhost:7099/api/Account/activate-user/{id}",
+                    Body = $"https://startedin-21a210f33eba.herokuapp.com/api/Account/activate-user/{id}",
                     IsBodyHtml = false,
                 };
                 mailMessage.From = new MailAddress(EmailSettingModel.Instance.FromEmailAddress, EmailSettingModel.Instance.FromDisplayName);
