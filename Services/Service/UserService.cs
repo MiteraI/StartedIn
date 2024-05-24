@@ -29,10 +29,11 @@ namespace Services.Service
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
         public UserService(IUserRepository userRepository, IMapper mapper, ITokenService tokenService,
             UserManager<User> userManager, IUnitOfWork unitOfWork, RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration)
+            IConfiguration configuration, IEmailService emailService)
         {
             _userRepository = userRepository;
             _mapper = mapper;
@@ -41,6 +42,7 @@ namespace Services.Service
             _unitOfWork = unitOfWork;
             _roleManager = roleManager;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         public async Task<LoginResponseDTO<string>> Login(LoginDTO loginDto)
@@ -141,34 +143,22 @@ namespace Services.Service
                 IsActive = false,
                 AccessFailedCount = 0
             };
-            if (await _roleManager.RoleExistsAsync(registerDto.Role)) 
+           var result = await _userManager.CreateAsync(user, registerDto.Password);
+           if (!result.Succeeded)
+           {
+               return new ResponseDTO<string>
+               {
+                   StatusCode = 500,
+                   Message = "Created Failed",
+               };
+           }
+           await _userManager.AddToRoleAsync(user, "User");
+           _emailService.SendVerificationMail(registerDto.Email, user.Id);
+            return new ResponseDTO<string>
             {
-                var result = await _userManager.CreateAsync(user, registerDto.Password);
-                if (!result.Succeeded)
-                {
-                    return new ResponseDTO<string>
-                    {
-                        StatusCode = 500,
-                        Message = "Created Failed",
-                    };
-                }
-                await _userManager.AddToRoleAsync(user, registerDto.Role);
-                return new ResponseDTO<string>
-                {
-                    StatusCode = 200,
-                    Message = "Created Successfully",
-                };
-            }
-            else
-            {
-                return new ResponseDTO<string>
-                {
-                    StatusCode = 500,
-                    Message = "This role doesn't exist",
-                };
-            }
-            
-            
+               StatusCode = 200,
+               Message = "Created Successfully",
+            };   
         }
         
         public ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
@@ -226,6 +216,28 @@ namespace Services.Service
                 StatusCode = 200,
                 Message = "Revoke successful"
             };
+        }
+
+        public async Task<ResponseDTO<string>> ActivateUser(string userId)
+        {
+            var user = _userManager.FindByIdAsync(userId).Result;
+            if (user == null)
+            {
+                return new ResponseDTO<string>()
+                {
+                    StatusCode = 400,
+                    Message = "This user doesn't exist"
+                };
+            }
+            user.IsActive = true;
+            user.EmailConfirmed = true;
+            _userRepository.Update(user);
+            return new ResponseDTO<string>()
+            {
+                StatusCode = 200,
+                Message = "Activate successfully !"
+            };
+            
         }
     }
 }

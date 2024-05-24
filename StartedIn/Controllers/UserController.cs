@@ -21,13 +21,15 @@ namespace StartedIn.Controllers
         private readonly IUserService _userService;
         private readonly ITokenService _tokenService;
         private readonly UserManager<User> _userManager;
+        private readonly IEmailService _emailService;
 
         public AccountController(IUserService accountService, ITokenService tokenService,
-            UserManager<User> userManager)
+            UserManager<User> userManager, IEmailService emailService)
         {
             _userService = accountService;
             _tokenService = tokenService;
             _userManager = userManager;
+            _emailService = emailService;
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
@@ -46,7 +48,7 @@ namespace StartedIn.Controllers
             var res = await _userService.Register(registerDto);
             if (res.StatusCode == 200)
             {
-                return Ok("Register successful");
+                return Ok("Register successful");     
             }
             return StatusCode(res.StatusCode, res.Message);
         }
@@ -103,6 +105,16 @@ namespace StartedIn.Controllers
             }
         
             return BadRequest("Invalid refresh token");
+        }
+        [HttpGet("activate-user/{userId}")]
+        public async Task<IActionResult> ActivateUser(string userId)
+        {
+            var res = await _userService.ActivateUser(userId);
+            if (res.StatusCode == 200)
+            {
+                return Ok(res);
+            }
+            return StatusCode(res.StatusCode, res.Message);
         }
         
     }
