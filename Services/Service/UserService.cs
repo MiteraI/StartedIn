@@ -143,35 +143,22 @@ namespace Services.Service
                 IsActive = false,
                 AccessFailedCount = 0
             };
-            if (await _roleManager.RoleExistsAsync(registerDto.Role)) 
+           var result = await _userManager.CreateAsync(user, registerDto.Password);
+           if (!result.Succeeded)
+           {
+               return new ResponseDTO<string>
+               {
+                   StatusCode = 500,
+                   Message = "Created Failed",
+               };
+           }
+           await _userManager.AddToRoleAsync(user, "User");
+           _emailService.SendVerificationMail(registerDto.Email, user.Id);
+            return new ResponseDTO<string>
             {
-                var result = await _userManager.CreateAsync(user, registerDto.Password);
-                if (!result.Succeeded)
-                {
-                    return new ResponseDTO<string>
-                    {
-                        StatusCode = 500,
-                        Message = "Created Failed",
-                    };
-                }
-                await _userManager.AddToRoleAsync(user, registerDto.Role);
-                _emailService.SendVerificationMail(registerDto.Email, user.Id);
-                return new ResponseDTO<string>
-                {
-                    StatusCode = 200,
-                    Message = "Created Successfully",
-                };
-            }
-            else
-            {
-                return new ResponseDTO<string>
-                {
-                    StatusCode = 500,
-                    Message = "This role doesn't exist",
-                };
-            }
-            
-            
+               StatusCode = 200,
+               Message = "Created Successfully",
+            };   
         }
         
         public ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)

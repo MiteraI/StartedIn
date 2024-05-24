@@ -20,8 +20,6 @@ namespace Domain.DTOs.RequestDTO
         [Required(ErrorMessage = "FullName is required")]
         public string? FullName { get; set; }
         public string? PhoneNumber { get; set; }
-        public string Role { get; set; }
-       
 
     }
 }
