@@ -2,7 +2,6 @@
 using Domain.DTOs.RequestDTO;
 using Domain.DTOs.ResponseDTO;
 using Domain.Enum;
-using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json.Linq;
 using Repositories.Interface;
@@ -16,26 +15,26 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Role = Domain.Enum.Role;
+using Repositories.Repository.Interface;
+using Services.Exceptions;
+using Domain.Entities;
 
 namespace Services.Service
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
         private readonly UserManager<User> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<Role> _roleManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
 
-        public UserService(IUserRepository userRepository, IMapper mapper, ITokenService tokenService,
-            UserManager<User> userManager, IUnitOfWork unitOfWork, RoleManager<IdentityRole> roleManager,
+        public UserService(IMapper mapper, ITokenService tokenService,
+            UserManager<User> userManager, IUnitOfWork unitOfWork, RoleManager<Role> roleManager,
             IConfiguration configuration, IEmailService emailService)
         {
-            _userRepository = userRepository;
             _mapper = mapper;
             _tokenService = tokenService;
             _userManager = userManager;
@@ -45,94 +44,38 @@ namespace Services.Service
             _emailService = emailService;
         }
 
-        public async Task<LoginResponseDTO<string>> Login(LoginDTO loginDto)
+        public async Task<LoginResponseDTO> Login(LoginDTO loginDto)
         {
-            // var loginUser = await _accountRepository.Login(loginDto.Email ?? string.Empty, loginDto.Password ?? string.Empty);
             var loginUser = await _userManager.FindByEmailAsync(loginDto.Email);
             if (loginUser == null || !await _userManager.CheckPasswordAsync(loginUser, loginDto.Password))
             {
-                return new LoginResponseDTO<string>
-                {
-                    StatusCode = 400,
-                    Message = "Wrong email or password"
-                };
+               throw new InvalidLoginException("Đăng nhập thất bại!");
+            }
+            if (loginUser.EmailConfirmed == false)
+            {
+                throw new NotActivateException("Tài khoản chưa được xác thực");
             }
             var jwtToken = _tokenService.CreateTokenForAccount(loginUser);
             var refreshToken = _tokenService.GenerateRefreshToken();
-            var user = _userRepository.GetById(loginUser.Id).Result;
+            var user = await _userManager.FindByIdAsync(loginUser.Id);
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiry = DateTimeOffset.UtcNow.AddHours(3);
-            await _userRepository.Update(user);
-            return new LoginResponseDTO<string>
+            await _userManager.UpdateAsync(user);
+            return new LoginResponseDTO
             {
-                StatusCode = 200,
-                Message = "Login successful",
-                JwtToken = jwtToken,
+                AccessToken = jwtToken,
                 RefreshToken = refreshToken,
             };
         }
 
 
-        public async Task<ResponseDTO<string>> Register(RegisterDTO registerDto)
+        public async Task Register(RegisterDTO registerDto)
         {
-            //_unitOfWork.BeginTransaction();
-            //var user = new User
-            //{
-            //    UserName = registerDto.UserName,
-            //    Email = registerDto.Email,
-            //};
-            //var result = await _userManager.CreateAsync(user, registerDto.Password);
-            //switch (registerDto.Role)
-            //{
-            //    case Role.Admin:
-            //        await _userManager.AddToRoleAsync(user, "Admin");
-            //        break;
-
-            //    case Role.User:
-            //        await _userManager.AddToRoleAsync(user, "User");
-            //        break;
-            //}
-            //if (result.Succeeded)
-            //{
-            //    var User = new User
-            //    {
-            //        Id = user.Id,
-            //        NormalizedUserName = registerDto.Name,
-            //        NormalizedEmail = registerDto.Email,
-            //        Email = registerDto.Email,
-            //        Status = AccountStatus.Active,
-            //    };
-            //    await _accountRepository.Add(user);
-            //    await _unitOfWork.CommitAsync();
-            //    return new ResponseDTO<string>
-            //    {
-            //        StatusCode = 200,
-            //        Message = "Register successful",
-            //    };
-
-            //}
-            //else
-            //{
-            //    await _unitOfWork.RollbackAsync();
-            //    await _userManager.DeleteAsync(user);
-            //    return new ResponseDTO<string>
-            //    {
-            //        StatusCode = 400,
-            //        Message = "Register failed",
-            //    };
-
-            //}
-
             var existUser = await _userManager.FindByEmailAsync(registerDto.Email);
             if (existUser != null)
             {
-                return new ResponseDTO<string>
-                {
-                    StatusCode = 403,
-                    Message = "User Already existed",
-                };
+                throw new ExistedEmailException("Email này đã tồn tại.");
             }
-
             User user = new()
             {
                 Email = registerDto.Email,
@@ -140,25 +83,25 @@ namespace Services.Service
                 UserName = registerDto.Email,
                 PhoneNumber = registerDto.PhoneNumber,
                 FullName = registerDto.FullName,
-                IsActive = false,
                 AccessFailedCount = 0
             };
-           var result = await _userManager.CreateAsync(user, registerDto.Password);
-           if (!result.Succeeded)
-           {
-               return new ResponseDTO<string>
-               {
-                   StatusCode = 500,
-                   Message = "Created Failed",
-               };
-           }
-           await _userManager.AddToRoleAsync(user, "User");
-           _emailService.SendVerificationMail(registerDto.Email, user.Id);
-            return new ResponseDTO<string>
+            try {
+                _unitOfWork.BeginTransaction();
+                var result = await _userManager.CreateAsync(user, registerDto.Password);
+                if (!result.Succeeded)
+                {
+                    throw new InvalidRegisterException("Đăng ký thất bại");
+                }
+                await _userManager.AddToRoleAsync(user, "User");
+                _emailService.SendVerificationMail(registerDto.Email, user.Id);
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
             {
-               StatusCode = 200,
-               Message = "Created Successfully",
-            };   
+                await _unitOfWork.RollbackAsync();
+                throw;
+            }   
         }
         
         public ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
@@ -174,70 +117,44 @@ namespace Services.Service
             return new JwtSecurityTokenHandler().ValidateToken(token, validation, out _);
         }
 
-        public async Task<LoginResponseDTO<string>> Refresh(RefreshTokenDTO refreshTokenDto)
+        public async Task<LoginResponseDTO> Refresh(RefreshTokenDTO refreshTokenDto)
         {
             var principal = GetPrincipalFromExpiredToken(refreshTokenDto.JwtToken);
             var user = await _userManager.FindByNameAsync(principal.Identity.Name);
             var jwtToken = _tokenService.CreateTokenForAccount(user);
-            return new LoginResponseDTO<string>
+            return new LoginResponseDTO
             {
-                StatusCode = 200,
-                Message = "Refresh successful",
-                JwtToken = jwtToken,
+                AccessToken = jwtToken,
                 RefreshToken = refreshTokenDto.RefreshToken
             };
             
         }
 
-        public async Task<ResponseDTO<string>> Revoke(string userName)
+        public async Task Revoke(string userName)
         {
-            if (userName == null)
-            {
-                return new ResponseDTO<string>()
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized"
-                };
-            }
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
-                return new ResponseDTO<string>()
-                {
-                    StatusCode = 401,
-                    Message = "Unauthorized"
-                };
+                throw new NotFoundException("Username is not found!");
             }
             user.RefreshToken = null;
-            user.RefreshTokenExpiry = null;
             await _userManager.UpdateAsync(user);
-            return new ResponseDTO<string>()
-            {
-                StatusCode = 200,
-                Message = "Revoke successful"
-            };
         }
 
-        public async Task<ResponseDTO<string>> ActivateUser(string userId)
+        public async Task ActivateUser(string userId)
         {
-            var user = _userManager.FindByIdAsync(userId).Result;
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return new ResponseDTO<string>()
-                {
-                    StatusCode = 400,
-                    Message = "This user doesn't exist"
-                };
+                throw new NotFoundException($"Unable to activate user {userId}");
             }
-            user.IsActive = true;
             user.EmailConfirmed = true;
-            _userRepository.Update(user);
-            return new ResponseDTO<string>()
-            {
-                StatusCode = 200,
-                Message = "Activate successfully !"
-            };
-            
+            await _userManager.UpdateAsync(user);
+        }
+        public async Task<User> GetUserByUserName(string name) 
+        {
+            var user = await _userManager.FindByNameAsync(name);
+            return user;
         }
     }
 }

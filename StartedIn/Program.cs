@@ -1,45 +1,38 @@
 using Domain.Context;
-using Domain.Data;
 using Domain.DTOs.Email;
-using Domain.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Repositories.Interface;
 using Repositories.Repository;
+using Repositories.Repository.Interface;
 using Serilog;
-using Serilog.Formatting.Json;
-using Services.Extensions;
 using Services.Interface;
 using Services.Service;
-using System.Runtime.Serialization;
+using StartedIn.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
-EmailSettingModel.Instance = config.GetSection("EmailSettings").Get<EmailSettingModel>();
-EmailSettingModel.Instance.Smtp.EmailAddress = Environment.GetEnvironmentVariable("SMTP_EMAIL") ?? EmailSettingModel.Instance.Smtp.EmailAddress;
-EmailSettingModel.Instance.Smtp.Password = Environment.GetEnvironmentVariable("SMTP_PASSWORD") ?? EmailSettingModel.Instance.Smtp.Password;
-EmailSettingModel.Instance.FromEmailAddress = Environment.GetEnvironmentVariable("FROM_EMAIL") ?? EmailSettingModel.Instance.FromEmailAddress;
-builder.Services.AddSingleton(EmailSettingModel.Instance);
+builder.Logging.AddSerilog();
+
+builder.Services.EmailConfiguration(config);
 
 // Add services to the container.
-builder.Services.AddSerilog();
+builder.Services.AddSecurityConfiguration(config);
+builder.Services.AddDatabaseConfiguration(config);
+builder.Services.AddRepositoryConfiguration();
+builder.Services.AddServiceConfiguration(config);
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddControllers();
-builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 builder.Services.AddJwtAuthenticationService(config);
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerService();
 
 builder.Services.AddDbContext<AppDbContext>();
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
+
 
 builder.Services.AddAuthorization();
 
@@ -47,6 +40,7 @@ builder.Host.UseSerilog((ctx,config) =>
 {
     config.WriteTo.Console().MinimumLevel.Information();
 });
+
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
@@ -72,27 +66,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(x => x
-        .AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader()
-);
 
-var appScope = app.Services.CreateScope();
-var appContext = appScope.ServiceProvider.GetRequiredService<AppDbContext>();
-var userManager = appScope.ServiceProvider.GetRequiredService<UserManager<User>>();
-var roleManager = appScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-try
-{
-    await DBInitializer.Initialize(appContext, userManager, roleManager);
-}
-catch (Exception ex)
-{
-    throw new Exception(ex.InnerException?.ToString());
-}
-
-app.UseAuthentication();
-app.UseAuthorization();
+app.SeedIdentity();
+app.UseSecurityConfiguration();
 app.MapControllers();
 
 app.Run();

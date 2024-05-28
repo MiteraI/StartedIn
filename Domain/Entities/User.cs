@@ -1,0 +1,23 @@
+﻿using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
+namespace Domain.Entities;
+
+public class User : IdentityUser
+{
+    public DateTimeOffset CreatedTime { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset LastUpdatedTime { get; set; } = DateTimeOffset.UtcNow;
+    public string FullName { get; set; }
+    public string? ProfilePicture { get; set; }
+    public string? CoverPhoto { get; set; }
+    public string? Content { get; set; }
+    public string? Bio { get; set; }
+    public DateTimeOffset? Verified { get; set; }
+    public string? RefreshToken { get; set; }
+    public DateTimeOffset? RefreshTokenExpiry { get; set; }
+    public IEnumerable<Post> Posts { get; set; }
+    public IEnumerable<Team> Teams { get; set; }
+    [JsonIgnore] public IEnumerable<UserRole> UserRoles { get;}
+}

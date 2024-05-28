@@ -1,6 +1,6 @@
 ﻿using Domain.Context;
 using Microsoft.EntityFrameworkCore.Storage;
-using Repositories.Interface;
+using Repositories.Repository.Interface;
 
 namespace Repositories.Repository;
 

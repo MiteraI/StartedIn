@@ -1,5 +1,6 @@
 ﻿using Domain.DTOs.RequestDTO;
 using Domain.DTOs.ResponseDTO;
+using Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,15 +12,16 @@ namespace Services.Interface
 {
     public interface IUserService
     {
-        Task<LoginResponseDTO<string>> Login(LoginDTO loginDto);
+        Task<LoginResponseDTO> Login(LoginDTO loginDto);
 
-        Task<ResponseDTO<string>> Register(RegisterDTO registerDto);
+        Task Register(RegisterDTO registerDto);
 
         ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token);
         
-        Task<LoginResponseDTO<string>> Refresh(RefreshTokenDTO refreshTokenDto);
+        Task<LoginResponseDTO> Refresh(RefreshTokenDTO refreshTokenDto);
 
-        Task<ResponseDTO<string>> Revoke(string userName);
-        Task<ResponseDTO<string>> ActivateUser(string userId);
+        Task Revoke(string userName);
+        Task ActivateUser(string userId);
+        Task<User> GetUserByUserName(string name);
     }
 }

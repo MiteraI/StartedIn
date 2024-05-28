@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace Domain.DTOs.ResponseDTO
 {
-    public class LoginResponseDTO<T>
+    public class LoginResponseDTO
     {
-        public int StatusCode { get; set; }
-        public string? Message { get; set; }
-        public string? JwtToken { get; set; }
+        public string? AccessToken { get; set; }
         public string? RefreshToken { get; set; }
     }
 }

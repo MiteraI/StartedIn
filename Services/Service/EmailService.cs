@@ -7,14 +7,16 @@ using System.Net.Mail;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace Services.Service
 {
     public class EmailService : IEmailService
     {
-        public EmailService() 
+        private readonly IConfiguration _configuration;
+        public EmailService(IConfiguration configuration) 
         {
-            
+            _configuration = configuration;
         }
         public void SendMail(SendEmailModel model)
         {
@@ -49,6 +51,7 @@ namespace Services.Service
 
         public void SendVerificationMail(string receiveEmail, string id)
         {
+            var appDomain = _configuration.GetValue<string>("API_DOMAIN") ?? (_configuration["Api_domain"]);
             try
             {
 
@@ -56,7 +59,7 @@ namespace Services.Service
                 {
 
                     Subject = "",
-                    Body = $"https://startedin-21a210f33eba.herokuapp.com/api/Account/activate-user/{id}",
+                    Body = $"{appDomain}api/Account/activate-user/{id}",
                     IsBodyHtml = false,
                 };
                 mailMessage.From = new MailAddress(EmailSettingModel.Instance.FromEmailAddress, EmailSettingModel.Instance.FromDisplayName);
