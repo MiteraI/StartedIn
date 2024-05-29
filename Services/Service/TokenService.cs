@@ -24,9 +24,9 @@ namespace Services.Service
 
             var claims = new List<Claim>
             {
-                new(ClaimTypes.Email,user.Email),
-                new("userId", user.Id),
-                new(ClaimTypes.Name, user.UserName)
+                new(ClaimTypes.Email, user.Email),
+                new(ClaimTypes.NameIdentifier, user.Id),
+                new(ClaimTypes.Name, user.FullName)
             };
 
             var roles = _userManager.GetRolesAsync(user);

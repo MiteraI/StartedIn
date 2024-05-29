@@ -24,7 +24,6 @@ namespace StartedIn.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IEmailService _emailService;
 
-
         public AccountController(IUserService accountService, ITokenService tokenService,
             UserManager<User> userManager, IEmailService emailService)
         {
@@ -33,6 +32,7 @@ namespace StartedIn.Controllers
             _userManager = userManager;
             _emailService = emailService;
         }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
@@ -70,16 +70,10 @@ namespace StartedIn.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, "Lỗi tạo tài khoản");
-            }
-            
-            
+            }  
         }
 
         [HttpPost("refresh-token")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenDTO refreshTokenDto)
         {
             var principal = _userService.GetPrincipalFromExpiredToken(refreshTokenDto.JwtToken);
@@ -98,22 +92,16 @@ namespace StartedIn.Controllers
             }
 
             var res = await _userService.Refresh(refreshTokenDto);
-
-
             return Ok(res);
-
         }
 
         [Authorize]
         [HttpDelete("revoke")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Revoke()
         {
             try 
             {
-                var userName = HttpContext.User.Identity.Name;
+                var userName = HttpContext.User.Identity!.Name;
                 if (userName == null)
                 {
                     return Unauthorized();
@@ -131,8 +119,7 @@ namespace StartedIn.Controllers
         }
         [HttpGet("activate-user/{userId}")]
         public async Task<IActionResult> ActivateUser(string userId)
-        {
-            
+        {  
             try {
                 await _userService.ActivateUser(userId);
                 return Ok("Kích hoạt thành công!");
