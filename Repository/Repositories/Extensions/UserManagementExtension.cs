@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repository.Repositories.UserManagement
+namespace Repository.Repositories.Extension
 {
     public static class UserManagementExtension
     {
