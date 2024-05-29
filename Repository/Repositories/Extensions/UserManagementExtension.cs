@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Repositories.Extensions
 {
-    public static class UserManagementExtension
+    public static class UserManagementExtensions
     {
         public static async Task<User>? FindRefreshTokenAsync(this UserManager<User> userManager, string refreshToken) {
             return await userManager?.Users?.FirstOrDefaultAsync(u => u.RefreshToken.Equals(refreshToken));
