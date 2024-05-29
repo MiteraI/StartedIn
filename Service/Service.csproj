@@ -20,7 +20,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\CrossCutting\CrossCutting.csproj" />
-      <ProjectReference Include="..\Repositories\Repository.csproj" />
+      <ProjectReference Include="..\Repository\Repository.csproj" />
     </ItemGroup>
 
 </Project>
