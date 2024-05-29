@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿    using Microsoft.AspNetCore.Identity;
 using System.Text.Json.Serialization;
 
 namespace Domain.Entities;
@@ -17,5 +17,5 @@ public class User : IdentityUser
     public DateTimeOffset? RefreshTokenExpiry { get; set; }
     public IEnumerable<Post> Posts { get; set; }
     public IEnumerable<Team> Teams { get; set; }
-    [JsonIgnore] public IEnumerable<UserRole> UserRoles { get;}
+    [JsonIgnore] public virtual IEnumerable<UserRole> UserRoles { get;}
 }

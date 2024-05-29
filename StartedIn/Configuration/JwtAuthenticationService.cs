@@ -71,5 +71,7 @@ public static class JwtAuthenticationService
                 }
             };
         });
+
+        services.AddAuthorization();
     }
 }

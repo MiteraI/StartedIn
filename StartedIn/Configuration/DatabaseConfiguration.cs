@@ -28,7 +28,6 @@ namespace StartedIn.Configuration
                                    $"Host={databaseUri.Host};Port={databaseUri.Port};Database={databaseUri.LocalPath.Substring(1)};Username={userInfo[0]};Password={userInfo[1]};Trust Server Certificate=true"
                                               );
                 });
-
             }
 
             // Create scope to migrate database

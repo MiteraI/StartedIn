@@ -4,15 +4,11 @@ using Domain.Entities;
 
 namespace Service.AutoMappingProfile
 {
-    public class AutoMapper : Profile
+    public class AutoMapperProfile : Profile
     {
-        public AutoMapper() {
-            MapRegister();
-        }
-        private void MapRegister()
+        public AutoMapperProfile()
         {
             CreateMap<User, RegisterDTO>().ReverseMap();
         }
-        
     }
 }

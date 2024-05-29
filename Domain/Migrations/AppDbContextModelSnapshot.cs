@@ -58,7 +58,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments");
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Interaction", b =>
@@ -84,7 +84,7 @@ namespace Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Interactions");
+                    b.ToTable("Interactions", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.MajorTask", b =>
@@ -121,7 +121,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("PhaseId");
 
-                    b.ToTable("MajorTasks");
+                    b.ToTable("MajorTasks", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.MinorTask", b =>
@@ -163,7 +163,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("TaskboardId");
 
-                    b.ToTable("MinorTasks");
+                    b.ToTable("MinorTasks", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Phase", b =>
@@ -196,7 +196,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Phases");
+                    b.ToTable("Phases", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Post", b =>
@@ -229,7 +229,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.PostImage", b =>
@@ -262,7 +262,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("PostImages");
+                    b.ToTable("PostImages", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Project", b =>
@@ -313,7 +313,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Role", b =>
@@ -372,7 +372,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("PhaseId");
 
-                    b.ToTable("Taskboards");
+                    b.ToTable("Taskboards", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Team", b =>
@@ -407,7 +407,7 @@ namespace Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Teams", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>

@@ -6,9 +6,9 @@ namespace Service.Services.Interface
 {
     public interface IUserService
     {
-        Task<LoginResponseDTO> Login(LoginDTO loginDto);
+        Task<LoginResponseDTO> Login(string email, string password);
 
-        Task Register(RegisterDTO registerDto);
+        Task Register(User user, string password);
 
         ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token);
 

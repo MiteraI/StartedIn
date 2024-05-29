@@ -54,7 +54,7 @@ namespace Service.Services
                 {
 
                     Subject = "",
-                    Body = $"{appDomain}api/activate-user/{id}",
+                    Body = $"{appDomain}/api/activate-user/{id}",
                     IsBodyHtml = false,
                 };
                 mailMessage.From = new MailAddress(EmailSettingModel.Instance.FromEmailAddress, EmailSettingModel.Instance.FromDisplayName);
@@ -72,9 +72,8 @@ namespace Service.Services
                 smtp.Send(mailMessage);
             }
             catch (Exception ex)
-            {
-
-                throw ex;
+            { 
+                throw;
             }
         }
     }

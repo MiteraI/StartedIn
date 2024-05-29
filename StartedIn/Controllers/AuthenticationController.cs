@@ -1,4 +1,5 @@
-﻿using CrossCutting.DTOs.RequestDTO;
+﻿using AutoMapper;
+using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
 using CrossCutting.Exceptions;
 using Domain.Entities;
@@ -14,17 +15,14 @@ namespace StartedIn.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly ITokenService _tokenService;
-        private readonly UserManager<User> _userManager;
-        private readonly IEmailService _emailService;
+        private readonly ILogger<AccountController> _logger;
+        private readonly IMapper _mapper;
 
-        public AccountController(IUserService accountService, ITokenService tokenService,
-            UserManager<User> userManager, IEmailService emailService)
+        public AccountController(IUserService accountService, ILogger<AccountController> logger, IMapper mapper)
         {
             _userService = accountService;
-            _tokenService = tokenService;
-            _userManager = userManager;
-            _emailService = emailService;
+            _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpPost("login")]
@@ -32,7 +30,7 @@ namespace StartedIn.Controllers
         {
             try
             {
-                LoginResponseDTO res = await _userService.Login(loginDto);
+                LoginResponseDTO res = await _userService.Login(loginDto.Email, loginDto.Password);
                 return Ok(res);
             }
             catch (InvalidLoginException ex)
@@ -45,6 +43,7 @@ namespace StartedIn.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while login");
                 return StatusCode(500, "Lỗi đăng nhập xảy ra");
             }
         }
@@ -54,7 +53,7 @@ namespace StartedIn.Controllers
         {
             try
             {
-                await _userService.Register(registerDto);
+                await _userService.Register(_mapper.Map<User>(registerDto), registerDto.Password);
                 return Ok("Tạo tài khoản thành công");
             }
             catch (ExistedEmailException ex)
@@ -63,6 +62,7 @@ namespace StartedIn.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while register");
                 return StatusCode(500, "Lỗi tạo tài khoản");
             }  
         }

@@ -11,6 +11,8 @@ using Repository.Repositories.Interface;
 using CrossCutting.DTOs.ResponseDTO;
 using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.Exceptions;
+using CrossCutting.Constants;
+using Microsoft.Extensions.Logging;
 
 namespace Service.Services
 {
@@ -18,27 +20,29 @@ namespace Service.Services
     {
         private readonly ITokenService _tokenService;
         private readonly UserManager<User> _userManager;
-        private readonly RoleManager<Role> _roleManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
+        private readonly ILogger<UserService> _logger;
 
         public UserService(ITokenService tokenService,
-            UserManager<User> userManager, IUnitOfWork unitOfWork, RoleManager<Role> roleManager,
-            IConfiguration configuration, IEmailService emailService)
+            UserManager<User> userManager, IUnitOfWork unitOfWork,
+            IConfiguration configuration, IEmailService emailService,
+            ILogger<UserService> logger
+            )
         {
             _tokenService = tokenService;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
-            _roleManager = roleManager;
             _configuration = configuration;
             _emailService = emailService;
+            _logger = logger;
         }
 
-        public async Task<LoginResponseDTO> Login(LoginDTO loginDto)
+        public async Task<LoginResponseDTO> Login(string email, string password)
         {
-            var loginUser = await _userManager.FindByEmailAsync(loginDto.Email);
-            if (loginUser == null || !await _userManager.CheckPasswordAsync(loginUser, loginDto.Password))
+            var loginUser = await _userManager.FindByEmailAsync(email);
+            if (loginUser == null || !await _userManager.CheckPasswordAsync(loginUser, password))
             {
                throw new InvalidLoginException("Đăng nhập thất bại!");
             }
@@ -60,36 +64,32 @@ namespace Service.Services
         }
 
 
-        public async Task Register(RegisterDTO registerDto)
+        public async Task Register(User registerUser, string password)
         {
-            var existUser = await _userManager.FindByEmailAsync(registerDto.Email);
+            var existUser = await _userManager.FindByEmailAsync(registerUser.Email);
             if (existUser != null)
             {
                 throw new ExistedEmailException("Email này đã tồn tại.");
             }
-            User user = new()
-            {
-                Email = registerDto.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = registerDto.Email,
-                PhoneNumber = registerDto.PhoneNumber,
-                FullName = registerDto.FullName,
-                AccessFailedCount = 0
-            };
+            
             try {
                 _unitOfWork.BeginTransaction();
-                var result = await _userManager.CreateAsync(user, registerDto.Password);
+                registerUser.UserName = registerUser.Email;
+                var result = await _userManager.CreateAsync(registerUser, password);
                 if (!result.Succeeded)
                 {
                     throw new InvalidRegisterException("Đăng ký thất bại");
                 }
-                await _userManager.AddToRoleAsync(user, "User");
-                _emailService.SendVerificationMail(registerDto.Email, user.Id);
+                await _userManager.AddToRoleAsync(registerUser, RoleConstants.USER);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitAsync();
+
+                // Only send mail if user is created successfully
+                _emailService.SendVerificationMail(registerUser.Email, registerUser.Id);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while register");
                 await _unitOfWork.RollbackAsync();
                 throw;
             }   
