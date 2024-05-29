@@ -54,7 +54,7 @@ namespace Service.Services
                 {
 
                     Subject = "",
-                    Body = $"{appDomain}api/Account/activate-user/{id}",
+                    Body = $"{appDomain}api/activate-user/{id}",
                     IsBodyHtml = false,
                 };
                 mailMessage.From = new MailAddress(EmailSettingModel.Instance.FromEmailAddress, EmailSettingModel.Instance.FromDisplayName);
