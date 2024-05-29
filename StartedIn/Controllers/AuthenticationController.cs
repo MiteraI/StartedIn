@@ -1,17 +1,11 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Domain.DTOs.RequestDTO;
-using Domain.DTOs.ResponseDTO;
+﻿using CrossCutting.DTOs.RequestDTO;
+using CrossCutting.DTOs.ResponseDTO;
+using CrossCutting.Exceptions;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Repositories.Interface;
-using Services.Exceptions;
-using Services.Interface;
+using Service.Services.Interface;
 
 namespace StartedIn.Controllers
 {

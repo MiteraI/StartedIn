@@ -1,6 +1,5 @@
-﻿using Repositories.Interface;
-using Services.Interface;
-using Services.Service;
+﻿using Service.Services;
+using Service.Services.Interface;
 
 namespace StartedIn.Configuration
 {

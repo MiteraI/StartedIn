@@ -1,10 +1,4 @@
-﻿using Domain.Context;
-using Domain.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
-using Domain.DTOs.Email;
-
+﻿using CrossCutting.DTOs.Email;
 namespace StartedIn.Configuration
 {
     public static class EmailServiceConfiguration

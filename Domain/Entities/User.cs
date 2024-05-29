@@ -1,6 +1,4 @@
-﻿using Domain.Entities;
-using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.AspNetCore.Identity;
 using System.Text.Json.Serialization;
 
 namespace Domain.Entities;

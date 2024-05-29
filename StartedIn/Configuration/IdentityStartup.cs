@@ -1,4 +1,4 @@
-﻿using Domain.Constants;
+﻿using CrossCutting.Constants;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
@@ -42,6 +42,7 @@ namespace StartedIn.Configuration
                 FullName = "Administrator",
                 PasswordHash = "AQAAAAIAAYagAAAAEDVvGpkikGvRZ56Ri2MKtaJTlb+tqMqrUG0TM7irCuj430fot1Qiq5eopSnTR+vbew==",
                 Email = "admin@gmail.com",
+                EmailConfirmed = true
              },
         };
         }

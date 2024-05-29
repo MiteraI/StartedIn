@@ -1,5 +1,5 @@
-﻿using Domain.Entity.BaseEntities;
-using Domain.Enum;
+﻿using Domain.Entities.BaseEntities;
+using CrossCutting.Enum;
 
 namespace Domain.Entities;
 

@@ -1,4 +1,4 @@
-﻿using Domain.Entity.BaseEntities;
+﻿using Domain.Entities.BaseEntities;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;

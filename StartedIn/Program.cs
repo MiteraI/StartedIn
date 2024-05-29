@@ -1,12 +1,8 @@
 using Domain.Context;
-using Domain.DTOs.Email;
 using Microsoft.EntityFrameworkCore;
-using Repositories.Interface;
-using Repositories.Repository;
-using Repositories.Repository.Interface;
+using Repository.Repositories;
+using Repository.Repositories.Interface;
 using Serilog;
-using Services.Interface;
-using Services.Service;
 using StartedIn.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,7 +27,6 @@ builder.Services.AddSwaggerService();
 builder.Services.AddDbContext<AppDbContext>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
 
 
 builder.Services.AddAuthorization();

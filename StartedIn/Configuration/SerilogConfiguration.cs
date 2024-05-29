@@ -1,5 +1,4 @@
 ﻿using Serilog;
-
 namespace StartedIn.Configuration
 {
     public static class SerilogConfiguration

@@ -24,4 +24,8 @@
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\CrossCutting\CrossCutting.csproj" />
+    </ItemGroup>
+
 </Project>
