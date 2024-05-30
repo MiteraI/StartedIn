@@ -12,6 +12,8 @@ using CrossCutting.DTOs.ResponseDTO;
 using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.Exceptions;
 using CrossCutting.Constants;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Repository.Repositories.Extensions;
 
@@ -25,11 +27,12 @@ namespace Service.Services
         private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
         private readonly ILogger<UserService> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UserService(ITokenService tokenService,
             UserManager<User> userManager, IUnitOfWork unitOfWork,
             IConfiguration configuration, IEmailService emailService,
-            ILogger<UserService> logger
+            ILogger<UserService> logger, IHttpContextAccessor httpContextAccessor
             )
         {
             _tokenService = tokenService;
@@ -38,6 +41,7 @@ namespace Service.Services
             _configuration = configuration;
             _emailService = emailService;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<LoginResponseDTO> Login(string email, string password)
@@ -96,19 +100,6 @@ namespace Service.Services
             }   
         }
         
-        // public ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
-        // {
-        //     var validation = new TokenValidationParameters
-        //     {
-        //         ValidateLifetime = false,
-        //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
-        //             (_configuration["jwt:secret"])),
-        //         ValidIssuer = _configuration["jwt:issuer"],
-        //         ValidAudience = _configuration["jwt:audience"]
-        //     };
-        //     return new JwtSecurityTokenHandler().ValidateToken(token, validation, out _);
-        // }
-
         public async Task<string> Refresh(string refreshToken)
         {
             var user = await _userManager.FindRefreshTokenAsync(refreshToken);
@@ -146,6 +137,14 @@ namespace Service.Services
         {
             var user = await _userManager.FindByNameAsync(name);
             return user;
+        }
+        
+        public async Task<User> GetUserWithUserRolesByName(string name)
+        {
+            return await _userManager.Users
+                .Include(it => it.UserRoles)
+                .ThenInclude(r => r.Role)   
+                .SingleOrDefaultAsync(it => it.UserName == name);
         }
     }
 }

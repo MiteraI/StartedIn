@@ -74,7 +74,8 @@ namespace StartedIn.Controllers
             try
             {
                 var res = await _userService.Refresh(refreshTokenDto.RefreshToken);
-                return Ok(res);
+                refreshTokenDto.AccessToken = res;
+                return Ok(refreshTokenDto);
             }
             catch (NotFoundException ex)
             {

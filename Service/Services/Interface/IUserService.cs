@@ -12,8 +12,10 @@ namespace Service.Services.Interface
 
         Task<string> Refresh(string refreshToken);
 
-        Task Revoke(string userName);
+        Task Revoke(string username);
         Task ActivateUser(string userId);
         Task<User> GetUserByUserName(string name);
+
+        Task<User> GetUserWithUserRolesByName(string name);
     }
 }
