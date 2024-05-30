@@ -10,9 +10,7 @@ namespace Service.Services.Interface
 
         Task Register(User user, string password);
 
-        ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token);
-
-        Task<LoginResponseDTO> Refresh(RefreshTokenDTO refreshTokenDto);
+        Task<string> Refresh(string refreshToken);
 
         Task Revoke(string userName);
         Task ActivateUser(string userId);

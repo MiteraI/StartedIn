@@ -24,9 +24,8 @@ namespace Service.Services
 
             var claims = new List<Claim>
             {
-                new(ClaimTypes.Email, user.Email),
                 new(ClaimTypes.NameIdentifier, user.Id),
-                new(ClaimTypes.Name, user.FullName)
+                new(ClaimTypes.Name, user.UserName)
             };
 
             var roles = _userManager.GetRolesAsync(user);
@@ -36,15 +35,14 @@ namespace Service.Services
             }
 
             var securityKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(
-                    _configuration["jwt:secret"]));
+                Encoding.UTF8.GetBytes(_configuration.GetValue<string>("SECRET_KEY") ?? _configuration["jwt:secret"]));
 
             var credential = new SigningCredentials(
                 securityKey, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
-                _configuration["jwt:issuer"],
-                _configuration["jwt:audience"],
+                _configuration.GetValue<string>("SECRET_ISSUER") ?? _configuration["jwt:issuer"],
+                _configuration.GetValue<string>("SECRET_AUDIENCE") ?? _configuration["jwt:audience"],
                 claims,
                 expires: DateTime.UtcNow.AddMinutes(20),
                 signingCredentials: credential);

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interface;
+using Services.Exceptions;
 
 namespace StartedIn.Controllers
 {
@@ -70,23 +71,21 @@ namespace StartedIn.Controllers
         [HttpPost("refresh-token")]
         public async Task<IActionResult> Refresh([FromBody] RefreshTokenDTO refreshTokenDto)
         {
-            var principal = _userService.GetPrincipalFromExpiredToken(refreshTokenDto.JwtToken);
+            try
+            {
+                var res = await _userService.Refresh(refreshTokenDto.RefreshToken);
+                return Ok(res);
+            }
+            catch (NotFoundException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Server Error");
+                return StatusCode(500, "Lỗi server");
+            }
             
-            if (principal?.Identity?.Name == null)
-            {
-                return Unauthorized();
-            }
-
-            var user = await _userService.GetUserByUserName(principal.Identity.Name);
-
-            if (user == null || user.RefreshToken != refreshTokenDto.RefreshToken ||
-                user.RefreshTokenExpiry <= DateTimeOffset.UtcNow)
-            {
-                return Unauthorized();
-            }
-
-            var res = await _userService.Refresh(refreshTokenDto);
-            return Ok(res);
         }
 
         [Authorize]
@@ -95,12 +94,12 @@ namespace StartedIn.Controllers
         {
             try 
             {
-                var userName = HttpContext.User.Identity!.Name;
-                if (userName == null)
+                var username = HttpContext.User.Identity!.Name;
+                if (username == null)
                 {
                     return Unauthorized();
                 }
-                await _userService.Revoke(userName);
+                await _userService.Revoke(username);
                 return Ok("Revoke Successfully !");
             }
             

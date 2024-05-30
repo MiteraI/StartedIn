@@ -13,6 +13,7 @@ using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.Exceptions;
 using CrossCutting.Constants;
 using Microsoft.Extensions.Logging;
+using Repository.Repositories.Extensions;
 
 namespace Service.Services
 {
@@ -95,35 +96,34 @@ namespace Service.Services
             }   
         }
         
-        public ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
-        {
-            var validation = new TokenValidationParameters
-            {
-                ValidateLifetime = false,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
-                    (_configuration["jwt:secret"])),
-                ValidIssuer = _configuration["jwt:issuer"],
-                ValidAudience = _configuration["jwt:audience"]
-            };
-            return new JwtSecurityTokenHandler().ValidateToken(token, validation, out _);
-        }
+        // public ClaimsPrincipal? GetPrincipalFromExpiredToken(string? token)
+        // {
+        //     var validation = new TokenValidationParameters
+        //     {
+        //         ValidateLifetime = false,
+        //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
+        //             (_configuration["jwt:secret"])),
+        //         ValidIssuer = _configuration["jwt:issuer"],
+        //         ValidAudience = _configuration["jwt:audience"]
+        //     };
+        //     return new JwtSecurityTokenHandler().ValidateToken(token, validation, out _);
+        // }
 
-        public async Task<LoginResponseDTO> Refresh(RefreshTokenDTO refreshTokenDto)
+        public async Task<string> Refresh(string refreshToken)
         {
-            var principal = GetPrincipalFromExpiredToken(refreshTokenDto.JwtToken);
-            var user = await _userManager.FindByNameAsync(principal.Identity.Name);
+            var user = await _userManager.FindRefreshTokenAsync(refreshToken);
+            if (user == null || !refreshToken.Equals(user.RefreshToken))
+            {
+                throw new NotFoundException("Không tìm thấy người dùng!");
+            }
             var jwtToken = _tokenService.CreateTokenForAccount(user);
-            return new LoginResponseDTO
-            {
-                AccessToken = jwtToken,
-                RefreshToken = refreshTokenDto.RefreshToken
-            };
-            
+            return jwtToken;
+
         }
 
-        public async Task Revoke(string userName)
+        public async Task Revoke(string username)
         {
-            var user = await _userManager.FindByNameAsync(userName);
+            var user = await _userManager.FindByNameAsync(username);
             if (user == null)
             {
                 throw new NotFoundException("Username is not found!");
