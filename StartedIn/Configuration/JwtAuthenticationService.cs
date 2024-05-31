@@ -46,7 +46,10 @@ public static class JwtAuthenticationService
                     // Call this to skip the default logic and avoid using the default response
                     context.HandleResponse();
 
-                    context.Response.Headers.Add("IS-TOKEN-EXPIRED", "true");
+                    if (context.AuthenticateFailure != null && context.AuthenticateFailure.GetType() == typeof(SecurityTokenExpiredException))
+                    {
+                        context.Response.Headers.Add("IS-TOKEN-EXPIRED", "true");
+                    }
 
                     context.Response.ContentType = "application/json";
 

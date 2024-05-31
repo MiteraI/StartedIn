@@ -21,7 +21,7 @@ namespace StartedIn.Controllers
         }
         
         [Authorize]
-        [HttpGet("get-profile-info")]
+        [HttpGet("profile")]
         public async Task<IActionResult> GetCurrentUserProfile()
         {
             var username = HttpContext.User.Identity!.Name;

@@ -11,6 +11,7 @@ namespace Service.Services
 {
     public class TokenService : ITokenService
     {
+        private const int FIVE_MINUTES = 300;
         private readonly IConfiguration _configuration;
         private readonly UserManager<User> _userManager;
         public TokenService(IConfiguration configuration, UserManager<User> userManager)
@@ -24,14 +25,14 @@ namespace Service.Services
 
             var claims = new List<Claim>
             {
-                new(ClaimTypes.NameIdentifier, user.Id),
-                new(ClaimTypes.Name, user.UserName)
+                new Claim(JwtRegisteredClaimNames.NameId, user.Id),
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
             };
 
             var roles = _userManager.GetRolesAsync(user);
             foreach (var role in roles.Result)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim("role", role));
             }
 
             var securityKey = new SymmetricSecurityKey(
@@ -44,7 +45,7 @@ namespace Service.Services
                 _configuration.GetValue<string>("SECRET_ISSUER") ?? _configuration["jwt:issuer"],
                 _configuration.GetValue<string>("SECRET_AUDIENCE") ?? _configuration["jwt:audience"],
                 claims,
-                expires: DateTime.UtcNow.AddMinutes(20),
+                expires: DateTime.UtcNow.AddSeconds(FIVE_MINUTES),
                 signingCredentials: credential);
 
             return tokenHandler.WriteToken(token);
