@@ -1,7 +1,7 @@
 ﻿namespace CrossCutting.Enum;
 
-public enum AccountStatus : int
+public enum AccountStatus
 {
-    Active = 1,
-    Disabled = 2
+    Active,
+    Disabled
 }

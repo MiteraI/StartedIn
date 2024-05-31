@@ -1,7 +1,7 @@
 ﻿namespace CrossCutting.Enum;
 
-public enum InteractionType : int
+public enum InteractionType
 {
-    Like = 0,
-    Congratulations = 1,
+    Like,
+    Congratulations
 }
