@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StartedIn", "StartedIn\Star
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{A7233CFC-932E-4D58-9D47-1DB29B0C7C66}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repositories", "Repositories\Repositories.csproj", "{65E6F2FF-C36D-434A-B712-9A81883E07D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "Repository\Repository.csproj", "{65E6F2FF-C36D-434A-B712-9A81883E07D5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{5BFC3A90-B3C2-41AC-887B-92B3DEEAE36C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.csproj", "{5BFC3A90-B3C2-41AC-887B-92B3DEEAE36C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrossCutting", "CrossCutting\CrossCutting.csproj", "{461E579F-AF6E-4F90-AB04-67E2771FF7F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{5BFC3A90-B3C2-41AC-887B-92B3DEEAE36C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5BFC3A90-B3C2-41AC-887B-92B3DEEAE36C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5BFC3A90-B3C2-41AC-887B-92B3DEEAE36C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{461E579F-AF6E-4F90-AB04-67E2771FF7F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{461E579F-AF6E-4F90-AB04-67E2771FF7F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{461E579F-AF6E-4F90-AB04-67E2771FF7F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{461E579F-AF6E-4F90-AB04-67E2771FF7F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

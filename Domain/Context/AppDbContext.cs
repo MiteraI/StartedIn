@@ -1,36 +1,20 @@
-﻿using Domain.Models;
+﻿using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 
 namespace Domain.Context;
 
-public class AppDbContext : IdentityDbContext<User>
+public class AppDbContext : IdentityDbContext<User, Role, string,
+        IdentityUserClaim<string>,
+        UserRole,
+        IdentityUserLogin<string>,
+        IdentityRoleClaim<string>,
+        IdentityUserToken<string>>
 {
-    private readonly IConfiguration _config;
-    private readonly ILogger<AppDbContext> _logger;
-    public AppDbContext(DbContextOptions<AppDbContext> options, IConfiguration config, ILogger<AppDbContext> logger) : base(options)
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
-        _config = config;
-        _logger = logger;
-    }
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        var envDatabaseUrl = _config.GetValue<string>("DATABASE_URL");
-        if (!string.IsNullOrEmpty(envDatabaseUrl))
-        {
-            var databaseUri = new Uri(envDatabaseUrl);
-            var userInfo = databaseUri.UserInfo.Split(':');
-            optionsBuilder.UseNpgsql(
-                               $"Host={databaseUri.Host};Port={databaseUri.Port};Database={databaseUri.LocalPath.Substring(1)};Username={userInfo[0]};Password={userInfo[1]};Trust Server Certificate=true"
-                                          );
-        }
-        else
-        {
-            optionsBuilder.UseNpgsql(_config.GetConnectionString("StartedInDB"));
-        }
+        
     }
 
     public DbSet<Post> Posts { get; set; }
@@ -58,10 +42,35 @@ public class AppDbContext : IdentityDbContext<User>
             .WithMany(y => y.Teams)
             .UsingEntity(z => z.ToTable("TeamAccount"));
 
+        modelBuilder.Entity<UserRole>(userRole =>
+        {
+            userRole.HasKey(ur => new { ur.UserId, ur.RoleId });
+
+            userRole.HasOne(ur => ur.Role)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.RoleId)
+                .IsRequired();
+
+            userRole.HasOne(ur => ur.User)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.UserId)
+                .IsRequired();
+        });
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.ToTable("User");
+        });
+
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.ToTable("Role");
+        });
+
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             var tableName = entityType.GetTableName();
-            if (tableName.StartsWith("AspNet"))
+            if (tableName!.StartsWith("AspNet"))
             {
                 entityType.SetTableName(tableName.Substring(6));
             }

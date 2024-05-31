@@ -3,6 +3,7 @@ using System;
 using Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240528143155_28052024930")]
+    partial class _28052024930
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,7 +61,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Comments", (string)null);
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("Domain.Entities.Interaction", b =>
@@ -84,7 +87,7 @@ namespace Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Interactions", (string)null);
+                    b.ToTable("Interactions");
                 });
 
             modelBuilder.Entity("Domain.Entities.MajorTask", b =>
@@ -121,7 +124,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("PhaseId");
 
-                    b.ToTable("MajorTasks", (string)null);
+                    b.ToTable("MajorTasks");
                 });
 
             modelBuilder.Entity("Domain.Entities.MinorTask", b =>
@@ -163,7 +166,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("TaskboardId");
 
-                    b.ToTable("MinorTasks", (string)null);
+                    b.ToTable("MinorTasks");
                 });
 
             modelBuilder.Entity("Domain.Entities.Phase", b =>
@@ -196,7 +199,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Phases", (string)null);
+                    b.ToTable("Phases");
                 });
 
             modelBuilder.Entity("Domain.Entities.Post", b =>
@@ -229,7 +232,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Posts", (string)null);
+                    b.ToTable("Posts");
                 });
 
             modelBuilder.Entity("Domain.Entities.PostImage", b =>
@@ -262,7 +265,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("PostImages", (string)null);
+                    b.ToTable("PostImages");
                 });
 
             modelBuilder.Entity("Domain.Entities.Project", b =>
@@ -313,7 +316,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("Domain.Entities.Role", b =>
@@ -372,7 +375,7 @@ namespace Domain.Migrations
 
                     b.HasIndex("PhaseId");
 
-                    b.ToTable("Taskboards", (string)null);
+                    b.ToTable("Taskboards");
                 });
 
             modelBuilder.Entity("Domain.Entities.Team", b =>
@@ -407,7 +410,7 @@ namespace Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teams", (string)null);
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
