@@ -10,7 +10,7 @@ public static class SwaggerService
     {
         services.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new OpenApiInfo { Title = "SecretsSharing", Version = "v1" });
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "StartedIn", Version = "v1" });
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,

@@ -53,8 +53,8 @@ namespace Service.Services
                 MailMessage mailMessage = new MailMessage()
                 {
 
-                    Subject = "",
-                    Body = $"{appDomain}/api/activate-user/{id}",
+                    Subject = "Kích hoạt tài khoản",
+                    Body = $"Bạn vui lòng bấm vào đường link sau để kích hoạt tài khoản StartedIn:\n{appDomain}/api/activate-user/{id} \n\n Xin chân thành cảm ơn vì đã đồng hành cùng StartedIn!",
                     IsBodyHtml = false,
                 };
                 mailMessage.From = new MailAddress(EmailSettingModel.Instance.FromEmailAddress, EmailSettingModel.Instance.FromDisplayName);
