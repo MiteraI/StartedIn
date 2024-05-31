@@ -87,10 +87,9 @@ namespace Service.Services
                 }
                 await _userManager.AddToRoleAsync(registerUser, RoleConstants.USER);
                 await _unitOfWork.SaveChangesAsync();
-                await _unitOfWork.CommitAsync();
-
                 // Only send mail if user is created successfully
                 _emailService.SendVerificationMail(registerUser.Email, registerUser.Id);
+                await _unitOfWork.CommitAsync();
             }
             catch (Exception ex)
             {
