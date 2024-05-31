@@ -69,7 +69,7 @@ namespace Repository.Repositories
         {
             pageIndex = pageIndex < 1 ? 0 : pageIndex - 1;
             pageSize = pageSize < 1 ? 10 : pageSize;
-            return _dbSet.Skip(pageIndex * pageSize).Take(pageSize).ToList();
+            return await _dbSet.Skip(pageIndex * pageSize).Take(pageSize).ToListAsync();
 
         }
     }
