@@ -9,14 +9,18 @@ namespace Service.AutoMappingProfile
     {
         public AutoMapperProfile()
         {
+            UserMappingProfile();
+        }
+
+        private void UserMappingProfile() {
             CreateMap<User, RegisterDTO>().ReverseMap();
             CreateMap<User, ProfileDTO>()
-                .ForMember(userDto => userDto.UserRoles, 
-                    opt => opt.MapFrom(user 
+                .ForMember(userDto => userDto.UserRoles,
+                    opt => opt.MapFrom(user
                         => user.UserRoles.Select(iur => iur.Role.Name).ToHashSet()))
                 .ReverseMap()
-                .ForPath(user => user.UserRoles, opt 
-                    => opt.MapFrom(userDto => userDto.UserRoles.Select(role => new UserRole { Role = new Role { Name = role }}).ToHashSet()));
+                .ForPath(user => user.UserRoles, opt
+                    => opt.MapFrom(userDto => userDto.UserRoles.Select(role => new UserRole { Role = new Role { Name = role } }).ToHashSet()));
         }
     }
 }

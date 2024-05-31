@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
+﻿using Microsoft.OpenApi.Models;
 
 namespace StartedIn.Configuration;
 
