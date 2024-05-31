@@ -5,7 +5,7 @@ namespace Repository.Repositories.Interface
     {
         Task<TEntity> GetOneAsync(TKey id);
         Task<IEnumerable<TEntity>> GetAllAsync();
-        Task<IEnumerable<TEntity>> GetPagingAsync(int position, int size);
+        Task<IEnumerable<TEntity>> GetPagingAsync(int pageIndex = 1 , int pageSize = 1);
         Task DeleteByIdAsync(TKey id);
         Task DeleteAsync(TEntity entity);
         TEntity Add(TEntity entity);
