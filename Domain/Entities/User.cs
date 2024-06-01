@@ -1,4 +1,4 @@
-﻿    using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.Text.Json.Serialization;
 
 namespace Domain.Entities;
@@ -18,4 +18,5 @@ public class User : IdentityUser
     public IEnumerable<Post> Posts { get; set; }
     public IEnumerable<Team> Teams { get; set; }
     [JsonIgnore] public virtual IEnumerable<UserRole> UserRoles { get;}
+    public ICollection<TeamUser> TeamUsers { get; set; }
 }

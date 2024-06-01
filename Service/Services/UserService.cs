@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Services.Exceptions;
 using Domain.Entities;
 using Service.Services.Interface;
 using Repository.Repositories.Interface;
 using CrossCutting.DTOs.ResponseDTO;
-using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.Exceptions;
 using CrossCutting.Constants;
 using Microsoft.AspNetCore.Http;
@@ -87,10 +82,9 @@ namespace Service.Services
                 }
                 await _userManager.AddToRoleAsync(registerUser, RoleConstants.USER);
                 await _unitOfWork.SaveChangesAsync();
-                await _unitOfWork.CommitAsync();
-
                 // Only send mail if user is created successfully
                 _emailService.SendVerificationMail(registerUser.Email, registerUser.Id);
+                await _unitOfWork.CommitAsync();
             }
             catch (Exception ex)
             {

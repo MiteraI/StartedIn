@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using CrossCutting.Enum;
+using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,7 @@ public class AppDbContext : IdentityDbContext<User, Role, string,
     public DbSet<Taskboard> Taskboards { get; set; }
     public DbSet<MajorTask> MajorTasks { get; set; }
     public DbSet<MinorTask> MinorTasks { get; set; }
+    public DbSet<TeamUser> TeamUsers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,10 +39,27 @@ public class AppDbContext : IdentityDbContext<User, Role, string,
             .WithMany(y => y.Posts)
             .UsingEntity(z => z.ToTable("PostInteraction"));
 
-        modelBuilder.Entity<Team>()
-            .HasMany(x => x.Users)
-            .WithMany(y => y.Teams)
-            .UsingEntity(z => z.ToTable("TeamAccount"));
+        modelBuilder.Entity<TeamUser>()
+            .HasKey(tu => new { tu.TeamId, tu.UserId });
+
+        modelBuilder.Entity<TeamUser>()
+            .HasOne(tu => tu.Team)
+            .WithMany(t => t.TeamUsers)
+            .HasForeignKey(tu => tu.TeamId);
+
+        modelBuilder.Entity<TeamUser>()
+            .HasOne(tu => tu.User)
+            .WithMany(u => u.TeamUsers)
+            .HasForeignKey(tu => tu.UserId);
+
+        modelBuilder.Entity<TeamUser>()
+            .Property(u => u.RoleInTeam)
+            .HasConversion(
+                v => v.ToString(),
+                v => (RoleInTeam)Enum.Parse(typeof(RoleInTeam), v));
+
+        modelBuilder.Entity<TeamUser>()
+            .ToTable("TeamUser");
 
         modelBuilder.Entity<UserRole>(userRole =>
         {
@@ -66,6 +85,11 @@ public class AppDbContext : IdentityDbContext<User, Role, string,
         {
             entity.ToTable("Role");
         });
+        modelBuilder.Entity<Interaction>()
+            .Property(u => u.InteractionType)
+            .HasConversion(
+                v => v.ToString(),
+                v => (InteractionType)Enum.Parse(typeof(InteractionType), v));
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
