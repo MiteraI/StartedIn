@@ -1,7 +1,5 @@
 ﻿using Domain.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Serilog;
 
 namespace StartedIn.Configuration
 {
