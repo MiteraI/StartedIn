@@ -10,6 +10,7 @@ namespace StartedIn.Configuration
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IPostService, PostService>();
 
             return services;
         }
