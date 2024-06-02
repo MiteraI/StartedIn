@@ -41,10 +41,12 @@ namespace Repository.Repositories
             return await query.SingleOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> GetPagingAsync(int position, int size)
+        public async Task<IEnumerable<TEntity>> GetPagingAsync(int pageIndex = 1, int pageSize = 1)
         {
             IQueryable<TEntity> query = BuildQuery();
-            return await query.Skip(position).Take(size).ToListAsync();
+            pageIndex = pageIndex < 1 ? 0 : pageIndex - 1;
+            pageSize = pageSize < 1 ? 10 : pageSize;
+            return await query.Skip(pageIndex * pageSize).Take(pageSize).ToListAsync();
         }
 
         public IFluentRepository<TEntity> Include(Expression<Func<TEntity, object>> expression)

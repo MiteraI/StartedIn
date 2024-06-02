@@ -10,6 +10,7 @@ namespace Service.AutoMappingProfile
         public AutoMapperProfile()
         {
             UserMappingProfile();
+            PostMappingProfile();
         }
 
         private void UserMappingProfile() {
@@ -21,6 +22,17 @@ namespace Service.AutoMappingProfile
                 .ReverseMap()
                 .ForPath(user => user.UserRoles, opt
                     => opt.MapFrom(userDto => userDto.UserRoles.Select(role => new UserRole { Role = new Role { Name = role } }).ToHashSet()));
+        }
+        private void PostMappingProfile() {
+            CreateMap<Post, PostResponseDTO>().
+                ForMember(postResponse => postResponse.ImgUrls,
+                opt => opt.MapFrom(post => post.PostImages.Select(pi => pi.ImageLink).ToHashSet()))
+                .ForMember(postResponse => postResponse.UserFullName,
+                opt => opt.MapFrom(post => post.User.FullName))
+                .ForMember(postResponse => postResponse.UserImgUrl,
+                opt => opt.MapFrom(post => post.User.ProfilePicture))
+                .ReverseMap();
+            CreateMap<PostRequestDTO, Post>().ReverseMap();
         }
     }
 }
