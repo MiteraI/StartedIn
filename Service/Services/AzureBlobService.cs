@@ -11,32 +11,20 @@ public class AzureBlobService : IAzureBlobService
     private readonly IConfiguration _configuration;
     private readonly BlobContainerClient _avatarContainerClient;
     private readonly BlobContainerClient _postImagesContainerClient;
-    private readonly string _azureBlobStorageAccountNameForAvatar;
     private readonly string _azureBlobStorageKeyForAvatar;
-    private readonly string _azureBlobStorageAccountNameForPost;
     private readonly string _azureBlobStorageKeyForPost;
 
     public AzureBlobService(IConfiguration configuration)
     {
         _configuration = configuration;
-        _azureBlobStorageAccountNameForAvatar = configuration.GetValue<string>("AzureBlobStorageAccountNameForAvatar");
         _azureBlobStorageKeyForAvatar = configuration.GetValue<string>("AzureBlobStorageKeyForAvatar");
-
-        _azureBlobStorageAccountNameForPost = configuration.GetValue<string>("AzureBlobStorageAccountNameForPost");
         _azureBlobStorageKeyForPost = configuration.GetValue<string>("AzureBlobStorageKeyForPost");
-        
-        var azureCredentialsForAvatar = new StorageSharedKeyCredential(_azureBlobStorageAccountNameForAvatar, _azureBlobStorageKeyForAvatar);
-        var azureCredentialForPost =
-            new StorageSharedKeyCredential(_azureBlobStorageAccountNameForPost, _azureBlobStorageKeyForPost);
-        
-        var blobUriForAvatar = new Uri($"https://{_azureBlobStorageAccountNameForAvatar}.blob.core.windows.net");
-        var blobServiceClientForAvatar = new BlobServiceClient(blobUriForAvatar, azureCredentialsForAvatar);
 
-        var blobUriForPost = new Uri($"https://{_azureBlobStorageAccountNameForAvatar}.blob.core.windows.net");
-        var blobServiceClientForPost = new BlobServiceClient(blobUriForPost, azureCredentialForPost);
+        var blobServiceClientForAvatar = new BlobServiceClient(_azureBlobStorageKeyForAvatar);
+        var blobServiceClientForPost = new BlobServiceClient(_azureBlobStorageKeyForPost);
         
-        _avatarContainerClient = blobServiceClientForAvatar.GetBlobContainerClient("avatars");
-        _postImagesContainerClient = blobServiceClientForPost.GetBlobContainerClient("postimages");
+        _avatarContainerClient = blobServiceClientForAvatar.GetBlobContainerClient("startedinavatar");
+        _postImagesContainerClient = blobServiceClientForPost.GetBlobContainerClient("startedinpostimages");
     }
     public async Task<string> UploadAvatar(IFormFile image)
     {
