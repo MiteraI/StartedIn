@@ -1,5 +1,7 @@
 ﻿using Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +12,8 @@ namespace Service.Services.Interface
     public interface IPostService
     {
         Task<IEnumerable<Post>> GetPostsAsync(int pageIndex, int pageSize);
-        Task CreateNewPost(string userId, Post post);
+        Task CreateNewPost(string userId, Post post, List<IFormFile> picList);
+        Task<Post> GetPostsById(string postId);
 
     }
 }

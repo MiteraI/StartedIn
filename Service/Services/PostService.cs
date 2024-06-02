@@ -1,4 +1,7 @@
-﻿using Domain.Entities;
+﻿using CrossCutting.DTOs.RequestDTO;
+using Domain.Entities;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Repository.Repositories;
 using Repository.Repositories.Interface;
@@ -17,14 +20,16 @@ namespace Service.Services
         private readonly IPostRepository _postRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<PostService> _logger;
-        public PostService(IPostRepository postRepository, IUnitOfWork unitOfWork, ILogger<PostService> logger) 
+        private readonly IAzureBlobService _azureBlobService;
+        public PostService(IPostRepository postRepository, IUnitOfWork unitOfWork, ILogger<PostService> logger, IAzureBlobService azureBlobService) 
         {
             _postRepository = postRepository;
+            _azureBlobService = azureBlobService;
             _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
-        public async Task CreateNewPost(string userId, Post post)
+        public async Task CreateNewPost(string userId, Post post, List<IFormFile> picList)
         {
             try
             {
@@ -33,6 +38,8 @@ namespace Service.Services
                 post.CommentCount = 0;
                 post.InteractionCount = 0;
                 var result = _postRepository.Add(post);
+                var imageURLs = await _azureBlobService.UploadPostImages(picList);
+                post.PostImages = imageURLs.Select(url => new PostImage { ImageLink = url }).ToList();
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitAsync();
             }
@@ -55,6 +62,16 @@ namespace Service.Services
                 throw new NotFoundException("Không có bài viết khả dụng !");
             }
             return postEntitiesList;
+        }
+
+        public async Task<Post> GetPostsById(string postId)
+        {
+            var chosenPost = await _postRepository.GetOneAsync(postId);
+            if (chosenPost == null)
+            {
+                throw new NotFoundException("Không có bài viết khả dụng !");
+            }
+            return chosenPost;
         }
     }
 }

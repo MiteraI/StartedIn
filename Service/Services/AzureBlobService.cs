@@ -11,20 +11,17 @@ public class AzureBlobService : IAzureBlobService
     private readonly IConfiguration _configuration;
     private readonly BlobContainerClient _avatarContainerClient;
     private readonly BlobContainerClient _postImagesContainerClient;
-    private readonly string _azureBlobStorageKeyForAvatar;
-    private readonly string _azureBlobStorageKeyForPost;
+    private readonly string _azureBlobStorageKey;
 
     public AzureBlobService(IConfiguration configuration)
     {
         _configuration = configuration;
-        _azureBlobStorageKeyForAvatar = configuration.GetValue<string>("AzureBlobStorageKeyForAvatar");
-        _azureBlobStorageKeyForPost = configuration.GetValue<string>("AzureBlobStorageKeyForPost");
+        _azureBlobStorageKey = configuration.GetValue<string>("AzureBlobStorageKey");
 
-        var blobServiceClientForAvatar = new BlobServiceClient(_azureBlobStorageKeyForAvatar);
-        var blobServiceClientForPost = new BlobServiceClient(_azureBlobStorageKeyForPost);
-        
-        _avatarContainerClient = blobServiceClientForAvatar.GetBlobContainerClient("startedinavatar");
-        _postImagesContainerClient = blobServiceClientForPost.GetBlobContainerClient("startedinpostimages");
+        BlobServiceClient blobServiceClient = new BlobServiceClient(_azureBlobStorageKey);
+
+        _avatarContainerClient = blobServiceClient.GetBlobContainerClient("avatars");
+        _postImagesContainerClient = blobServiceClient.GetBlobContainerClient("post-images");
     }
     public async Task<string> UploadAvatar(IFormFile image)
     {
