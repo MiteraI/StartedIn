@@ -2,6 +2,8 @@
 using Domain.Context;
 using Repository.Repositories.Interface;
 using Domain.Entities.BaseEntities;
+using System.Linq.Expressions;
+
 namespace Repository.Repositories
 {
     public class GenericRepository<TEntity, TKey> : IGenericRepository<TEntity, TKey>, IDisposable where TEntity : BaseEntity<TKey>

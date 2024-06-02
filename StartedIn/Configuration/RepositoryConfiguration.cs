@@ -8,6 +8,7 @@ namespace StartedIn.Configuration
         public static IServiceCollection AddRepositoryConfiguration(this IServiceCollection services)
         {
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IPostRepository, PostRepository>();
 
             return services;
         }
