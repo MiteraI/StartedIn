@@ -1,7 +1,5 @@
-﻿using CrossCutting.DTOs.RequestDTO;
-using CrossCutting.DTOs.ResponseDTO;
+﻿using CrossCutting.DTOs.ResponseDTO;
 using Domain.Entities;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
 namespace Service.Services.Interface

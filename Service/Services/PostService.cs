@@ -1,18 +1,10 @@
-﻿using CrossCutting.DTOs.RequestDTO;
-using Domain.Entities;
-using Microsoft.AspNetCore.DataProtection;
+﻿using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using Repository.Repositories;
 using Repository.Repositories.Interface;
 using Service.Services.Interface;
 using Services.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Services
 {
