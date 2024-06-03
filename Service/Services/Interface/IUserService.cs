@@ -2,6 +2,8 @@
 using CrossCutting.DTOs.ResponseDTO;
 using Domain.Entities;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+
 namespace Service.Services.Interface
 {
     public interface IUserService
@@ -17,5 +19,9 @@ namespace Service.Services.Interface
         Task<User> GetUserByUserName(string name);
 
         Task<User> GetUserWithUserRolesByName(string name);
+
+        Task<User> UpdateAvatar(IFormFile avatar, string username);
+
+        Task<User> UpdateProfile(User userToUpdate, string username);
     }
 }
