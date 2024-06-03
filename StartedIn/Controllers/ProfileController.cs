@@ -66,8 +66,7 @@ namespace StartedIn.Controllers
             }
             try
             {
-                var url = await _azureBlobService.UploadAvatar(avatar);
-                await _userService.UpdateAvatar(url, username);
+                await _userService.UpdateAvatar(avatar, username);
                 return Ok("Cập nhật ảnh đại diện thành công");
             }
             catch (Exception ex)

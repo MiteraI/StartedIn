@@ -23,11 +23,12 @@ namespace Service.Services
         private readonly IEmailService _emailService;
         private readonly ILogger<UserService> _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
+        private readonly IAzureBlobService _azureBlobService;
         public UserService(ITokenService tokenService,
             UserManager<User> userManager, IUnitOfWork unitOfWork,
             IConfiguration configuration, IEmailService emailService,
-            ILogger<UserService> logger, IHttpContextAccessor httpContextAccessor
+            ILogger<UserService> logger, IHttpContextAccessor httpContextAccessor,
+            IAzureBlobService azureBlobService
             )
         {
             _tokenService = tokenService;
@@ -37,6 +38,7 @@ namespace Service.Services
             _emailService = emailService;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
+            _azureBlobService = azureBlobService;
         }
 
         public async Task<LoginResponseDTO> Login(string email, string password)
@@ -141,8 +143,9 @@ namespace Service.Services
                 .SingleOrDefaultAsync(it => it.UserName == name);
         }
 
-        public virtual async Task<User> UpdateAvatar(string url, string username)
+        public virtual async Task<User> UpdateAvatar(IFormFile avatar, string username)
         {
+            var url = await _azureBlobService.UploadAvatar(avatar);
             var user = await GetUserByUserName(username);
             user.ProfilePicture = url;
             await _userManager.UpdateAsync(user);
