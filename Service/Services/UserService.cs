@@ -140,5 +140,23 @@ namespace Service.Services
                 .ThenInclude(r => r.Role)   
                 .SingleOrDefaultAsync(it => it.UserName == name);
         }
+
+        public virtual async Task<User> UpdateAvatar(string url, string username)
+        {
+            var user = await GetUserByUserName(username);
+            user.ProfilePicture = url;
+            await _userManager.UpdateAsync(user);
+            return user;
+        }
+        
+        public virtual async Task<User> UpdateProfile(User userToUpdate, string username)
+        {
+            var user = await GetUserByUserName(username);
+            user.Content = userToUpdate.Content;
+            user.Bio = userToUpdate.Bio;
+            user.PhoneNumber = userToUpdate.PhoneNumber;
+            await _userManager.UpdateAsync(user);
+            return user;
+        }
     }
 }

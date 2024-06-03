@@ -2,6 +2,7 @@
 using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
 using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace Service.AutoMappingProfile
 {
@@ -15,13 +16,15 @@ namespace Service.AutoMappingProfile
 
         private void UserMappingProfile() {
             CreateMap<User, RegisterDTO>().ReverseMap();
-            CreateMap<User, ProfileDTO>()
+            CreateMap<User, HeaderProfileDTO>()
                 .ForMember(userDto => userDto.UserRoles,
                     opt => opt.MapFrom(user
                         => user.UserRoles.Select(iur => iur.Role.Name).ToHashSet()))
                 .ReverseMap()
                 .ForPath(user => user.UserRoles, opt
                     => opt.MapFrom(userDto => userDto.UserRoles.Select(role => new UserRole { Role = new Role { Name = role } }).ToHashSet()));
+            CreateMap<User, FullProfileDTO>().ReverseMap();
+            CreateMap<User, UpdateProfileDTO>().ReverseMap();
         }
         private void PostMappingProfile() {
             CreateMap<Post, PostResponseDTO>().

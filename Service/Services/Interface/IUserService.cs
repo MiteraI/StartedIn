@@ -17,5 +17,9 @@ namespace Service.Services.Interface
         Task<User> GetUserByUserName(string name);
 
         Task<User> GetUserWithUserRolesByName(string name);
+
+        Task<User> UpdateAvatar(string url, string username);
+
+        Task<User> UpdateProfile(User userToUpdate, string username);
     }
 }
