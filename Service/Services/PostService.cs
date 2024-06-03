@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Repository.Repositories;
 using Repository.Repositories.Interface;
@@ -21,12 +22,14 @@ namespace Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<PostService> _logger;
         private readonly IAzureBlobService _azureBlobService;
-        public PostService(IPostRepository postRepository, IUnitOfWork unitOfWork, ILogger<PostService> logger, IAzureBlobService azureBlobService) 
+        private readonly UserManager<User> _userManager;
+        public PostService(IPostRepository postRepository, IUnitOfWork unitOfWork, ILogger<PostService> logger, IAzureBlobService azureBlobService, UserManager<User> userManager) 
         {
             _postRepository = postRepository;
             _azureBlobService = azureBlobService;
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _userManager = userManager;
         }
 
         public async Task CreateNewPost(string userId, Post post, List<IFormFile> picList)
@@ -37,6 +40,8 @@ namespace Service.Services
                 post.UserId = userId;
                 post.CommentCount = 0;
                 post.InteractionCount = 0;
+                post.PostStatus = CrossCutting.Enum.Status.Pending;
+                post.User = await _userManager.FindByIdAsync(userId);
                 var result = _postRepository.Add(post);
                 var imageURLs = await _azureBlobService.UploadPostImages(picList);
                 post.PostImages = imageURLs.Select(url => new PostImage { ImageLink = url }).ToList();
@@ -49,6 +54,19 @@ namespace Service.Services
                 await _unitOfWork.RollbackAsync();
                 throw;
             }
+        }
+
+        public async Task<IEnumerable<Post>> GetActivePostAsync(int pageIndex, int pageSize)
+        {
+            var postEntitiesList = await _postRepository.QueryHelper().Filter(c => c.PostStatus == CrossCutting.Enum.Status.Active)
+                .Include(post => post.PostImages)
+                .Include(post => post.User)
+                .OrderBy(posts => posts.OrderByDescending(p => p.CreatedTime)).GetPagingAsync(pageIndex, pageSize);
+            if (!postEntitiesList.Any())
+            {
+                throw new NotFoundException("Không có bài viết khả dụng !");
+            }
+            return postEntitiesList;
         }
 
         public async Task<IEnumerable<Post>> GetPostsAsync(int pageIndex, int pageSize)

@@ -12,6 +12,7 @@ namespace Service.Services.Interface
     public interface IPostService
     {
         Task<IEnumerable<Post>> GetPostsAsync(int pageIndex, int pageSize);
+        Task<IEnumerable<Post>> GetActivePostAsync(int pageIndex, int pageSize);
         Task CreateNewPost(string userId, Post post, List<IFormFile> picList);
         Task<Post> GetPostsById(string postId);
 

@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
+using CrossCutting.Constants;
 using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Service.Services;
 using Service.Services.Interface;
 using Services.Exceptions;
 using System.Security.Claims;
@@ -29,7 +28,7 @@ namespace StartedIn.Controllers
             _azureBlobService = azureBlobService;
         }
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = RoleConstants.ADMIN)]
         [Route("/api/posts")]
         public async Task<ActionResult<List<PostResponseDTO>>> GetAllPost([FromQuery] int pageIndex, [FromQuery] int pageSize)
         {
@@ -48,6 +47,27 @@ namespace StartedIn.Controllers
                 return StatusCode(500, "Lỗi server");
             }
         }
+        [HttpGet]
+        [Authorize(Roles = RoleConstants.USER)]
+        [Route("/api/posts/active-posts")]
+        public async Task<ActionResult<List<PostResponseDTO>>> GetAllActivePost([FromQuery] int pageIndex, [FromQuery] int pageSize)
+        {
+            try
+            {
+                var postEntitiesList = await _postService.GetActivePostAsync(pageIndex, pageSize);
+                var responseActivePostList = _mapper.Map<List<PostResponseDTO>>(postEntitiesList);
+                return Ok(responseActivePostList);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Lỗi server");
+            }
+        }
+
         [HttpPost]
         [Authorize]
         [Route("/api/posts")]
