@@ -1,8 +1,8 @@
 ﻿namespace CrossCutting.Enum;
 
-public enum Status : int
+public enum Status
 {
-    Pending = 0,
-    Active = 1,
-    Disabled = 2
+    Pending,
+    Active,
+    Disabled
 }

@@ -1,15 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Services.Exceptions;
 using Domain.Entities;
 using Service.Services.Interface;
 using Repository.Repositories.Interface;
 using CrossCutting.DTOs.ResponseDTO;
-using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.Exceptions;
 using CrossCutting.Constants;
 using Microsoft.AspNetCore.Http;
@@ -24,24 +19,22 @@ namespace Service.Services
         private readonly ITokenService _tokenService;
         private readonly UserManager<User> _userManager;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
         private readonly ILogger<UserService> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-
+        private readonly IAzureBlobService _azureBlobService;
         public UserService(ITokenService tokenService,
             UserManager<User> userManager, IUnitOfWork unitOfWork,
             IConfiguration configuration, IEmailService emailService,
-            ILogger<UserService> logger, IHttpContextAccessor httpContextAccessor
+            ILogger<UserService> logger, IHttpContextAccessor httpContextAccessor,
+            IAzureBlobService azureBlobService
             )
         {
             _tokenService = tokenService;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
-            _configuration = configuration;
             _emailService = emailService;
             _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
+            _azureBlobService = azureBlobService;
         }
 
         public async Task<LoginResponseDTO> Login(string email, string password)
@@ -144,6 +137,25 @@ namespace Service.Services
                 .Include(it => it.UserRoles)
                 .ThenInclude(r => r.Role)   
                 .SingleOrDefaultAsync(it => it.UserName == name);
+        }
+
+        public virtual async Task<User> UpdateAvatar(IFormFile avatar, string username)
+        {
+            var url = await _azureBlobService.UploadAvatar(avatar);
+            var user = await GetUserByUserName(username);
+            user.ProfilePicture = url;
+            await _userManager.UpdateAsync(user);
+            return user;
+        }
+        
+        public virtual async Task<User> UpdateProfile(User userToUpdate, string username)
+        {
+            var user = await GetUserByUserName(username);
+            user.Content = userToUpdate.Content;
+            user.Bio = userToUpdate.Bio;
+            user.PhoneNumber = userToUpdate.PhoneNumber;
+            await _userManager.UpdateAsync(user);
+            return user;
         }
     }
 }

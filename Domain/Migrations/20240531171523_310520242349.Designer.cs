@@ -3,6 +3,7 @@ using System;
 using Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240531171523_310520242349")]
+    partial class _310520242349
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -206,10 +209,8 @@ namespace Domain.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
-                    b.Property<int>("CommentCount")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("CreatedBy")
@@ -218,18 +219,11 @@ namespace Domain.Migrations
                     b.Property<DateTimeOffset>("CreatedTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("InteractionCount")
-                        .HasColumnType("integer");
-
                     b.Property<string>("LastUpdatedBy")
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("LastUpdatedTime")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PostStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -415,33 +409,9 @@ namespace Domain.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Teams");
-                });
-
-            modelBuilder.Entity("Domain.Entities.TeamUser", b =>
-                {
-                    b.Property<string>("TeamId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("RoleInTeam")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("TeamId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("TeamUser", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
@@ -660,6 +630,21 @@ namespace Domain.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("TeamUser", b =>
+                {
+                    b.Property<string>("TeamsId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UsersId")
+                        .HasColumnType("text");
+
+                    b.HasKey("TeamsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("TeamUser", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.Comment", b =>
                 {
                     b.HasOne("Domain.Entities.Post", "Post")
@@ -762,32 +747,6 @@ namespace Domain.Migrations
                     b.Navigation("Phase");
                 });
 
-            modelBuilder.Entity("Domain.Entities.Team", b =>
-                {
-                    b.HasOne("Domain.Entities.User", null)
-                        .WithMany("Teams")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("Domain.Entities.TeamUser", b =>
-                {
-                    b.HasOne("Domain.Entities.Team", "Team")
-                        .WithMany("TeamUsers")
-                        .HasForeignKey("TeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.User", "User")
-                        .WithMany("TeamUsers")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Team");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Domain.Entities.UserRole", b =>
                 {
                     b.HasOne("Domain.Entities.Role", "Role")
@@ -858,6 +817,21 @@ namespace Domain.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TeamUser", b =>
+                {
+                    b.HasOne("Domain.Entities.Team", null)
+                        .WithMany()
+                        .HasForeignKey("TeamsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Entities.MajorTask", b =>
                 {
                     b.Navigation("MinorTasks");
@@ -893,17 +867,11 @@ namespace Domain.Migrations
             modelBuilder.Entity("Domain.Entities.Team", b =>
                 {
                     b.Navigation("Projects");
-
-                    b.Navigation("TeamUsers");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Navigation("Posts");
-
-                    b.Navigation("TeamUsers");
-
-                    b.Navigation("Teams");
 
                     b.Navigation("UserRoles");
                 });

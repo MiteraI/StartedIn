@@ -1,7 +1,3 @@
-using Domain.Context;
-using Microsoft.EntityFrameworkCore;
-using Repository.Repositories;
-using Repository.Repositories.Interface;
 using Serilog;
 using StartedIn.Configuration;
 

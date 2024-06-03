@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.BaseEntities;
+using System.Linq.Expressions;
 namespace Repository.Repositories.Interface
 {
     public interface IGenericRepository<TEntity, TKey> where TEntity : BaseEntity<TKey>
