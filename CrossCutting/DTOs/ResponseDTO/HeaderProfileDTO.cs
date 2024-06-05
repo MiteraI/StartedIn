@@ -11,4 +11,5 @@ public class HeaderProfileDTO
     public string email { get; set; }
     public string fullName { get; set; }
     public string ProfilePicture { get; set; }
+    public string bio { get; set; }
 }
