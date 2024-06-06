@@ -460,7 +460,8 @@ namespace Domain.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Content")
-                        .HasColumnType("text");
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
 
                     b.Property<string>("CoverPhoto")
                         .HasColumnType("text");
@@ -510,9 +511,6 @@ namespace Domain.Migrations
 
                     b.Property<string>("RefreshToken")
                         .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("RefreshTokenExpiry")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
