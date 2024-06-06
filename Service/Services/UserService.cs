@@ -10,6 +10,7 @@ using CrossCutting.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Repository.Repositories.Extensions;
 
 namespace Service.Services
@@ -52,12 +53,25 @@ namespace Service.Services
             {
                 throw new NotActivateException("Tài khoản chưa được xác thực");
             }
-            var jwtToken = _tokenService.CreateTokenForAccount(loginUser);
-            var refreshToken = _tokenService.GenerateRefreshToken();
             var user = await _userManager.FindByIdAsync(loginUser.Id);
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiry = DateTimeOffset.UtcNow.AddHours(3);
-            await _userManager.UpdateAsync(user);
+            string jwtToken;
+            string refreshToken;
+            if (user.RefreshToken.IsNullOrEmpty())
+            { 
+                jwtToken = _tokenService.CreateTokenForAccount(loginUser);
+                return new LoginResponseDTO()
+                {
+                    AccessToken = jwtToken,
+                    RefreshToken = user.RefreshToken
+                };
+            }
+            else
+            {
+                jwtToken = _tokenService.CreateTokenForAccount(loginUser);
+                refreshToken = _tokenService.GenerateRefreshToken();
+                user.RefreshToken = refreshToken;
+                await _userManager.UpdateAsync(user);
+            }
             return new LoginResponseDTO
             {
                 AccessToken = jwtToken,
