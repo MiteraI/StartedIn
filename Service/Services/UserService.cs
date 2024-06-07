@@ -52,7 +52,7 @@ namespace Service.Services
             var user = await _userManager.FindByIdAsync(loginUser.Id);
             string jwtToken;
             string refreshToken;
-            if (user.RefreshToken.IsNullOrEmpty())
+            if (!user.RefreshToken.IsNullOrEmpty())
             { 
                 jwtToken = _tokenService.CreateTokenForAccount(loginUser);
                 return new LoginResponseDTO()
