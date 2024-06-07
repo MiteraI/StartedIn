@@ -8,7 +8,7 @@ namespace CrossCutting.DTOs.RequestDTO
     {
         public string? Content { get; set; }
 
-        public List<IFormFile>? PostImageLinks { get; set; }
+        public List<IFormFile>? PostImageFiles { get; set; }
     }
 
 }
