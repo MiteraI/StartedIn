@@ -77,7 +77,7 @@ namespace StartedIn.Controllers
             {
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 var newPost = _mapper.Map<Post>(postRequestDTO);
-                await _postService.CreateNewPost(userId, newPost,postRequestDTO.PostImageUrls);
+                await _postService.CreateNewPost(userId, newPost,postRequestDTO.PostImageFiles);
                 var responseNewPost = _mapper.Map<PostResponseDTO>(newPost);
                 return CreatedAtAction(nameof(GetPostById), new { id = responseNewPost.Id }, responseNewPost);
             }
