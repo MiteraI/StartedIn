@@ -90,6 +90,11 @@ public class AppDbContext : IdentityDbContext<User, Role, string,
             .HasConversion(
                 v => v.ToString(),
                 v => (InteractionType)Enum.Parse(typeof(InteractionType), v));
+        modelBuilder.Entity<Post>()
+            .Property(u=>u.PostStatus)
+            .HasConversion(
+                v => v.ToString(),
+                v => (Status)Enum.Parse(typeof(Status), v));
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {

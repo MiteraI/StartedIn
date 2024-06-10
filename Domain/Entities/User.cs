@@ -18,7 +18,6 @@ public class User : IdentityUser
     public DateTimeOffset? Verified { get; set; }
     public string? RefreshToken { get; set; }
     [JsonIgnore] public IEnumerable<Post> Posts { get; set; }
-    public IEnumerable<Team> Teams { get; set; }
     [JsonIgnore] public virtual IEnumerable<UserRole> UserRoles { get;}
     public ICollection<TeamUser> TeamUsers { get; set; }
 }

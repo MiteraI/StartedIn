@@ -20,10 +20,8 @@ namespace Service.Services
         private readonly ITokenService _tokenService;
         private readonly UserManager<User> _userManager;
         private readonly IUnitOfWork _unitOfWork;
-        private readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
         private readonly ILogger<UserService> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAzureBlobService _azureBlobService;
         public UserService(ITokenService tokenService,
             UserManager<User> userManager, IUnitOfWork unitOfWork,
@@ -35,10 +33,8 @@ namespace Service.Services
             _tokenService = tokenService;
             _userManager = userManager;
             _unitOfWork = unitOfWork;
-            _configuration = configuration;
             _emailService = emailService;
             _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
             _azureBlobService = azureBlobService;
         }
 

@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using AutoMapper;
 using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
@@ -15,13 +14,11 @@ namespace StartedIn.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
-        private readonly IAzureBlobService _azureBlobService;
 
-        public ProfileController(IUserService userService, IMapper mapper, IAzureBlobService azureBlobService)
+        public ProfileController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
             _mapper = mapper;
-            _azureBlobService = azureBlobService;
         }
         
         // Lấy các thông tin cần để hiển thị ở profile header
