@@ -1,0 +1,37 @@
+﻿using CrossCutting.Enum;
+using Domain.Context;
+using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Repository.Repositories.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Repository.Repositories
+{
+    public class UserRepository : UserStore<User, Role, AppDbContext>, IUserRepository
+    {
+        private readonly AppDbContext _appDbContext;
+        public UserRepository(AppDbContext context) : base(context)
+        {
+            _appDbContext = context;
+        }
+
+        public async Task AddUserToTeam(string userId, string teamId, RoleInTeam roleInTeam)
+        {
+            var userTeam = new TeamUser
+            {
+                UserId = userId,
+                TeamId = teamId,
+                RoleInTeam = roleInTeam
+            };
+            await _appDbContext.Set<TeamUser>().AddAsync(userTeam);
+        }
+    }
+
+
+}

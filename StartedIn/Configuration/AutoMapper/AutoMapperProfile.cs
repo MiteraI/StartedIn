@@ -12,6 +12,8 @@ namespace Service.AutoMappingProfile
         {
             UserMappingProfile();
             PostMappingProfile();
+            TeamMappingProfile();
+            ProjectMappingProfile();
         }
 
         private void UserMappingProfile() {
@@ -36,6 +38,13 @@ namespace Service.AutoMappingProfile
                 opt => opt.MapFrom(post => post.User.ProfilePicture))
                 .ReverseMap();
             CreateMap<PostRequestDTO, Post>().ReverseMap();
+        }
+        private void TeamMappingProfile() {
+            CreateMap<Team, TeamCreateRequestDTO>().ReverseMap();
+        }
+        private void ProjectMappingProfile()
+        {
+            CreateMap<Project, ProjectCreateDTO>().ReverseMap();
         }
     }
 }
