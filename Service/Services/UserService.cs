@@ -43,7 +43,7 @@ namespace Service.Services
             var loginUser = await _userManager.FindByEmailAsync(email);
             if (loginUser == null || !await _userManager.CheckPasswordAsync(loginUser, password))
             {
-               throw new InvalidLoginException("Đăng nhập thất bại!");
+                throw new InvalidLoginException("Đăng nhập thất bại!");
             }
             if (loginUser.EmailConfirmed == false)
             {
