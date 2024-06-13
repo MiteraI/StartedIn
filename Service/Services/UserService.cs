@@ -43,7 +43,7 @@ namespace Service.Services
             var loginUser = await _userManager.FindByEmailAsync(email);
             if (loginUser == null || !await _userManager.CheckPasswordAsync(loginUser, password))
             {
-               throw new InvalidLoginException("Đăng nhập thất bại!");
+                throw new InvalidLoginException("Đăng nhập thất bại!");
             }
             if (loginUser.EmailConfirmed == false)
             {
@@ -168,6 +168,15 @@ namespace Service.Services
             user.Content = userToUpdate.Content;
             user.Bio = userToUpdate.Bio;
             user.PhoneNumber = userToUpdate.PhoneNumber;
+            await _userManager.UpdateAsync(user);
+            return user;
+        }
+
+        public virtual async Task<User> UpdateCoverPhoto(IFormFile coverPhoto, string username)
+        {
+            var url = await _azureBlobService.UploadAvatar(coverPhoto);
+            var user = await GetUserByUserName(username);
+            user.CoverPhoto = url;
             await _userManager.UpdateAsync(user);
             return user;
         }
