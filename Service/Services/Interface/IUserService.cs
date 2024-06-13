@@ -23,5 +23,7 @@ namespace Service.Services.Interface
         Task<User> UpdateProfile(User userToUpdate, string username);
 
         Task<User> UpdateCoverPhoto(IFormFile coverPhoto, string username);
+
+        Task<User> GetUserWithId(string id);
     }
 }

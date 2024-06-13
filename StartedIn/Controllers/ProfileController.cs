@@ -113,6 +113,21 @@ namespace StartedIn.Controllers
             }
         }
         
+        [HttpGet("users/{userId}")]
+        [Authorize]
+        public async Task<IActionResult> GetUserById(string userId)
+        {
+            try
+            {
+                var user = await _userService.GetUserWithId(userId);
+                return Ok(_mapper.Map<FullProfileDTO>(user));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Lỗi server");
+            }
+        }
+        
 
     }
 }

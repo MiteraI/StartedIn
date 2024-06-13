@@ -180,5 +180,11 @@ namespace Service.Services
             await _userManager.UpdateAsync(user);
             return user;
         }
+
+        public async Task<User> GetUserWithId(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            return user;
+        }
     }
 }
