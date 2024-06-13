@@ -71,6 +71,25 @@ namespace StartedIn.Controllers
                 return BadRequest("Cập nhật ảnh đại diện thất bại");
             }
         }
+        [Authorize]
+        [HttpPost("profile/cover-photo")]
+        public async Task<IActionResult> UploadCoverPhoto(IFormFile coverPhoto)
+        {
+            var username = HttpContext.User.Identity!.Name;
+            if (username == null)
+            {
+                return BadRequest("Không tìm thấy người dùng");
+            }
+            try
+            {
+                await _userService.UpdateCoverPhoto(coverPhoto, username);
+                return Ok("Cập nhật ảnh bìa thành công");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Cập nhật ảnh bìa thất bại");
+            }
+        }
 
         [Authorize]
         [HttpPut("profile/edit")]

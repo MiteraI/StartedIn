@@ -12,6 +12,7 @@ namespace StartedIn.Configuration
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IAzureBlobService, AzureBlobService>();
             services.AddScoped<IPostService, PostService>();
+            services.AddScoped<ITeamService, TeamService>();
             return services;
         }
     }
