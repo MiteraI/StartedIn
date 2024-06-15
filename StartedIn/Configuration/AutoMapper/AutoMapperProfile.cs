@@ -41,6 +41,14 @@ namespace Service.AutoMappingProfile
         }
         private void TeamMappingProfile() {
             CreateMap<Team, TeamCreateRequestDTO>().ReverseMap();
+            CreateMap<Team, TeamResponseDTO>()
+               .ForMember(tr => tr.Users,
+                   opt => opt.MapFrom(t
+                       => t.TeamUsers.Select(tu => tu.User.FullName).ToHashSet()))
+               .ReverseMap()
+               .ForPath(t => t.TeamUsers, opt
+                   => opt.MapFrom(tr => tr.Users.Select(name => new TeamUser { User = new User { FullName = name } }).ToHashSet()));
+
         }
         private void ProjectMappingProfile()
         {

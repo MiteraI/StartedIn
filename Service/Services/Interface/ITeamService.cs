@@ -10,5 +10,7 @@ namespace Service.Services.Interface
     public interface ITeamService
     {
         Task CreateNewTeam(string userId, Team team, Project project); 
+        Task<IEnumerable<Team>> GetTeamByUserId(string userId);
+
     }
 }

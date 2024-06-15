@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Repository.Repositories.Interface;
 using Service.Services.Interface;
+using Services.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -53,7 +54,15 @@ namespace Service.Services
                 throw;
             }
         }
-        
 
+        public async Task<IEnumerable<Team>> GetTeamByUserId(string userId)
+        {
+            var team = await _teamRepository.GetTeamsByUserIdAsync(userId);
+            if (!team.Any()) 
+            {
+                throw new NotFoundException("Không có team nào.");
+            }
+            return team;
+        }
     }
 }

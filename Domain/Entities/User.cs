@@ -13,7 +13,6 @@ public class User : IdentityUser
     public string? CoverPhoto { get; set; }
     
     [StringLength(120)]
-    public string? Content { get; set; }
     public string? Bio { get; set; }
     public DateTimeOffset? Verified { get; set; }
     public string? RefreshToken { get; set; }
