@@ -87,6 +87,7 @@ namespace Service.Services
             try {
                 _unitOfWork.BeginTransaction();
                 registerUser.UserName = registerUser.Email;
+                registerUser.ProfilePicture = ProfileConstant.defaultAvatarUrl;
                 var result = await _userManager.CreateAsync(registerUser, password);
                 if (!result.Succeeded)
                 {
@@ -123,7 +124,7 @@ namespace Service.Services
             var user = await _userManager.FindByNameAsync(username);
             if (user == null)
             {
-                throw new NotFoundException("Username is not found!");
+                throw new NotFoundException("Không tìm thấy người dùng!");
             }
             user.RefreshToken = null;
             await _userManager.UpdateAsync(user);
@@ -137,6 +138,7 @@ namespace Service.Services
                 throw new NotFoundException($"Unable to activate user {userId}");
             }
             user.EmailConfirmed = true;
+            user.Verified = DateTimeOffset.UtcNow;
             await _userManager.UpdateAsync(user);
         }
         public async Task<User> GetUserByUserName(string name) 
@@ -165,7 +167,6 @@ namespace Service.Services
         public virtual async Task<User> UpdateProfile(User userToUpdate, string username)
         {
             var user = await GetUserByUserName(username);
-            user.Content = userToUpdate.Content;
             user.Bio = userToUpdate.Bio;
             user.PhoneNumber = userToUpdate.PhoneNumber;
             await _userManager.UpdateAsync(user);
