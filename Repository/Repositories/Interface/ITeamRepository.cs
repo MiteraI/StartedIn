@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Repositories.Interface
 {
-    public interface ITeamRepository : IGenericRepository<Team,string>
+    public interface ITeamRepository : IGenericRepository<Team, string>
     {
         Task<IEnumerable<Team>> GetTeamsByUserIdAsync(string userId);
     }

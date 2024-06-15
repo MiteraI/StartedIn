@@ -21,27 +21,32 @@ namespace Service.Services
         private readonly ILogger<TeamService> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserRepository _userRepository;
+        private readonly UserManager<User> _userManager;
 
-        public TeamService(ITeamRepository teamRepository, IProjectRepository projectRepository,ILogger<TeamService> logger, IUnitOfWork unitOfWork,IUserRepository userRepository)
+        public TeamService(ITeamRepository teamRepository, IProjectRepository projectRepository,ILogger<TeamService> logger, IUnitOfWork unitOfWork,IUserRepository userRepository, UserManager<User> userManager)
         {
             _logger = logger;
             _teamRepository = teamRepository;
             _projectRepository = projectRepository;
             _unitOfWork = unitOfWork;
             _userRepository = userRepository;
+            _userManager = userManager;
         }
 
         public async Task CreateNewTeam(string userId, Team team, Project project)
         {
             try {
                 _unitOfWork.BeginTransaction();
+                var user = await _userManager.FindByIdAsync(userId);
                 team.TeamLeaderId = userId;
+                team.CreatedBy = user.FullName;
                 var teamEntity = _teamRepository.Add(team);
                 project.TeamId = team.Id;
                 project.EstimateDuration = (int)((project.EndDate - project.StartDate).TotalDays);
                 project.ActualDuration = project.EstimateDuration;
                 project.ActualCost = 0;
                 project.Progress = 0;
+                project.CreatedBy = user.FullName;
                 var projectEntity = _projectRepository.Add(project);
                 await _userRepository.AddUserToTeam(userId, teamEntity.Id, RoleInTeam.Leader);
                 await _unitOfWork.SaveChangesAsync();
