@@ -1,7 +1,5 @@
-using AutoMapper;
 using CrossCutting.Enum;
 using Domain.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Repository.Repositories.Interface;
@@ -86,7 +84,7 @@ public class ConnectionService : IConnectionService
             .Include(c => c.Sender)
             .OrderBy(c => c.OrderByDescending(c => c.CreatedTime))
             .GetPagingAsync(pageIndex, pageSize);
-        if (connections == null)
+        if (!connections.Any())
         {
             throw new NotFoundException("Không tìm thấy lời mời kết nối");
         }

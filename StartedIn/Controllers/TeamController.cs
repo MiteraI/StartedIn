@@ -3,7 +3,6 @@ using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interface;
 using System.Security.Claims;
@@ -11,6 +10,7 @@ using System.Security.Claims;
 namespace StartedIn.Controllers
 {
     [ApiController]
+    [Route("api")]
     public class TeamController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -22,9 +22,8 @@ namespace StartedIn.Controllers
             _mapper = mapper;
             _teamService = teamService;
         }
-        [HttpPost]
+        [HttpPost("teams")]
         [Authorize]
-        [Route("/api/teams")]
         public async Task<IActionResult> CreateNewStartup(TeamAndProjectCreateDTO teamAndProjectCreateDTO) 
         {
             try 
@@ -41,8 +40,7 @@ namespace StartedIn.Controllers
             }
         }
         
-        [HttpGet]
-        [Route("/api/teams/user-team")]
+        [HttpGet("teams/user-team")]
         [Authorize]
         public async Task<ActionResult<TeamResponseDTO>> GetTeamByUserId()
         {
