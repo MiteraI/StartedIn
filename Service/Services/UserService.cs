@@ -87,6 +87,7 @@ namespace Service.Services
             try {
                 _unitOfWork.BeginTransaction();
                 registerUser.UserName = registerUser.Email;
+                registerUser.ProfilePicture = ProfileConstant.defaultAvatarUrl;
                 var result = await _userManager.CreateAsync(registerUser, password);
                 if (!result.Succeeded)
                 {
@@ -118,12 +119,12 @@ namespace Service.Services
 
         }
 
-        public async Task Revoke(string username)
+        public async Task Revoke(string userId)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                throw new NotFoundException("Username is not found!");
+                throw new NotFoundException("Không tìm thấy người dùng!");
             }
             user.RefreshToken = null;
             await _userManager.UpdateAsync(user);
@@ -137,6 +138,7 @@ namespace Service.Services
                 throw new NotFoundException($"Unable to activate user {userId}");
             }
             user.EmailConfirmed = true;
+            user.Verified = DateTimeOffset.UtcNow;
             await _userManager.UpdateAsync(user);
         }
         public async Task<User> GetUserByUserName(string name) 
@@ -145,39 +147,44 @@ namespace Service.Services
             return user;
         }
         
-        public async Task<User> GetUserWithUserRolesByName(string name)
+        public async Task<User> GetUserWithUserRolesById(string userId)
         {
             return await _userManager.Users
                 .Include(it => it.UserRoles)
                 .ThenInclude(r => r.Role)   
-                .SingleOrDefaultAsync(it => it.UserName == name);
+                .SingleOrDefaultAsync(it => it.Id == userId);
         }
 
-        public virtual async Task<User> UpdateAvatar(IFormFile avatar, string username)
+        public virtual async Task<User> UpdateAvatar(IFormFile avatar, string userId)
         {
-            var url = await _azureBlobService.UploadAvatar(avatar);
-            var user = await GetUserByUserName(username);
+            var url = await _azureBlobService.UploadAvatarOrCover(avatar);
+            var user = await GetUserWithId(userId);
             user.ProfilePicture = url;
             await _userManager.UpdateAsync(user);
             return user;
         }
         
-        public virtual async Task<User> UpdateProfile(User userToUpdate, string username)
+        public virtual async Task<User> UpdateProfile(User userToUpdate, string userId)
         {
-            var user = await GetUserByUserName(username);
-            user.Content = userToUpdate.Content;
+            var user = await GetUserWithId(userId);
             user.Bio = userToUpdate.Bio;
             user.PhoneNumber = userToUpdate.PhoneNumber;
             await _userManager.UpdateAsync(user);
             return user;
         }
 
-        public virtual async Task<User> UpdateCoverPhoto(IFormFile coverPhoto, string username)
+        public virtual async Task<User> UpdateCoverPhoto(IFormFile coverPhoto, string userId)
         {
-            var url = await _azureBlobService.UploadAvatar(coverPhoto);
-            var user = await GetUserByUserName(username);
+            var url = await _azureBlobService.UploadAvatarOrCover(coverPhoto);
+            var user = await GetUserWithId(userId);
             user.CoverPhoto = url;
             await _userManager.UpdateAsync(user);
+            return user;
+        }
+
+        public async Task<User> GetUserWithId(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
             return user;
         }
     }

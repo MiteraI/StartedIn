@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CrossCutting.DTOs.RequestDTO;
+using CrossCutting.DTOs.ResponseDTO;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -39,6 +40,26 @@ namespace StartedIn.Controllers
                 return BadRequest("Tạo team thất bại.");
             }
         }
+        
+        [HttpGet]
+        [Route("/api/teams/user-team")]
+        [Authorize]
+        public async Task<ActionResult<TeamResponseDTO>> GetTeamByUserId()
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var teamEntityList = await _teamService.GetTeamByUserId(userId);
+                var responseTeamList = _mapper.Map<List<TeamResponseDTO>>(teamEntityList);
+                return Ok(responseTeamList);
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
 
     }
 }
