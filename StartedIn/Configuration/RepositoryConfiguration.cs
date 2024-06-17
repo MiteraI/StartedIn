@@ -12,6 +12,7 @@ namespace StartedIn.Configuration
             services.AddScoped<ITeamRepository, TeamRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IConnectionRepository, ConnectionRepository>();
 
             return services;
         }

@@ -14,6 +14,7 @@ namespace Service.AutoMappingProfile
             PostMappingProfile();
             TeamMappingProfile();
             ProjectMappingProfile();
+            ConnectionMappingProfile();
         }
 
         private void UserMappingProfile() {
@@ -53,6 +54,18 @@ namespace Service.AutoMappingProfile
         private void ProjectMappingProfile()
         {
             CreateMap<Project, ProjectCreateDTO>().ReverseMap();
+        }
+
+        private void ConnectionMappingProfile()
+        {
+            CreateMap<Connection, PendingConnectionDTO>()
+                .ForMember(c => c.SenderName,
+                    opt => opt.MapFrom(con => con.Sender.FullName))
+                .ForMember(c => c.ProfilePicture,
+                    opt => opt.MapFrom(con => con.Sender.ProfilePicture))
+                .ForMember(c => c.Time,
+                    opt => opt.MapFrom(con => con.CreatedTime))
+                .ReverseMap();
         }
     }
 }

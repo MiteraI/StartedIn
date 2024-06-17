@@ -29,6 +29,7 @@ public class AppDbContext : IdentityDbContext<User, Role, string,
     public DbSet<MajorTask> MajorTasks { get; set; }
     public DbSet<MinorTask> MinorTasks { get; set; }
     public DbSet<TeamUser> TeamUsers { get; set; }
+    public DbSet<Connection> Connections { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -96,6 +97,33 @@ public class AppDbContext : IdentityDbContext<User, Role, string,
                 v => v.ToString(),
                 v => (Status)Enum.Parse(typeof(Status), v));
 
+        modelBuilder.Entity<Connection>(entity =>
+        {
+            entity.ToTable("Connection");
+        });
+
+        modelBuilder.Entity<Connection>()
+            .Property(u => u.ConnectionStatus)
+            .HasConversion(
+                v => v.ToString(),
+                v => (ConnectionStatus)Enum.Parse(typeof(ConnectionStatus), v));
+
+        modelBuilder.Entity<Connection>()
+            .HasOne(c => c.Sender)
+            .WithMany(c => c.SentConnections)
+            .HasForeignKey(u => u.SenderId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Connection>()
+            .HasOne(c => c.Receiver)
+            .WithMany(c => c.ReceivedConnections)
+            .HasForeignKey(u => u.ReceiverId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Connection>()
+            .HasIndex(c => new { c.SenderId, c.ReceiverId })
+            .IsUnique();
+        
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
             var tableName = entityType.GetTableName();
