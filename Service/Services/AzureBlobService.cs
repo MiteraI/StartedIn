@@ -2,6 +2,10 @@ using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Service.Services.Interface;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
+using System.Text;
 
 namespace Service.Services;
 
@@ -28,14 +32,23 @@ public class AzureBlobService : IAzureBlobService
         var blobClient = _avatarContainerClient.GetBlobClient(fileName);
 
         using (var stream = image.OpenReadStream())
+        using (var imageSharp = await Image.LoadAsync(stream))
         {
+            // Resize the image to a smaller size (e.g., 300x300 pixels)
+            imageSharp.Mutate(x => x.Resize(250, 250));
+
+            // Compress and convert the image to JPEG format with 80% quality
+            var encoder = new JpegEncoder { Quality = 80 };
             using (var memoryStream = new MemoryStream())
             {
-                await stream.CopyToAsync(memoryStream);
-                var imageBytes = memoryStream.ToArray();
-                await blobClient.UploadAsync(new MemoryStream(imageBytes));
+                imageSharp.Save(memoryStream, encoder);
+                memoryStream.Position = 0;
+
+                // Upload the compressed image to Azure Blob Storage
+                await blobClient.UploadAsync(memoryStream);
             }
         }
+
         return blobClient.Uri.AbsoluteUri;
     }
     
@@ -46,12 +59,20 @@ public class AzureBlobService : IAzureBlobService
         var blobClient = _postImagesContainerClient.GetBlobClient(fileName);
 
         using (var stream = image.OpenReadStream())
+        using (var imageSharp = await Image.LoadAsync(stream))
         {
+            // Resize the image to a smaller size (e.g., 1400x1400 pixels)
+            imageSharp.Mutate(x => x.Resize(500, 500));
+
+            // Compress and convert the image to JPEG format with 80% quality
+            var encoder = new JpegEncoder { Quality = 80 };
             using (var memoryStream = new MemoryStream())
             {
-                await stream.CopyToAsync(memoryStream);
-                var imageBytes = memoryStream.ToArray();
-                await blobClient.UploadAsync(new MemoryStream(imageBytes));
+                imageSharp.Save(memoryStream, encoder);
+                memoryStream.Position = 0;
+
+                // Upload the compressed image to Azure Blob Storage
+                await blobClient.UploadAsync(memoryStream);
             }
         }
         return blobClient.Uri.AbsoluteUri;
