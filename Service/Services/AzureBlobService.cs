@@ -29,22 +29,23 @@ public class AzureBlobService : IAzureBlobService
     public async Task<string> UploadAvatarOrCover(IFormFile image)
     {
         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+        var fileExtension = Path.GetExtension(image.FileName).ToLower();
+        var validExtensions = new[] { ".png", ".jpg", ".jpeg" };
+        if (!validExtensions.Contains(fileExtension))
+        {
+            throw new InvalidOperationException("Unsupported file format. Please upload a .png, .jpg, or .jpeg file.");
+        }
         var blobClient = _avatarContainerClient.GetBlobClient(fileName);
 
         using (var stream = image.OpenReadStream())
         using (var imageSharp = await Image.LoadAsync(stream))
         {
-            // Resize the image to a smaller size (e.g., 300x300 pixels)
-            imageSharp.Mutate(x => x.Resize(250, 250));
-
-            // Compress and convert the image to JPEG format with 80% quality
+            imageSharp.Mutate(x => x.Resize(300, 300));
             var encoder = new JpegEncoder { Quality = 80 };
             using (var memoryStream = new MemoryStream())
             {
                 imageSharp.Save(memoryStream, encoder);
                 memoryStream.Position = 0;
-
-                // Upload the compressed image to Azure Blob Storage
                 await blobClient.UploadAsync(memoryStream);
             }
         }
@@ -54,24 +55,24 @@ public class AzureBlobService : IAzureBlobService
     
     public async Task<string> UploadPostImage(IFormFile image)
     {
-        // Create blob client from file name from IFormFile image with guid
         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+        var fileExtension = Path.GetExtension(image.FileName).ToLower();
+        var validExtensions = new[] { ".png", ".jpg", ".jpeg" };
+        if (!validExtensions.Contains(fileExtension))
+        {
+            throw new InvalidOperationException("Unsupported file format. Please upload a .png, .jpg, or .jpeg file.");
+        }
         var blobClient = _postImagesContainerClient.GetBlobClient(fileName);
 
         using (var stream = image.OpenReadStream())
         using (var imageSharp = await Image.LoadAsync(stream))
         {
-            // Resize the image to a smaller size (e.g., 1400x1400 pixels)
-            imageSharp.Mutate(x => x.Resize(500, 500));
-
-            // Compress and convert the image to JPEG format with 80% quality
+            imageSharp.Mutate(x => x.Resize(1400, 1400));
             var encoder = new JpegEncoder { Quality = 80 };
             using (var memoryStream = new MemoryStream())
             {
                 imageSharp.Save(memoryStream, encoder);
                 memoryStream.Position = 0;
-
-                // Upload the compressed image to Azure Blob Storage
                 await blobClient.UploadAsync(memoryStream);
             }
         }
