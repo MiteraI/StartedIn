@@ -22,7 +22,7 @@ public class AzureBlobService : IAzureBlobService
         _avatarContainerClient = blobServiceClient.GetBlobContainerClient("avatars");
         _postImagesContainerClient = blobServiceClient.GetBlobContainerClient("post-images");
     }
-    public async Task<string> UploadAvatar(IFormFile image)
+    public async Task<string> UploadAvatarOrCover(IFormFile image)
     {
         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
         var blobClient = _avatarContainerClient.GetBlobClient(fileName);

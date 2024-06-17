@@ -12,17 +12,17 @@ namespace Service.Services.Interface
 
         Task<string> Refresh(string refreshToken);
 
-        Task Revoke(string username);
+        Task Revoke(string userId);
         Task ActivateUser(string userId);
         Task<User> GetUserByUserName(string name);
 
-        Task<User> GetUserWithUserRolesByName(string name);
+        Task<User> GetUserWithUserRolesById(string userId);
 
-        Task<User> UpdateAvatar(IFormFile avatar, string username);
+        Task<User> UpdateAvatar(IFormFile avatar, string userId);
 
-        Task<User> UpdateProfile(User userToUpdate, string username);
+        Task<User> UpdateProfile(User userToUpdate, string userId);
 
-        Task<User> UpdateCoverPhoto(IFormFile coverPhoto, string username);
+        Task<User> UpdateCoverPhoto(IFormFile coverPhoto, string userId);
 
         Task<User> GetUserWithId(string id);
     }

@@ -5,6 +5,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interface;
+using System.Security.Claims;
 
 namespace StartedIn.Controllers
 {
@@ -26,8 +27,8 @@ namespace StartedIn.Controllers
         [HttpGet("profile")]
         public async Task<IActionResult> GetCurrentUserProfile()
         {
-            var username = HttpContext.User.Identity!.Name;
-            var queryUser = await _userService.GetUserWithUserRolesByName(username);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var queryUser = await _userService.GetUserWithUserRolesById(userId);
             if (queryUser == null)
             {
                 return BadRequest("Không tìm thấy người dùng!");
@@ -41,8 +42,8 @@ namespace StartedIn.Controllers
         [HttpGet("full-profile")]
         public async Task<IActionResult> GetCurrentUserFullProfile()
         {
-            var username = HttpContext.User.Identity!.Name;
-            var queryUser = await _userService.GetUserByUserName(username);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var queryUser = await _userService.GetUserWithId(userId);
             if (queryUser == null)
             {
                 return BadRequest("Không tìm thấy người dùng!");
@@ -56,14 +57,14 @@ namespace StartedIn.Controllers
         [HttpPost("profile/avatar")]
         public async Task<IActionResult> UploadAvatar(IFormFile avatar)
         {
-            var username = HttpContext.User.Identity!.Name;
-            if (username == null)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (userId == null)
             {
                 return BadRequest("Không tìm thấy người dùng");
             }
             try
             {
-                await _userService.UpdateAvatar(avatar, username);
+                await _userService.UpdateAvatar(avatar, userId);
                 return Ok("Cập nhật ảnh đại diện thành công");
             }
             catch (Exception ex)
@@ -75,14 +76,14 @@ namespace StartedIn.Controllers
         [HttpPost("profile/cover-photo")]
         public async Task<IActionResult> UploadCoverPhoto(IFormFile coverPhoto)
         {
-            var username = HttpContext.User.Identity!.Name;
-            if (username == null)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (userId == null)
             {
                 return BadRequest("Không tìm thấy người dùng");
             }
             try
             {
-                await _userService.UpdateCoverPhoto(coverPhoto, username);
+                await _userService.UpdateCoverPhoto(coverPhoto, userId);
                 return Ok("Cập nhật ảnh bìa thành công");
             }
             catch (Exception ex)
@@ -95,15 +96,15 @@ namespace StartedIn.Controllers
         [HttpPut("profile/edit")]
         public async Task<IActionResult> EditProfile([FromBody]UpdateProfileDTO updateProfileDto)
         {
-            var username = HttpContext.User.Identity!.Name;
-            if (username == null)
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (userId == null)
             {
                 return BadRequest("Không tìm thấy người dùng");
             }
 
             try
             {
-                var user = await _userService.UpdateProfile(_mapper.Map<User>(updateProfileDto), username);
+                var user = await _userService.UpdateProfile(_mapper.Map<User>(updateProfileDto), userId);
                 var updatedUser = _mapper.Map<FullProfileDTO>(user);
                 return Ok(updatedUser);
             }
