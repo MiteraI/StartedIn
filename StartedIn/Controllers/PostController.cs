@@ -63,6 +63,7 @@ namespace StartedIn.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex,"Error when get posts");
                 return StatusCode(500, "Lỗi server");
             }
         }

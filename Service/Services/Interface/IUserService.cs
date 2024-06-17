@@ -25,5 +25,6 @@ namespace Service.Services.Interface
         Task<User> UpdateCoverPhoto(IFormFile coverPhoto, string userId);
 
         Task<User> GetUserWithId(string id);
+        Task<IEnumerable<User>> GetUsersList(int pageIndex, int pageSize);
     }
 }

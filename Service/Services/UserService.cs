@@ -187,5 +187,15 @@ namespace Service.Services
             var user = await _userManager.FindByIdAsync(id);
             return user;
         }
+
+        public async Task<IEnumerable<User>> GetUsersList(int pageIndex, int pageSize)
+        {
+            var userList = await _userManager.GetUsersAsync(pageIndex, pageSize);
+            if (!userList.Any()) 
+            {
+                throw new NotFoundException("Không có người dùng nào trong danh sách");
+            }
+            return userList;
+        }
     }
 }
