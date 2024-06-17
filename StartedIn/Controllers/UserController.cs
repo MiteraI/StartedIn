@@ -33,7 +33,7 @@ namespace StartedIn.Controllers
             catch (NotFoundException ex)
             {
                 _logger.LogError(ex, "No user found.");
-                return NotFound(ex);
+                return NotFound(ex.Message);
             }
             catch (Exception ex) 
             {
