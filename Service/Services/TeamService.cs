@@ -5,12 +5,6 @@ using Microsoft.Extensions.Logging;
 using Repository.Repositories.Interface;
 using Service.Services.Interface;
 using Services.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Services
 {

@@ -19,4 +19,6 @@ public class User : IdentityUser
     [JsonIgnore] public IEnumerable<Post> Posts { get; set; }
     [JsonIgnore] public virtual IEnumerable<UserRole> UserRoles { get;}
     public ICollection<TeamUser> TeamUsers { get; set; }
+    public ICollection<Connection> SentConnections { get; set; }
+    public ICollection<Connection> ReceivedConnections { get; set; }
 }
