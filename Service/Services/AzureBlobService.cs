@@ -28,10 +28,6 @@ public class AzureBlobService : IAzureBlobService
     }
     public async Task<string> UploadAvatarOrCover(IFormFile image)
     {
-        if (!IsValidImageFile(image))
-        {
-            throw new ArgumentException("The uploaded file is not a valid image.");
-        }
         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
         var fileExtension = Path.GetExtension(image.FileName).ToLower();
         var validExtensions = new[] { ".png", ".jpg", ".jpeg" };
