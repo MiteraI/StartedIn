@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interface;
 using Services.Exceptions;
+using System.Security.Claims;
 
 namespace StartedIn.Controllers
 {
@@ -94,12 +95,12 @@ namespace StartedIn.Controllers
         {
             try 
             {
-                var username = HttpContext.User.Identity!.Name;
-                if (username == null)
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                if (userId == null)
                 {
                     return Unauthorized();
                 }
-                await _userService.Revoke(username);
+                await _userService.Revoke(userId);
                 return Ok("Revoke Successfully !");
             }
             

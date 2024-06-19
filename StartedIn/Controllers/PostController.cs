@@ -12,6 +12,7 @@ using System.Security.Claims;
 namespace StartedIn.Controllers
 {
     [ApiController]
+    [Route("api")]
     public class PostController : ControllerBase
     {
         private readonly IPostService _postService;
@@ -27,9 +28,8 @@ namespace StartedIn.Controllers
             _userService = userService;
             _azureBlobService = azureBlobService;
         }
-        [HttpGet]
+        [HttpGet("posts")]
         [Authorize(Roles = RoleConstants.ADMIN)]
-        [Route("/api/posts")]
         public async Task<ActionResult<List<PostResponseDTO>>> GetAllPost([FromQuery] int pageIndex, [FromQuery] int pageSize)
         {
             try
@@ -47,9 +47,8 @@ namespace StartedIn.Controllers
                 return StatusCode(500, "Lỗi server");
             }
         }
-        [HttpGet]
+        [HttpGet("posts/active-posts")]
         [Authorize(Roles = RoleConstants.USER)]
-        [Route("/api/posts/active-posts")]
         public async Task<ActionResult<List<PostResponseDTO>>> GetAllActivePost([FromQuery] int pageIndex, [FromQuery] int pageSize)
         {
             try
@@ -64,13 +63,13 @@ namespace StartedIn.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex,"Error when get posts");
                 return StatusCode(500, "Lỗi server");
             }
         }
 
-        [HttpPost]
+        [HttpPost("posts")]
         [Authorize]
-        [Route("/api/posts")]
         public async Task<ActionResult<PostResponseDTO>> CreateNewPost([FromForm] PostRequestDTO postRequestDTO) 
         {
             try
@@ -86,9 +85,8 @@ namespace StartedIn.Controllers
                 return BadRequest("Tạo post thất bại.");
             }
         }
-        [HttpGet]
+        [HttpGet("posts/{id}")]
         [Authorize]
-        [Route("/api/posts/{id}")]
         public async Task<IActionResult> GetPostById([FromRoute] string id)
         {
             try

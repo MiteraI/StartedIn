@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using AutoMapper;
 using CrossCutting.DTOs.ResponseDTO;
-using CrossCutting.Enum;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interface;
@@ -32,11 +31,11 @@ namespace StartedIn.Controllers;
             {
                 var senderId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 await _connectionService.CreateConnection(senderId, receiverId);
-                return StatusCode(201, "Tạo connection thành công");
+                return StatusCode(201, "Gửi lời mời kết nối thành công");
             }
             catch (Exception ex)
             {
-                return BadRequest("Tạo connection thất bại");
+                return BadRequest("Gửi lời mời kết nối thất bại");
             }
         }
 
@@ -46,17 +45,17 @@ namespace StartedIn.Controllers;
         {
             try
             {
-                await RespondConnection(connectionId, responseId);
-                return StatusCode(201, "Respond connection thành công");
+                await _connectionService.RespondConnection(connectionId, responseId);
+                return StatusCode(201, "Kết nối thành công");
             }
             catch (Exception ex)
             {
-                return BadRequest("Respond connection thất bại");
+                return BadRequest("Kết nối thất bại");
             }
         }
 
         [Authorize]
-        [HttpGet("connections")]
+        [HttpGet("connect/pending-connections")]
         public async Task<IActionResult> GetPendingConnections([FromQuery] int pageIndex, int pageSize)
         {
             var receiverId = User.FindFirst(ClaimTypes.NameIdentifier).Value;

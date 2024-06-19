@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Repository.Repositories.Interface
 {
-    public interface IUserRepository: IUserStore<User>
+    public interface IUserRepository : IUserStore<User>
     {
         Task AddUserToTeam(string userId, string teamId, RoleInTeam roleInTeam);
     }

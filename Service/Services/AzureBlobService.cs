@@ -2,6 +2,10 @@ using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Service.Services.Interface;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
+using System.Text;
 
 namespace Service.Services;
 
@@ -22,44 +26,58 @@ public class AzureBlobService : IAzureBlobService
         _avatarContainerClient = blobServiceClient.GetBlobContainerClient("avatars");
         _postImagesContainerClient = blobServiceClient.GetBlobContainerClient("post-images");
     }
-    public async Task<string> UploadAvatar(IFormFile image)
+    public async Task<string> UploadAvatarOrCover(IFormFile image)
     {
         if (!IsValidImageFile(image))
         {
             throw new ArgumentException("The uploaded file is not a valid image.");
         }
         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+        var fileExtension = Path.GetExtension(image.FileName).ToLower();
+        var validExtensions = new[] { ".png", ".jpg", ".jpeg" };
+        if (!validExtensions.Contains(fileExtension))
+        {
+            throw new InvalidOperationException("Unsupported file format. Please upload a .png, .jpg, or .jpeg file.");
+        }
         var blobClient = _avatarContainerClient.GetBlobClient(fileName);
 
         using (var stream = image.OpenReadStream())
+        using (var imageSharp = await Image.LoadAsync(stream))
         {
+            imageSharp.Mutate(x => x.Resize(300, 300));
+            var encoder = new JpegEncoder { Quality = 80 };
             using (var memoryStream = new MemoryStream())
             {
-                await stream.CopyToAsync(memoryStream);
-                var imageBytes = memoryStream.ToArray();
-                await blobClient.UploadAsync(new MemoryStream(imageBytes));
+                imageSharp.Save(memoryStream, encoder);
+                memoryStream.Position = 0;
+                await blobClient.UploadAsync(memoryStream);
             }
         }
+
         return blobClient.Uri.AbsoluteUri;
     }
     
     public async Task<string> UploadPostImage(IFormFile image)
     {
-        // Create blob client from file name from IFormFile image with guid
-        if (!IsValidImageFile(image))
-        {
-            throw new ArgumentException("The uploaded file is not a valid image.");
-        }
         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+        var fileExtension = Path.GetExtension(image.FileName).ToLower();
+        var validExtensions = new[] { ".png", ".jpg", ".jpeg" };
+        if (!validExtensions.Contains(fileExtension))
+        {
+            throw new InvalidOperationException("Unsupported file format. Please upload a .png, .jpg, or .jpeg file.");
+        }
         var blobClient = _postImagesContainerClient.GetBlobClient(fileName);
 
         using (var stream = image.OpenReadStream())
+        using (var imageSharp = await Image.LoadAsync(stream))
         {
+            imageSharp.Mutate(x => x.Resize(1400, 1400));
+            var encoder = new JpegEncoder { Quality = 80 };
             using (var memoryStream = new MemoryStream())
             {
-                await stream.CopyToAsync(memoryStream);
-                var imageBytes = memoryStream.ToArray();
-                await blobClient.UploadAsync(new MemoryStream(imageBytes));
+                imageSharp.Save(memoryStream, encoder);
+                memoryStream.Position = 0;
+                await blobClient.UploadAsync(memoryStream);
             }
         }
         return blobClient.Uri.AbsoluteUri;
@@ -78,12 +96,4 @@ public class AzureBlobService : IAzureBlobService
         return imageUrls;
     }
     
-    private bool IsValidImageFile(IFormFile file)
-    {
-        // Get the file's content type
-        var contentType = file.ContentType.ToLower();
-
-        // Check if the content type is a valid image type
-        return contentType.StartsWith("image/");
-    }
 }
