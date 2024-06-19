@@ -24,6 +24,10 @@ public class AzureBlobService : IAzureBlobService
     }
     public async Task<string> UploadAvatar(IFormFile image)
     {
+        if (!IsValidImageFile(image))
+        {
+            throw new ArgumentException("The uploaded file is not a valid image.");
+        }
         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
         var blobClient = _avatarContainerClient.GetBlobClient(fileName);
 
@@ -42,6 +46,10 @@ public class AzureBlobService : IAzureBlobService
     public async Task<string> UploadPostImage(IFormFile image)
     {
         // Create blob client from file name from IFormFile image with guid
+        if (!IsValidImageFile(image))
+        {
+            throw new ArgumentException("The uploaded file is not a valid image.");
+        }
         var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
         var blobClient = _postImagesContainerClient.GetBlobClient(fileName);
 
@@ -68,5 +76,14 @@ public class AzureBlobService : IAzureBlobService
             }
         }
         return imageUrls;
+    }
+    
+    private bool IsValidImageFile(IFormFile file)
+    {
+        // Get the file's content type
+        var contentType = file.ContentType.ToLower();
+
+        // Check if the content type is a valid image type
+        return contentType.StartsWith("image/");
     }
 }
