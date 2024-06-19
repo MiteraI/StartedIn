@@ -28,13 +28,11 @@ public class AzureBlobService : IAzureBlobService
     }
     public async Task<string> UploadAvatarOrCover(IFormFile image)
     {
-        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-        var fileExtension = Path.GetExtension(image.FileName).ToLower();
-        var validExtensions = new[] { ".png", ".jpg", ".jpeg" };
-        if (!validExtensions.Contains(fileExtension))
+        if (!IsValidImageFile(image))
         {
-            throw new InvalidOperationException("Unsupported file format. Please upload a .png, .jpg, or .jpeg file.");
+            throw new ArgumentException("The uploaded file is not a valid image.");
         }
+        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
         var blobClient = _avatarContainerClient.GetBlobClient(fileName);
 
         using (var stream = image.OpenReadStream())
@@ -55,13 +53,11 @@ public class AzureBlobService : IAzureBlobService
     
     public async Task<string> UploadPostImage(IFormFile image)
     {
-        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-        var fileExtension = Path.GetExtension(image.FileName).ToLower();
-        var validExtensions = new[] { ".png", ".jpg", ".jpeg" };
-        if (!validExtensions.Contains(fileExtension))
+        if (!IsValidImageFile(image))
         {
-            throw new InvalidOperationException("Unsupported file format. Please upload a .png, .jpg, or .jpeg file.");
+            throw new ArgumentException("The uploaded file is not a valid image.");
         }
+        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
         var blobClient = _postImagesContainerClient.GetBlobClient(fileName);
 
         using (var stream = image.OpenReadStream())
@@ -92,4 +88,12 @@ public class AzureBlobService : IAzureBlobService
         return imageUrls;
     }
     
+    private bool IsValidImageFile(IFormFile file)
+    {
+        // Get the file's content type
+        var contentType = file.ContentType.ToLower();
+
+        // Check if the content type is a valid image type
+        return contentType.StartsWith("image/");
+    }
 }
