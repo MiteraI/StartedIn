@@ -1,6 +1,6 @@
 namespace CrossCutting.DTOs.ResponseDTO;
 
-public class FullProfileDTO
+public class FullProfileDTO : IdentityResponseDTO
 {
     public string ProfilePicture { get; set; }
     public string CoverPhoto { get; set; }
