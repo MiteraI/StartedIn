@@ -23,11 +23,12 @@ namespace Service.Services
         private readonly IEmailService _emailService;
         private readonly ILogger<UserService> _logger;
         private readonly IAzureBlobService _azureBlobService;
+        private readonly RoleManager<Role> _roleManager;
         public UserService(ITokenService tokenService,
             UserManager<User> userManager, IUnitOfWork unitOfWork,
             IConfiguration configuration, IEmailService emailService,
             ILogger<UserService> logger, IHttpContextAccessor httpContextAccessor,
-            IAzureBlobService azureBlobService
+            IAzureBlobService azureBlobService, RoleManager<Role> roleManager
             )
         {
             _tokenService = tokenService;
@@ -36,6 +37,7 @@ namespace Service.Services
             _emailService = emailService;
             _logger = logger;
             _azureBlobService = azureBlobService;
+            _roleManager = roleManager;
         }
 
         public async Task<LoginResponseDTO> Login(string email, string password)
@@ -196,6 +198,17 @@ namespace Service.Services
                 throw new NotFoundException("Không có người dùng nào trong danh sách");
             }
             return userList;
+        }
+
+        public async Task<IEnumerable<User>> GetUserSuggestedFriendList(string userId, int pageIndex, int pageSize)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            var SuggestedUserList =  await _userManager.GetNonConnectedUsersAsync(_roleManager, user, pageIndex, pageSize);
+            if (!SuggestedUserList.Any())
+            {
+                throw new NotFoundException("Không có người dùng nào trong danh sách");
+            }
+            return SuggestedUserList;
         }
     }
 }
