@@ -90,5 +90,18 @@ public class ConnectionService : IConnectionService
         }
         return connections;
     }
+    public async Task<IEnumerable<Connection>> GetUserConnectionSendingRequest(int pageIndex, int pageSize, string senderId)
+    {
+        var connections = await _connectionRepository.QueryHelper()
+            .Filter(c => c.ConnectionStatus == ConnectionStatus.Pending && c.SenderId == senderId)
+            .Include(c => c.Receiver)
+            .OrderBy(c => c.OrderByDescending(c => c.CreatedTime))
+            .GetPagingAsync(pageIndex, pageSize);
+        if (!connections.Any())
+        {
+            throw new NotFoundException("Không tìm thấy lời mời kết nối");
+        }
+        return connections;
+    }
     
 }

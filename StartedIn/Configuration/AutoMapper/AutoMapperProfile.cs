@@ -66,6 +66,15 @@ namespace Service.AutoMappingProfile
                 .ForMember(c => c.Time,
                     opt => opt.MapFrom(con => con.CreatedTime))
                 .ReverseMap();
+            CreateMap<Connection, PendingSendingRequestDTO>()
+                .ForMember(c => c.ReceiverName,
+                    opt => opt.MapFrom(con => con.Receiver.FullName))
+                .ForMember(c => c.ProfilePicture,
+                    opt => opt.MapFrom(con => con.Receiver.ProfilePicture))
+                .ForMember(c => c.Time,
+                    opt => opt.MapFrom(con => con.CreatedTime))
+                .ReverseMap();
+
         }
     }
 }
