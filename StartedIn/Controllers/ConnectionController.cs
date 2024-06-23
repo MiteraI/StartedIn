@@ -55,7 +55,7 @@ namespace StartedIn.Controllers;
         }
 
         [Authorize]
-        [HttpGet("connect/pending-connections")]
+        [HttpGet("connect/pending-connection-receiving-request")]
         public async Task<IActionResult> GetPendingConnections([FromQuery] int pageIndex, int pageSize)
         {
             var receiverId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -75,7 +75,7 @@ namespace StartedIn.Controllers;
             }
         }
     [Authorize]
-    [HttpGet("connect/pending-connection-request")]
+    [HttpGet("connect/pending-connection-sending-request")]
     public async Task<IActionResult> GetConnectionSendingRequest([FromQuery] int pageIndex, int pageSize)
     {
         var senderId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
