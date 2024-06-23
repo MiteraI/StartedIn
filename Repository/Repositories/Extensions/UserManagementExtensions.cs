@@ -58,6 +58,7 @@ namespace Repository.Repositories.Extensions
             var nonConnectedUsers = await userManager.Users
                 .Where(u => u.Id != currentUser.Id && !connectedUserIds.Contains(u.Id))
                 .Where(u => u.UserRoles.Any(ur => ur.RoleId == roleId))
+                .Where(u => u.EmailConfirmed == true)
                 .Skip(pageIndex * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
