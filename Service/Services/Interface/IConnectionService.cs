@@ -9,4 +9,5 @@ public interface IConnectionService
     Task RespondConnection(string connectionId, int response);
 
     Task<IEnumerable<Connection>> GetPendingConnections(int pageIndex, int pageSize, string receiverId);
+    Task<IEnumerable<Connection>> GetUserConnectionSendingRequest(int pageIndex, int pageSize, string senderId);
 }

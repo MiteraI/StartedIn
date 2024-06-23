@@ -55,7 +55,7 @@ namespace StartedIn.Controllers;
         }
 
         [Authorize]
-        [HttpGet("connect/pending-connections")]
+        [HttpGet("connect/pending-connection-receiving-request")]
         public async Task<IActionResult> GetPendingConnections([FromQuery] int pageIndex, int pageSize)
         {
             var receiverId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -74,5 +74,25 @@ namespace StartedIn.Controllers;
                 return StatusCode(500, "Lỗi server");
             }
         }
-        
+    [Authorize]
+    [HttpGet("connect/pending-connection-sending-request")]
+    public async Task<IActionResult> GetConnectionSendingRequest([FromQuery] int pageIndex, int pageSize)
+    {
+        var senderId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        try
+        {
+            var connections = await _connectionService.GetUserConnectionSendingRequest(pageIndex, pageSize, senderId);
+            var response = _mapper.Map<List<PendingSendingRequestDTO>>(connections);
+            return Ok(response);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Lỗi server");
+        }
     }
+
+}
