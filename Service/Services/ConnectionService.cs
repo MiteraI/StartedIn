@@ -103,5 +103,17 @@ public class ConnectionService : IConnectionService
         }
         return connections;
     }
-    
+    public async Task<IEnumerable<Connection>> GetUserConnectionList(int pageIndex, int pageSize, string userId)
+    {
+        var connections = await _connectionRepository.QueryHelper()
+            .Filter(c => (c.SenderId == userId || c.ReceiverId == userId) && c.ConnectionStatus == ConnectionStatus.Accepted)
+            .Include(c => c.Receiver)
+            .Include(c => c.Sender)
+            .GetPagingAsync(pageIndex, pageSize);
+        if (!connections.Any())
+        {
+            throw new NotFoundException("Không tìm thấy lời mời kết nối");
+        }
+        return connections;
+    }
 }
