@@ -10,4 +10,5 @@ public interface IConnectionService
 
     Task<IEnumerable<Connection>> GetPendingConnections(int pageIndex, int pageSize, string receiverId);
     Task<IEnumerable<Connection>> GetUserConnectionSendingRequest(int pageIndex, int pageSize, string senderId);
+    Task<IEnumerable<Connection>> GetUserConnectionList(int pageIndex, int pageSize,string userId);
 }

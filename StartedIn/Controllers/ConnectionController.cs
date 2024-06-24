@@ -94,5 +94,32 @@ namespace StartedIn.Controllers;
             return StatusCode(500, "Lỗi server");
         }
     }
+    [Authorize]
+    [HttpGet("connect/user-connection-list")]
+    public async Task<IActionResult> GetUserConnectionList([FromQuery] int pageIndex, int pageSize)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        try
+        {
+            var connections = await _connectionService.GetUserConnectionList(pageIndex, pageSize, userId);
 
+            var response = connections.Select(connection =>
+            {
+                var connectedUser = connection.SenderId == userId ? connection.Receiver : connection.Sender;
+                var connectionDto = _mapper.Map<ConnectionDTO>(connectedUser);
+                connectionDto.Id = connection.Id;
+                return connectionDto;
+            }).ToList();
+
+            return Ok(response);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Lỗi server");
+        }
+    }
 }
