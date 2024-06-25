@@ -116,4 +116,24 @@ public class ConnectionService : IConnectionService
         }
         return connections;
     }
+
+    public async Task CancelConnection(string connectionId)
+    {
+        try {
+            _unitOfWork.BeginTransaction();
+            var chosenConnection = await _connectionRepository.GetOneAsync(connectionId);
+            if (chosenConnection == null)
+            {
+                throw new NotFoundException("Không tìm thấy kết nối người dùng");
+            }
+            await _connectionRepository.DeleteByIdAsync(chosenConnection.Id);
+            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Lỗi khi xoá kết nối.");
+        }
+       
+    }
 }

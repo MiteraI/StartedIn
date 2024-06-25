@@ -122,4 +122,23 @@ namespace StartedIn.Controllers;
             return StatusCode(500, "Lỗi server");
         }
     }
+    [Authorize]
+    [HttpDelete("connect/connection/{connectionId}")]
+    public async Task<IActionResult> DeleteConnection(string connectionId)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        try
+        {
+            await _connectionService.CancelConnection(connectionId);
+            return Ok("Xoá kết nối thành công.");
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Lỗi server");
+        }
+    }
 }
