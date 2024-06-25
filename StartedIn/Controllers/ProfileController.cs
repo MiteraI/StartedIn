@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interface;
 using System.Security.Claims;
+using Services.Exceptions;
 
 namespace StartedIn.Controllers
 {
@@ -15,11 +16,12 @@ namespace StartedIn.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
-
-        public ProfileController(IUserService userService, IMapper mapper)
+        private readonly ILogger<ProfileController> _logger;
+        public ProfileController(IUserService userService, IMapper mapper, ILogger<ProfileController> logger)
         {
             _userService = userService;
             _mapper = mapper;
+            _logger = logger;
         }
         
         // Lấy các thông tin cần để hiển thị ở profile header
@@ -123,9 +125,15 @@ namespace StartedIn.Controllers
                 var user = await _userService.GetUserWithId(userId);
                 return Ok(_mapper.Map<FullProfileDTO>(user));
             }
-            catch (Exception ex)
+            catch (NotFoundException ex)
             {
-                return StatusCode(500, "Lỗi server");
+                _logger.LogError(ex, "No user found.");
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex) 
+            {
+                _logger.LogError(ex, "Error while getting user.");
+                return StatusCode(500,"Lỗi server");
             }
         }
         
