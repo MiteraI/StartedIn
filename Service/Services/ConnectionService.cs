@@ -52,23 +52,15 @@ public class ConnectionService : IConnectionService
         
     }
 
-    public async Task RespondConnection(string connectionId, int response)
+    public async Task AcceptConnection(string connectionId)
     {
-        // if response = 0, means reject
-        // if response = 1, means accept
         var connection = await GetConnectionById(connectionId);
-        if (response == 0)
+        if (connection is null)
         {
-            connection.ConnectionStatus = ConnectionStatus.Rejected;
+            throw new NotFoundException("Không tìm thấy kết nối");
         }
-
-        if (response == 1)
-        {
-            connection.ConnectionStatus = ConnectionStatus.Accepted;
-        }
-
+        connection.ConnectionStatus = ConnectionStatus.Accepted;
         _connectionRepository.SaveChangesAsync();
-
     }
 
     public async Task<Connection> GetConnectionById(string connectionId)

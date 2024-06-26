@@ -40,18 +40,22 @@ namespace StartedIn.Controllers;
         }
 
         [Authorize]
-        [HttpPost("connect/{connectionId}/{responseId}")]
-        public async Task<IActionResult> RespondConnection(string connectionId, int responseId)
+        [HttpPut("connect/{connectionId}")]
+        public async Task<IActionResult> AcceptConnection(string connectionId)
         {
-            try
-            {
-                await _connectionService.RespondConnection(connectionId, responseId);
-                return StatusCode(201, "Kết nối thành công");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Kết nối thất bại");
-            }
+        try
+        {
+            await _connectionService.AcceptConnection(connectionId);
+            return StatusCode(200, "Kết nối thành công");
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Kết nối thất bại");
+        }
         }
 
         [Authorize]
@@ -123,7 +127,7 @@ namespace StartedIn.Controllers;
         }
     }
     [Authorize]
-    [HttpDelete("connect/connection/{connectionId}")]
+    [HttpDelete("connect/{connectionId}")]
     public async Task<IActionResult> DeleteConnection(string connectionId)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;

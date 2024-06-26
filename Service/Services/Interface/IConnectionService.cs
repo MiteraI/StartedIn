@@ -6,7 +6,7 @@ public interface IConnectionService
 { 
     Task CreateConnection(string senderId, string receiverId);
 
-    Task RespondConnection(string connectionId, int response);
+    Task AcceptConnection(string connectionId);
 
     Task<IEnumerable<Connection>> GetPendingConnections(int pageIndex, int pageSize, string receiverId);
     Task<IEnumerable<Connection>> GetUserConnectionSendingRequest(int pageIndex, int pageSize, string senderId);
