@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interface;
 using Services.Exceptions;
+using System.Security.Claims;
 
 namespace StartedIn.Controllers
 {
@@ -21,12 +22,13 @@ namespace StartedIn.Controllers
             _userService = userService;
             _logger = logger;
         }
-        [HttpGet("users")]
-        public async Task<ActionResult<IEnumerable<FullProfileDTO>>> GetUserLists([FromQuery] int pageIndex, int pageSize)
+        [HttpGet("users/suggest-connection")]
+        public async Task<ActionResult<IEnumerable<FullProfileDTO>>> GetSuggestedUserLists([FromQuery] int pageIndex, int pageSize)
         {
             try
             {
-                var userList = await _userService.GetUsersList(pageIndex, pageSize);
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var userList = await _userService.GetUserSuggestedFriendList(userId,pageIndex, pageSize);
                 var responseUserList = _mapper.Map<List<FullProfileDTO>>(userList);
                 return responseUserList;
             }

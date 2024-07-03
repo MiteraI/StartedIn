@@ -40,22 +40,26 @@ namespace StartedIn.Controllers;
         }
 
         [Authorize]
-        [HttpPost("connect/{connectionId}/{responseId}")]
-        public async Task<IActionResult> RespondConnection(string connectionId, int responseId)
+        [HttpPut("connect/{connectionId}")]
+        public async Task<IActionResult> AcceptConnection(string connectionId)
         {
-            try
-            {
-                await _connectionService.RespondConnection(connectionId, responseId);
-                return StatusCode(201, "Kết nối thành công");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Kết nối thất bại");
-            }
+        try
+        {
+            await _connectionService.AcceptConnection(connectionId);
+            return StatusCode(200, "Kết nối thành công");
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Kết nối thất bại");
+        }
         }
 
         [Authorize]
-        [HttpGet("connect/pending-connections")]
+        [HttpGet("connect/pending-connection-receiving-request")]
         public async Task<IActionResult> GetPendingConnections([FromQuery] int pageIndex, int pageSize)
         {
             var receiverId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
@@ -74,5 +78,71 @@ namespace StartedIn.Controllers;
                 return StatusCode(500, "Lỗi server");
             }
         }
-        
+    [Authorize]
+    [HttpGet("connect/pending-connection-sending-request")]
+    public async Task<IActionResult> GetConnectionSendingRequest([FromQuery] int pageIndex, int pageSize)
+    {
+        var senderId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        try
+        {
+            var connections = await _connectionService.GetUserConnectionSendingRequest(pageIndex, pageSize, senderId);
+            var response = _mapper.Map<List<PendingSendingRequestDTO>>(connections);
+            return Ok(response);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Lỗi server");
+        }
     }
+    [Authorize]
+    [HttpGet("connect/user-connection-list")]
+    public async Task<IActionResult> GetUserConnectionList([FromQuery] int pageIndex, int pageSize)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        try
+        {
+            var connections = await _connectionService.GetUserConnectionList(pageIndex, pageSize, userId);
+
+            var response = connections.Select(connection =>
+            {
+                var connectedUser = connection.SenderId == userId ? connection.Receiver : connection.Sender;
+                var connectionDto = _mapper.Map<ConnectionDTO>(connectedUser);
+                connectionDto.Id = connection.Id;
+                return connectionDto;
+            }).ToList();
+
+            return Ok(response);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Lỗi server");
+        }
+    }
+    [Authorize]
+    [HttpDelete("connect/{connectionId}")]
+    public async Task<IActionResult> DeleteConnection(string connectionId)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        try
+        {
+            await _connectionService.CancelConnection(connectionId);
+            return Ok("Xoá kết nối thành công.");
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Lỗi server");
+        }
+    }
+}

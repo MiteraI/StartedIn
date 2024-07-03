@@ -2,7 +2,6 @@
 using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
 using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace Service.AutoMappingProfile
 {
@@ -66,6 +65,26 @@ namespace Service.AutoMappingProfile
                 .ForMember(c => c.Time,
                     opt => opt.MapFrom(con => con.CreatedTime))
                 .ReverseMap();
+            CreateMap<Connection, PendingSendingRequestDTO>()
+                .ForMember(c => c.ReceiverName,
+                    opt => opt.MapFrom(con => con.Receiver.FullName))
+                .ForMember(c => c.ProfilePicture,
+                    opt => opt.MapFrom(con => con.Receiver.ProfilePicture))
+                .ForMember(c => c.Time,
+                    opt => opt.MapFrom(con => con.CreatedTime))
+                .ReverseMap();
+
+            CreateMap<Connection, ConnectionDTO>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.UserId, opt => opt.Ignore())  // We will handle this in the controller
+            .ForMember(dest => dest.ConnectedUserName, opt => opt.Ignore())  // We will handle this in the controller
+            .ForMember(dest => dest.ProfilePicture, opt => opt.Ignore());  // We will handle this in the controller
+
+            CreateMap<User, ConnectionDTO>()
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.ConnectedUserName, opt => opt.MapFrom(src => src.FullName))
+            .ForMember(dest => dest.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture));
+
         }
     }
 }

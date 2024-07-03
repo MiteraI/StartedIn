@@ -9,8 +9,8 @@ public class Project : BaseAuditEntity<string>
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public int EstimateDuration { get; set; }
-    public int ActualDuration { get; set; }
-    public decimal ActualCost { get; set; }
+    public int? ActualDuration { get; set; }
+    public decimal? ActualCost { get; set; }
     public float Progress { get; set; }
     
     [ForeignKey(nameof(Team))]

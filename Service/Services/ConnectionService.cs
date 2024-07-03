@@ -52,23 +52,15 @@ public class ConnectionService : IConnectionService
         
     }
 
-    public async Task RespondConnection(string connectionId, int response)
+    public async Task AcceptConnection(string connectionId)
     {
-        // if response = 0, means reject
-        // if response = 1, means accept
         var connection = await GetConnectionById(connectionId);
-        if (response == 0)
+        if (connection is null)
         {
-            connection.ConnectionStatus = ConnectionStatus.Rejected;
+            throw new NotFoundException("Không tìm thấy kết nối");
         }
-
-        if (response == 1)
-        {
-            connection.ConnectionStatus = ConnectionStatus.Accepted;
-        }
-
-        _connectionRepository.SaveChangesAsync();
-
+        connection.ConnectionStatus = ConnectionStatus.Accepted;
+        await _connectionRepository.SaveChangesAsync();
     }
 
     public async Task<Connection> GetConnectionById(string connectionId)
@@ -90,5 +82,50 @@ public class ConnectionService : IConnectionService
         }
         return connections;
     }
-    
+    public async Task<IEnumerable<Connection>> GetUserConnectionSendingRequest(int pageIndex, int pageSize, string senderId)
+    {
+        var connections = await _connectionRepository.QueryHelper()
+            .Filter(c => c.ConnectionStatus == ConnectionStatus.Pending && c.SenderId == senderId)
+            .Include(c => c.Receiver)
+            .OrderBy(c => c.OrderByDescending(c => c.CreatedTime))
+            .GetPagingAsync(pageIndex, pageSize);
+        if (!connections.Any())
+        {
+            throw new NotFoundException("Không tìm thấy lời mời kết nối");
+        }
+        return connections;
+    }
+    public async Task<IEnumerable<Connection>> GetUserConnectionList(int pageIndex, int pageSize, string userId)
+    {
+        var connections = await _connectionRepository.QueryHelper()
+            .Filter(c => (c.SenderId == userId || c.ReceiverId == userId) && c.ConnectionStatus == ConnectionStatus.Accepted)
+            .Include(c => c.Receiver)
+            .Include(c => c.Sender)
+            .GetPagingAsync(pageIndex, pageSize);
+        if (!connections.Any())
+        {
+            throw new NotFoundException("Không tìm thấy lời mời kết nối");
+        }
+        return connections;
+    }
+
+    public async Task CancelConnection(string connectionId)
+    {
+        try {
+            _unitOfWork.BeginTransaction();
+            var chosenConnection = await _connectionRepository.GetOneAsync(connectionId);
+            if (chosenConnection == null)
+            {
+                throw new NotFoundException("Không tìm thấy kết nối người dùng");
+            }
+            await _connectionRepository.DeleteByIdAsync(chosenConnection.Id);
+            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.CommitAsync();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Lỗi khi xoá kết nối.");
+        }
+       
+    }
 }
