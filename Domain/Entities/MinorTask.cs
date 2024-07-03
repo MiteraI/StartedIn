@@ -5,6 +5,7 @@ namespace Domain.Entities;
 
 public class MinorTask : BaseAuditEntity<string>
 {
+    public int Position { get; set; }
     public string TaskTitle { get; set; }
     public string Description { get; set; }
     

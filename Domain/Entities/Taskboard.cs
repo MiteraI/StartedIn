@@ -6,6 +6,7 @@ namespace Domain.Entities;
 
 public class Taskboard : BaseAuditEntity<string>
 {
+    public int Position { get; set; }
     [ForeignKey(nameof(Phase))]
     public string PhaseId { get; set; }
     
