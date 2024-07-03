@@ -60,7 +60,7 @@ public class ConnectionService : IConnectionService
             throw new NotFoundException("Không tìm thấy kết nối");
         }
         connection.ConnectionStatus = ConnectionStatus.Accepted;
-        _connectionRepository.SaveChangesAsync();
+        await _connectionRepository.SaveChangesAsync();
     }
 
     public async Task<Connection> GetConnectionById(string connectionId)
