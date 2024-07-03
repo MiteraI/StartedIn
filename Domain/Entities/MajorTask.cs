@@ -5,6 +5,7 @@ namespace Domain.Entities;
 
 public class MajorTask : BaseAuditEntity<string>
 {
+    public int Position { get; set; }
     [ForeignKey(nameof(Phase))]
     public string PhaseId { get; set; }
     public string TaskTitle { get; set; }

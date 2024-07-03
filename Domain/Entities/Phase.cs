@@ -5,6 +5,7 @@ namespace Domain.Entities;
 
 public class Phase : BaseAuditEntity<string>
 {
+    public int Position { get; set; }
     public string PhaseName { get; set; }
     
     [ForeignKey(nameof(Project))]
