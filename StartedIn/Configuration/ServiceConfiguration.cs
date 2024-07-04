@@ -14,6 +14,7 @@ namespace StartedIn.Configuration
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<ITeamService, TeamService>();
             services.AddScoped<IConnectionService, ConnectionService>();
+            services.AddScoped<IProjectService, ProjectService>();
             return services;
         }
     }
