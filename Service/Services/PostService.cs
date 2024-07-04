@@ -76,7 +76,11 @@ namespace Service.Services
 
         public async Task<Post> GetPostsById(string postId)
         {
-            var chosenPost = await _postRepository.GetOneAsync(postId);
+            var chosenPost = await _postRepository.QueryHelper()
+                .Filter(post => post.Id.Equals(postId))
+                .Include(post => post.PostImages)
+                .Include(post => post.User)
+                .GetOneAsync();
             if (chosenPost == null)
             {
                 throw new NotFoundException("Không có bài viết khả dụng !");
