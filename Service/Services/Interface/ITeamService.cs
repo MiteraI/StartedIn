@@ -11,6 +11,7 @@ namespace Service.Services.Interface
     {
         Task CreateNewTeam(string userId, Team team, Project project); 
         Task<IEnumerable<Team>> GetTeamByUserId(string userId);
+        Task SendJoinTeamInvitation(string userId, List<string> inviteEmails, string teamId);
 
     }
 }

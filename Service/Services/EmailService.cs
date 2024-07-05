@@ -3,6 +3,7 @@ using System.Net.Mail;
 using System.Net;
 using Microsoft.Extensions.Configuration;
 using Service.Services.Interface;
+using System;
 
 namespace Service.Services
 {
@@ -13,6 +14,36 @@ namespace Service.Services
         {
             _configuration = configuration;
         }
+
+        public void SendInvitationToTeam(string receiveEmail, string teamId)
+        {
+            var webDomain = _configuration.GetValue<string>("WEB_DOMAIN") ?? (_configuration["Local_domain"]);
+            try
+            {
+                MailMessage mailMessage = new MailMessage()
+                {
+                    Subject = "Lời mời tham gia nhóm",
+                    Body = $"Bạn vui lòng bấm vào đường link sau để tham gia vào nhóm:\n{webDomain}/invite/{teamId} \n\n Xin chân thành cảm ơn vì đã đồng hành cùng StartedIn!",
+                    IsBodyHtml = false,
+                };
+                mailMessage.From = new MailAddress(EmailSettingModel.Instance.FromEmailAddress, EmailSettingModel.Instance.FromDisplayName);
+                mailMessage.To.Add(receiveEmail);
+                var smtp = new SmtpClient()
+                {
+                    EnableSsl = EmailSettingModel.Instance.Smtp.EnableSsl,
+                    Host = EmailSettingModel.Instance.Smtp.Host,
+                    Port = EmailSettingModel.Instance.Smtp.Port,
+                };
+                var network = new NetworkCredential(EmailSettingModel.Instance.Smtp.EmailAddress, EmailSettingModel.Instance.Smtp.Password);
+                smtp.Credentials = network;
+                smtp.Send(mailMessage);   
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         public void SendMail(SendEmailModel model)
         {
             try
