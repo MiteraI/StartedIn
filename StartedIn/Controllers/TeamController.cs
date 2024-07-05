@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
+using CrossCutting.Exceptions;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,13 +27,17 @@ namespace StartedIn.Controllers
         [Authorize]
         public async Task<IActionResult> CreateNewStartup(TeamAndProjectCreateDTO teamAndProjectCreateDTO) 
         {
-            try 
+            try
             {
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 var newTeam = _mapper.Map<Team>(teamAndProjectCreateDTO.TeamCreateRequestDTO);
                 var newProject = _mapper.Map<Project>(teamAndProjectCreateDTO.ProjectCreateDTO);
                 await _teamService.CreateNewTeam(userId, newTeam, newProject);
                 return StatusCode(201, "Tạo team thành công");
+            }
+            catch (ExistedRecordException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
