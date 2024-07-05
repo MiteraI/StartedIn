@@ -61,6 +61,29 @@ namespace StartedIn.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost("teams/team-invitation/{teamId}")]
+        [Authorize]
+        public async Task<IActionResult> SendInvitationToTeam([FromBody] List<string> userIds, [FromRoute] string teamId)
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                await _teamService.SendJoinTeamInvitation(userId, userIds, teamId);
+                return Ok("Gửi lời mời gia nhập thành công");
+            }
+            catch (TeamLimitException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (InviteException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
 
 
