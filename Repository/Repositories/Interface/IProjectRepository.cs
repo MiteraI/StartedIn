@@ -9,5 +9,6 @@ namespace Repository.Repositories.Interface
 {
     public interface IProjectRepository : IGenericRepository<Project,string>
     {
+        Task<IEnumerable<Project>> GetProjectsByTeamIdAsync(string teamId);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CrossCutting.Enum;
+using CrossCutting.Exceptions;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -32,19 +33,22 @@ namespace Service.Services
             try {
                 _unitOfWork.BeginTransaction();
                 var user = await _userManager.FindByIdAsync(userId);
-                team.TeamLeaderId = userId;
-                team.CreatedBy = user.FullName;
-                var teamEntity = _teamRepository.Add(team);
-                project.TeamId = team.Id;
-                project.EstimateDuration = (int)((project.EndDate - project.StartDate).TotalDays);
-                project.ActualDuration = project.EstimateDuration;
-                project.ActualCost = 0;
-                project.Progress = 0;
-                project.CreatedBy = user.FullName;
-                var projectEntity = _projectRepository.Add(project);
-                await _userRepository.AddUserToTeam(userId, teamEntity.Id, RoleInTeam.Leader);
-                await _unitOfWork.SaveChangesAsync();
-                await _unitOfWork.CommitAsync();
+                var teamList = await _teamRepository.QueryHelper().Filter(team => team.TeamLeaderId.Equals(user.Id)).GetAllAsync();
+                if (teamList.Any())
+                {
+                    throw new ExistedRecordException("Bạn không thể tạo thêm team");
+                }
+                else {
+                    team.TeamLeaderId = userId;
+                    team.CreatedBy = user.FullName;
+                    var teamEntity = _teamRepository.Add(team);
+                    project.TeamId = team.Id;
+                    project.CreatedBy = user.FullName;
+                    var projectEntity = _projectRepository.Add(project);
+                    await _userRepository.AddUserToTeam(userId, teamEntity.Id, RoleInTeam.Leader);
+                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.CommitAsync();
+                }
             }
             catch (Exception ex) 
             {
