@@ -6,6 +6,7 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interface;
+using Services.Exceptions;
 using System.Security.Claims;
 
 namespace StartedIn.Controllers
@@ -78,6 +79,29 @@ namespace StartedIn.Controllers
             catch (InviteException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("invite/add/{teamId}/{userId}")]
+        [Authorize]
+        public async Task<IActionResult> AddUserToTeam([FromRoute] string teamId, string userId)
+        {
+            try
+            {
+                await _teamService.AddUserToTeam(teamId,userId);
+                return Ok("Bạn đã được tham gia nhóm!");
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InviteException ex)
+            {
+                return BadRequest("Người dùng đã tồn tại trong team");
             }
             catch (Exception ex)
             {
