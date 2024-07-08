@@ -107,5 +107,21 @@ namespace Service.Services
             }
             return team;
         }
+
+        public async Task AddUserToTeam(string teamId, string userId)
+        {
+              var user = await _userManager.FindByIdAsync(userId);
+              if (user == null)
+              {
+                throw new NotFoundException("Không tìm thấy người dùng");
+              }
+              var userInTeam = await _userRepository.GetAUserInTeam(teamId, user.Id);
+              if (userInTeam != null)
+              {
+                throw new InviteException("Người dùng đã có trong nhóm");
+              }
+              await _userRepository.AddUserToTeam(userId, teamId, RoleInTeam.Member);
+              await _unitOfWork.SaveChangesAsync();
+        }
     }
 }

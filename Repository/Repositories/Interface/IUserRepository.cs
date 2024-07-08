@@ -12,5 +12,7 @@ namespace Repository.Repositories.Interface
     public interface IUserRepository : IUserStore<User>
     {
         Task AddUserToTeam(string userId, string teamId, RoleInTeam roleInTeam);
+
+        Task<TeamUser> GetAUserInTeam(string teamId, string userId);
     }
 }
