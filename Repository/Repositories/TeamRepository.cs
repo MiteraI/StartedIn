@@ -18,14 +18,36 @@ namespace Repository.Repositories
             _appDbContext = context;
         }
 
+        public async Task<IEnumerable<Team>> GetTeamByUserGuestIdAsync(string userId)
+        {
+            var teams = await _appDbContext.Teams
+                .Where(t => t.TeamUsers.Any(tu => tu.UserId == userId) && t.TeamLeaderId != userId)
+                .Include(t => t.Projects)
+                .Include(t => t.TeamUsers)
+                .ThenInclude(tu => tu.User).OrderByDescending(t => t.CreatedTime)
+                .ToListAsync();
+            return teams;
+        }
+
+        public async Task<IEnumerable<Team>> GetTeamByUserLeaderIdAsync(string userId)
+        {
+            var teams = await _appDbContext.Teams
+                .Where(t => t.TeamLeaderId == userId)
+                .Include(t => t.Projects)
+                .Include(t => t.TeamUsers)
+                .ThenInclude(tu => tu.User).OrderByDescending(t => t.CreatedTime)
+                .ToListAsync();
+            return teams;
+        }
+
         public async Task<IEnumerable<Team>> GetTeamsByUserIdAsync(string userId)
         {
             var teams = await _appDbContext.Teams
                 .Where(t => t.TeamUsers.Any(tu => tu.UserId == userId))
+                .Include(t => t.Projects)
                 .Include(t => t.TeamUsers)
-                    .ThenInclude(tu => tu.User).OrderByDescending(t => t.CreatedTime)
+                .ThenInclude(tu => tu.User).OrderByDescending(t => t.CreatedTime)
                 .ToListAsync();
-
             return teams;
         }
     }
