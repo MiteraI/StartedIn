@@ -109,6 +109,41 @@ namespace StartedIn.Controllers
             }
         }
 
+        [HttpGet("teams/user-leader-team")]
+        [Authorize]
+        public async Task<ActionResult<TeamResponseDTO>> GetTeamByLeaderUserId()
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var teamEntityList = await _teamService.GetTeamByUserIfLeader(userId);
+                var responseTeamList = _mapper.Map<List<TeamResponseDTO>>(teamEntityList);
+                return Ok(responseTeamList);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("teams/user-guest-team")]
+        [Authorize]
+        public async Task<ActionResult<TeamResponseDTO>> GetTeamByGuestUserId()
+        {
+            try
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+                var teamEntityList = await _teamService.GetTeamByUserIfGuest(userId);
+                var responseTeamList = _mapper.Map<List<TeamResponseDTO>>(teamEntityList);
+                return Ok(responseTeamList);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
 
 
     }

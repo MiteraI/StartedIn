@@ -123,5 +123,25 @@ namespace Service.Services
               await _userRepository.AddUserToTeam(userId, teamId, RoleInTeam.Member);
               await _unitOfWork.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Team>> GetTeamByUserIfLeader(string userId)
+        {
+            var team = await _teamRepository.GetTeamByUserLeaderIdAsync(userId);
+            if (!team.Any())
+            {
+                throw new NotFoundException("Không có team nào.");
+            }
+            return team;
+        }
+
+        public async Task<IEnumerable<Team>> GetTeamByUserIfGuest(string userId)
+        {
+            var team = await _teamRepository.GetTeamByUserGuestIdAsync(userId);
+            if (!team.Any())
+            {
+                throw new NotFoundException("Không có team nào.");
+            }
+            return team;
+        }
     }
 }
