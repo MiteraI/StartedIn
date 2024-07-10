@@ -57,6 +57,10 @@ namespace StartedIn.Controllers
                 var responseTeamList = _mapper.Map<List<TeamResponseDTO>>(teamEntityList);
                 return Ok(responseTeamList);
             }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
             catch (Exception ex) 
             {
                 return BadRequest(ex.Message);
