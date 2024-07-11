@@ -12,4 +12,5 @@ public class Team : BaseAuditEntity<string>
     
     public IEnumerable<Project> Projects { get; set; }
     public IEnumerable<TeamUser> TeamUsers { get; set; }
+    public User TeamLeader { get; set; }
 }

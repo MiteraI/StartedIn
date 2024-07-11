@@ -14,6 +14,18 @@ namespace Service.AutoMappingProfile
             TeamMappingProfile();
             ProjectMappingProfile();
             ConnectionMappingProfile();
+            PhaseMappingProfile();
+            MajorTaskMappingProfile();
+        }
+
+        private void MajorTaskMappingProfile()
+        {
+            CreateMap<MajorTask, MajorTaskResponseDTO>().ReverseMap();
+        }
+
+        private void PhaseMappingProfile()
+        {
+            CreateMap<Phase, PhaseResponseDTO>();
         }
 
         private void UserMappingProfile() {
@@ -27,6 +39,7 @@ namespace Service.AutoMappingProfile
                     => opt.MapFrom(userDto => userDto.UserRoles.Select(role => new UserRole { Role = new Role { Name = role } }).ToHashSet()));
             CreateMap<User, FullProfileDTO>().ReverseMap();
             CreateMap<User, UpdateProfileDTO>().ReverseMap();
+            CreateMap<User, ProjectLeaderResponseDTO>().ReverseMap();
         }
         private void PostMappingProfile() {
             CreateMap<Post, PostResponseDTO>().
@@ -54,7 +67,10 @@ namespace Service.AutoMappingProfile
         private void ProjectMappingProfile()
         {
             CreateMap<Project, ProjectCreateDTO>().ReverseMap();
-            CreateMap<Project, ProjectResponseDTO>().ReverseMap();
+            CreateMap<Project, ProjectResponseDTO>()
+                .ForMember(dest => dest.Leader, 
+                    opt => opt.MapFrom(src => src.Team.TeamLeader))
+                .ReverseMap();
         }
 
         private void ConnectionMappingProfile()

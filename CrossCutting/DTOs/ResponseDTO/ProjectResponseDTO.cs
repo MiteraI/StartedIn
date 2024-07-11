@@ -10,5 +10,8 @@ namespace CrossCutting.DTOs.ResponseDTO
     {
         public string Id { get; set; }
         public string ProjectName { get; set; }
+        public string TeamId { get; set; }
+        public ProjectLeaderResponseDTO Leader { get; set; }
+        public IEnumerable<PhaseResponseDTO> Phases { get; set; }
     }
 }

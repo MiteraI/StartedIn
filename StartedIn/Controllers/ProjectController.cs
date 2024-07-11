@@ -1,3 +1,4 @@
+using AutoMapper;
 using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
 using CrossCutting.Exceptions;
@@ -13,11 +14,13 @@ namespace StartedIn.Controllers
     {
         private readonly IProjectService _projectService;
         private readonly ILogger<ProjectController> _logger;
+        private readonly IMapper _mapper;
 
-        public ProjectController(IProjectService projectService, ILogger<ProjectController> logger)
+        public ProjectController(IProjectService projectService, ILogger<ProjectController> logger, IMapper mapper)
         {
             _projectService = projectService;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet("team/{id}/projects")]
@@ -55,6 +58,25 @@ namespace StartedIn.Controllers
             {
                 _logger.LogError(ex, "Error while creating new project.");
                 return StatusCode(500,"Lỗi server");
+            }
+        }
+
+        [HttpGet("projects/{id}")]
+        public async Task<ActionResult<ProjectResponseDTO>> GetProjectById(string id)
+        {
+            try
+            {
+                var project = await _projectService.GetProjectById(id);
+                var mappedProject = _mapper.Map<ProjectResponseDTO>(project);
+                return Ok(mappedProject);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

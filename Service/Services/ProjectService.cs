@@ -1,10 +1,12 @@
 using CrossCutting.DTOs.RequestDTO;
+using CrossCutting.DTOs.ResponseDTO;
 using CrossCutting.Exceptions;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Repository.Repositories.Interface;
 using Service.Services.Interface;
+using Services.Exceptions;
 
 namespace Service.Services;
 
@@ -62,5 +64,16 @@ public class ProjectService : IProjectService
     public async Task<IEnumerable<Project>> GetProjectsByTeamId(string teamId)
     {
         return await _projectRepository.GetProjectsByTeamIdAsync(teamId);
+    }
+
+    public async Task<Project> GetProjectById(string id)
+    {
+        var project = await _projectRepository.GetProjectById(id);
+        if (project == null)
+        {
+            throw new NotFoundException("Không có project nào");
+        }
+
+        return project;
     }
 }
