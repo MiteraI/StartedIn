@@ -2,6 +2,7 @@
 using Domain.Context;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Repository.Repositories.Interface;
 
 namespace Repository.Repositories
@@ -24,6 +25,12 @@ namespace Repository.Repositories
             };
             await _appDbContext.Set<TeamUser>().AddAsync(userTeam);
         }
+
+        public async Task<TeamUser> GetAUserInTeam(string teamId, string userId)
+        {
+            return await _appDbContext.Set<TeamUser>().Where(x => x.TeamId.Equals(teamId) && x.UserId.Equals(userId)).FirstOrDefaultAsync();
+        }
+       
     }
 
 

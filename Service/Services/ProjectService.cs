@@ -44,12 +44,7 @@ public class ProjectService : IProjectService
             Project project = new Project
             {
                 ProjectName = projectCreateDto.ProjectName,
-                StartDate = projectCreateDto.StartDate,
-                EndDate = projectCreateDto.EndDate,
                 TeamId = projectCreateDto.TeamId,
-                EstimateDuration = (int)((projectCreateDto.EndDate - projectCreateDto.StartDate).TotalDays),
-                ActualCost = 0,
-                Progress = 0,
                 CreatedBy = leaderName
             };
             var projectEntity = _projectRepository.Add(project);

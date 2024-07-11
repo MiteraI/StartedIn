@@ -5,5 +5,6 @@ namespace Service.Services.Interface
     {
         void SendMail(SendEmailModel model);
         void SendVerificationMail(string receiveEmail, string id);
+        void SendInvitationToTeam(string receiveEmail, string teamId);
     }
 }

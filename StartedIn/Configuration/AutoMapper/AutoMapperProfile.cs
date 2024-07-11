@@ -45,6 +45,7 @@ namespace Service.AutoMappingProfile
                .ForMember(tr => tr.Users,
                    opt => opt.MapFrom(t
                        => t.TeamUsers.Select(tu => tu.User.FullName).ToHashSet()))
+               .ForMember(tr => tr.Projects, opt => opt.MapFrom(t=>t.Projects))
                .ReverseMap()
                .ForPath(t => t.TeamUsers, opt
                    => opt.MapFrom(tr => tr.Users.Select(name => new TeamUser { User = new User { FullName = name } }).ToHashSet()));
@@ -53,6 +54,7 @@ namespace Service.AutoMappingProfile
         private void ProjectMappingProfile()
         {
             CreateMap<Project, ProjectCreateDTO>().ReverseMap();
+            CreateMap<Project, ProjectResponseDTO>().ReverseMap();
         }
 
         private void ConnectionMappingProfile()

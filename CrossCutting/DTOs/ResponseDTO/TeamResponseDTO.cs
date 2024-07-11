@@ -14,5 +14,6 @@ namespace CrossCutting.DTOs.ResponseDTO
         public DateTimeOffset CreatedTime { get; set; }
         public string? CreatedBy { get; set; }
         public IEnumerable<string> Users { get; set; }
+        public IEnumerable<ProjectResponseDTO> Projects { get; set; }
     }
 }
