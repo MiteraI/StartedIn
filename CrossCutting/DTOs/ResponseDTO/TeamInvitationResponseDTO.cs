@@ -9,6 +9,7 @@ namespace CrossCutting.DTOs.ResponseDTO
     public class TeamInvitationResponseDTO : IdentityResponseDTO
     {
         public string TeamName { get; set; }
+        public string Description { get; set; }
         public TeamLeaderResponseDTO Leader { get; set; }
     }
 }

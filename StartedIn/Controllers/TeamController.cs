@@ -34,7 +34,8 @@ namespace StartedIn.Controllers
                 var newTeam = _mapper.Map<Team>(teamAndProjectCreateDTO.Team);
                 var newProject = _mapper.Map<Project>(teamAndProjectCreateDTO.Project);
                 await _teamService.CreateNewTeam(userId, newTeam, newProject);
-                return StatusCode(201, "Tạo team thành công");
+                var responseNewStartUp = _mapper.Map<TeamResponseDTO>(newTeam);
+                return CreatedAtAction(nameof(GetTeamById), new { teamId = responseNewStartUp.Id }, responseNewStartUp);
             }
             catch (ExistedRecordException ex)
             {
@@ -188,6 +189,25 @@ namespace StartedIn.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("teams/{teamId}")]
+        public async Task<ActionResult<TeamResponseDTO>> GetTeamById(string teamId) 
+        {
+            try
+            {
+                var teamEntity = await _teamService.GetTeamById(teamId);
+                var responseTeam = _mapper.Map<TeamResponseDTO>(teamEntity);
+                return Ok(responseTeam);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,"Lỗi server");
             }
         }
 
