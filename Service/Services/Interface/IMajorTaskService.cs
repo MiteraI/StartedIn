@@ -4,5 +4,5 @@ namespace Service.Services.Interface;
 
 public interface IMajorTaskService
 {
-    Task CreateNewMajorTask(MajorTaskCreateDTO majorTaskCreateDto);
+    Task<string> CreateNewMajorTask(MajorTaskCreateDTO majorTaskCreateDto);
 }

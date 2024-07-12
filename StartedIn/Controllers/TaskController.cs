@@ -26,8 +26,8 @@ public class TaskController : ControllerBase
     {
         try
         {
-            await _majorTaskService.CreateNewMajorTask(majorTaskCreateDto);
-            return StatusCode(201, "Tạo phase thành công");
+            string id = await _majorTaskService.CreateNewMajorTask(majorTaskCreateDto);
+            return StatusCode(201, new { message = "Tạo task thành công", id = id });
         }
         catch (Exception ex)
         {

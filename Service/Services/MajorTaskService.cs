@@ -18,7 +18,7 @@ public class MajorTaskService : IMajorTaskService
         _majorTaskRepository = majorTaskRepository;
         _logger = logger;
     }
-    public async Task CreateNewMajorTask(MajorTaskCreateDTO majorTaskCreateDto)
+    public async Task<string> CreateNewMajorTask(MajorTaskCreateDTO majorTaskCreateDto)
     {
         try
         {
@@ -33,6 +33,7 @@ public class MajorTaskService : IMajorTaskService
             var majorTaskEntity = _majorTaskRepository.Add(majorTask);
             await _unitOfWork.SaveChangesAsync();
             await _unitOfWork.CommitAsync();
+            return majorTaskEntity.Id;
         }
         catch (Exception ex)
         {
