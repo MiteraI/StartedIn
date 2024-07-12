@@ -18,7 +18,7 @@ public class PhaseService : IPhaseService
         _phaseRepository = phaseRepository;
         _logger = logger;
     }
-    public async Task CreateNewPhase(PhaseCreateDTO phaseCreateDto)
+    public async Task<string> CreateNewPhase(PhaseCreateDTO phaseCreateDto)
     {
         try
         {
@@ -32,6 +32,7 @@ public class PhaseService : IPhaseService
             var phaseEntity = _phaseRepository.Add(phase);
             await _unitOfWork.SaveChangesAsync();
             await _unitOfWork.CommitAsync();
+            return phaseEntity.Id;
         }
         catch (Exception ex)
         {

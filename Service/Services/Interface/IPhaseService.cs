@@ -4,5 +4,5 @@ namespace Service.Services.Interface;
 
 public interface IPhaseService
 {
-    Task CreateNewPhase(PhaseCreateDTO phaseCreateDto);
+    Task<string> CreateNewPhase(PhaseCreateDTO phaseCreateDto);
 }

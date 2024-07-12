@@ -22,8 +22,8 @@ public class PhaseController : ControllerBase
     {
         try
         {
-            await _phaseService.CreateNewPhase(phaseCreateDto);
-            return StatusCode(201, "Tạo phase thành công");
+            string id = await _phaseService.CreateNewPhase(phaseCreateDto);
+            return StatusCode(201, new { message = "Tạo phase thành công", id = id });
         }
         catch (Exception ex)
         {
