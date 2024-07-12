@@ -193,6 +193,7 @@ namespace StartedIn.Controllers
         }
 
         [HttpGet("teams/{teamId}")]
+        [Authorize]
         public async Task<ActionResult<TeamResponseDTO>> GetTeamById(string teamId) 
         {
             try
