@@ -143,5 +143,16 @@ namespace Service.Services
             }
             return team;
         }
+
+        public async Task<Team> GetTeamById(string teamId)
+        {
+            var team = await _teamRepository.GetTeamByIdAsync(teamId);
+            if (team is null)
+            {
+                throw new NotFoundException("Không có team nào.");
+            }
+            return team;
+        }
+        
     }
 }

@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace CrossCutting.DTOs.ResponseDTO
 {
-    public class ResponseProjectForListInTeamDTO : IdentityResponseDTO
+    public class TeamLeaderResponseDTO : IdentityResponseDTO
     {
-        public string ProjectName { get; set; }
+        public string Email { get; set; }
+        public string FullName { get; set; }
     }
 }
