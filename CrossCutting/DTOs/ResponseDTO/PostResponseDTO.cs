@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace CrossCutting.DTOs.ResponseDTO
 {
-    public class PostResponseDTO
+    public class PostResponseDTO : IdentityResponseDTO
     {
-        public string Id { get; set; }
         public string UserId { get; set; }
         public string UserImgUrl { get; set; }
         public string UserFullName { get; set; }

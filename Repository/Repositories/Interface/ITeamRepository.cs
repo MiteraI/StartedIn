@@ -12,5 +12,6 @@ namespace Repository.Repositories.Interface
         Task<IEnumerable<Team>> GetTeamsByUserIdAsync(string userId);
         Task<IEnumerable<Team>> GetTeamByUserLeaderIdAsync(string userId);
         Task<IEnumerable<Team>> GetTeamByUserGuestIdAsync(string userId);
+        Task<Team> GetTeamByIdAsync(string teamId);
     }
 }

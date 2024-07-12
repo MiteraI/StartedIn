@@ -31,8 +31,8 @@ namespace StartedIn.Controllers
             try
             {
                 var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                var newTeam = _mapper.Map<Team>(teamAndProjectCreateDTO.TeamCreateRequestDTO);
-                var newProject = _mapper.Map<Project>(teamAndProjectCreateDTO.ProjectCreateDTO);
+                var newTeam = _mapper.Map<Team>(teamAndProjectCreateDTO.Team);
+                var newProject = _mapper.Map<Project>(teamAndProjectCreateDTO.Project);
                 await _teamService.CreateNewTeam(userId, newTeam, newProject);
                 return StatusCode(201, "Tạo team thành công");
             }
@@ -133,6 +133,25 @@ namespace StartedIn.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpGet("teams/{teamId}/team-members")]
+        [Authorize]
+        public async Task<ActionResult<TeamWithMembersResponseDTO>> GetTeamByIdWithMember(string teamId)
+        {
+            try
+            {
+                var teamEntity = await _teamService.GetTeamById(teamId);
+                var responseTeam = _mapper.Map<TeamWithMembersResponseDTO>(teamEntity);
+                return Ok(responseTeam);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpGet("teams/user-guest-team")]
         [Authorize]
         public async Task<ActionResult<TeamResponseDTO>> GetTeamByGuestUserId()
@@ -143,6 +162,24 @@ namespace StartedIn.Controllers
                 var teamEntityList = await _teamService.GetTeamByUserIfGuest(userId);
                 var responseTeamList = _mapper.Map<List<TeamResponseDTO>>(teamEntityList);
                 return Ok(responseTeamList);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpGet("invite/view/{teamId}")]
+        public async Task<ActionResult<TeamInvitationResponseDTO>> GetTeamDetailByIdWithLeader(string teamId)
+        {
+            try
+            {
+                var teamEntity = await _teamService.GetTeamById(teamId);
+                var responseTeam = _mapper.Map<TeamInvitationResponseDTO>(teamEntity);
+                return Ok(responseTeam);
             }
             catch (NotFoundException ex)
             {
