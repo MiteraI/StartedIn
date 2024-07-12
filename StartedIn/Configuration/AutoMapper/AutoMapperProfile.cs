@@ -67,6 +67,7 @@ namespace Service.AutoMappingProfile
         private void ProjectMappingProfile()
         {
             CreateMap<Project, ProjectCreateDTO>().ReverseMap();
+            CreateMap<Project, ResponseProjectForListInTeamDTO>().ReverseMap();
             CreateMap<Project, ProjectResponseDTO>()
                 .ForMember(dest => dest.Leader, 
                     opt => opt.MapFrom(src => src.Team.TeamLeader))
