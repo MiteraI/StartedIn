@@ -49,7 +49,7 @@ namespace StartedIn.Controllers
         
         [HttpGet("teams/user-team")]
         [Authorize]
-        public async Task<ActionResult<TeamResponseDTO>> GetTeamByUserId()
+        public async Task<ActionResult<List<TeamResponseDTO>>> GetTeamByUserId()
         {
             try
             {
@@ -116,7 +116,7 @@ namespace StartedIn.Controllers
 
         [HttpGet("teams/user-leader-team")]
         [Authorize]
-        public async Task<ActionResult<TeamResponseDTO>> GetTeamByLeaderUserId()
+        public async Task<ActionResult<List<TeamResponseDTO>>> GetTeamByLeaderUserId()
         {
             try
             {
@@ -155,7 +155,7 @@ namespace StartedIn.Controllers
         }
         [HttpGet("teams/user-guest-team")]
         [Authorize]
-        public async Task<ActionResult<TeamResponseDTO>> GetTeamByGuestUserId()
+        public async Task<ActionResult<List<TeamResponseDTO>>> GetTeamByGuestUserId()
         {
             try
             {

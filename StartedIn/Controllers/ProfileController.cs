@@ -27,7 +27,7 @@ namespace StartedIn.Controllers
         // Lấy các thông tin cần để hiển thị ở profile header
         [Authorize]
         [HttpGet("profile")]
-        public async Task<IActionResult> GetCurrentUserProfile()
+        public async Task<ActionResult<HeaderProfileDTO>> GetCurrentUserProfile()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var queryUser = await _userService.GetUserWithUserRolesById(userId);
@@ -42,7 +42,7 @@ namespace StartedIn.Controllers
         // lấy full cho page profile
         [Authorize]
         [HttpGet("full-profile")]
-        public async Task<IActionResult> GetCurrentUserFullProfile()
+        public async Task<ActionResult<FullProfileDTO>> GetCurrentUserFullProfile()
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             var queryUser = await _userService.GetUserWithId(userId);
@@ -57,7 +57,7 @@ namespace StartedIn.Controllers
         
         [Authorize]
         [HttpPost("profile/avatar")]
-        public async Task<IActionResult> UploadAvatar(IFormFile avatar)
+        public async Task<ActionResult<FullProfileDTO>> UploadAvatar(IFormFile avatar)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             if (userId == null)
@@ -66,8 +66,9 @@ namespace StartedIn.Controllers
             }
             try
             {
-                await _userService.UpdateAvatar(avatar, userId);
-                return Ok("Cập nhật ảnh đại diện thành công");
+                var user = await _userService.UpdateAvatar(avatar, userId);
+                var responseUserProfile = _mapper.Map<FullProfileDTO>(user);
+                return Ok(responseUserProfile);
             }
             catch (Exception ex)
             {
@@ -76,7 +77,7 @@ namespace StartedIn.Controllers
         }
         [Authorize]
         [HttpPost("profile/cover-photo")]
-        public async Task<IActionResult> UploadCoverPhoto(IFormFile coverPhoto)
+        public async Task<ActionResult<FullProfileDTO>> UploadCoverPhoto(IFormFile coverPhoto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             if (userId == null)
@@ -85,8 +86,9 @@ namespace StartedIn.Controllers
             }
             try
             {
-                await _userService.UpdateCoverPhoto(coverPhoto, userId);
-                return Ok("Cập nhật ảnh bìa thành công");
+                var user = await _userService.UpdateCoverPhoto(coverPhoto, userId);
+                var responseUserProfile = _mapper.Map<FullProfileDTO>(user);
+                return Ok(responseUserProfile);
             }
             catch (Exception ex)
             {
@@ -96,7 +98,7 @@ namespace StartedIn.Controllers
 
         [Authorize]
         [HttpPut("profile/edit")]
-        public async Task<IActionResult> EditProfile([FromBody]UpdateProfileDTO updateProfileDto)
+        public async Task<ActionResult<FullProfileDTO>> EditProfile([FromBody]UpdateProfileDTO updateProfileDto)
         {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             if (userId == null)
@@ -118,7 +120,7 @@ namespace StartedIn.Controllers
         
         [HttpGet("users/{userId}")]
         [Authorize]
-        public async Task<IActionResult> GetUserById(string userId)
+        public async Task<ActionResult<FullProfileDTO>> GetUserById(string userId)
         {
             try
             {
