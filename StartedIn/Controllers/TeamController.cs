@@ -26,7 +26,7 @@ namespace StartedIn.Controllers
         }
         [HttpPost("teams")]
         [Authorize]
-        public async Task<IActionResult> CreateNewStartup(TeamAndProjectCreateDTO teamAndProjectCreateDTO) 
+        public async Task<ActionResult<TeamResponseDTO>> CreateNewStartup(TeamAndProjectCreateDTO teamAndProjectCreateDTO) 
         {
             try
             {
