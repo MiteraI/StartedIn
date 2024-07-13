@@ -23,7 +23,7 @@ public class ConnectionService : IConnectionService
         _connectionRepository = connectionRepository;
     }
     
-    public async Task CreateConnection(string senderId, string receiverId)
+    public async Task<Connection> CreateConnection(string senderId, string receiverId)
     {
         var receiver = await _userManager.FindByIdAsync(receiverId);
         var sender = await _userManager.FindByIdAsync(senderId);
@@ -44,15 +44,17 @@ public class ConnectionService : IConnectionService
             _connectionRepository.Add(connection);
             await _unitOfWork.SaveChangesAsync();
             await _unitOfWork.CommitAsync();
+            return connection;
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while creating connection");
+            throw new Exception("Gửi lời mời thất bại");
         }
         
     }
 
-    public async Task AcceptConnection(string connectionId)
+    public async Task<Connection> AcceptConnection(string connectionId)
     {
         var connection = await GetConnectionById(connectionId);
         if (connection is null)
@@ -61,11 +63,16 @@ public class ConnectionService : IConnectionService
         }
         connection.ConnectionStatus = ConnectionStatus.Accepted;
         await _connectionRepository.SaveChangesAsync();
+        return connection;
     }
 
     public async Task<Connection> GetConnectionById(string connectionId)
     {
-        var connection = await _connectionRepository.GetOneAsync(connectionId);
+        var connection = await _connectionRepository.QueryHelper()
+            .Filter(c => c.Id.Equals(connectionId))
+            .Include(c => c.Receiver)
+            .Include(c => c.Sender)
+            .GetOneAsync();
         return connection;
     }
 
