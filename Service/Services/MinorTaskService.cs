@@ -135,7 +135,7 @@ public class MinorTaskService : IMinorTaskService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error while moving major task");
+            _logger.LogError(ex, "Error while moving minor task");
             await _unitOfWork.RollbackAsync();
             throw;
         }
