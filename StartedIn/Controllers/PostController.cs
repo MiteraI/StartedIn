@@ -87,7 +87,7 @@ namespace StartedIn.Controllers
         }
         [HttpGet("posts/{id}")]
         [Authorize]
-        public async Task<IActionResult> GetPostById([FromRoute] string id)
+        public async Task<ActionResult<PostResponseDTO>> GetPostById([FromRoute] string id)
         {
             try
             {

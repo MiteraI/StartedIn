@@ -40,6 +40,7 @@ namespace Service.AutoMappingProfile
             CreateMap<User, FullProfileDTO>().ReverseMap();
             CreateMap<User, UpdateProfileDTO>().ReverseMap();
             CreateMap<User, ProjectLeaderResponseDTO>().ReverseMap();
+            CreateMap<User, TeamLeaderResponseDTO>().ReverseMap();
         }
         private void PostMappingProfile() {
             CreateMap<Post, PostResponseDTO>().
@@ -62,11 +63,28 @@ namespace Service.AutoMappingProfile
                .ReverseMap()
                .ForPath(t => t.TeamUsers, opt
                    => opt.MapFrom(tr => tr.Users.Select(name => new TeamUser { User = new User { FullName = name } }).ToHashSet()));
+            
+            CreateMap<Team, TeamInvitationResponseDTO>()
+                .ForMember(dest => dest.Leader, opt => opt.MapFrom(src => src.TeamLeader))
+                .ReverseMap();
 
+            CreateMap<Team, TeamWithMembersResponseDTO>()
+            .ForMember(dest => dest.TeamMembers, opt => opt.MapFrom(src =>
+                src.TeamUsers.Select(tu => new TeamMemberResponseDTO
+                {
+                    Id = tu.User.Id,
+                    FullName = tu.User.FullName,
+                    Email = tu.User.Email,
+                    ProfilePicture = tu.User.ProfilePicture,
+                    RoleInTeam = tu.RoleInTeam.ToString()
+                }).ToList()));
+
+            
         }
         private void ProjectMappingProfile()
         {
             CreateMap<Project, ProjectCreateDTO>().ReverseMap();
+            CreateMap<Project, ResponseProjectForListInTeamDTO>().ReverseMap();
             CreateMap<Project, ProjectResponseDTO>()
                 .ForMember(dest => dest.Leader, 
                     opt => opt.MapFrom(src => src.Team.TeamLeader))
@@ -94,9 +112,9 @@ namespace Service.AutoMappingProfile
 
             CreateMap<Connection, ConnectionDTO>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
-            .ForMember(dest => dest.UserId, opt => opt.Ignore())  // We will handle this in the controller
-            .ForMember(dest => dest.ConnectedUserName, opt => opt.Ignore())  // We will handle this in the controller
-            .ForMember(dest => dest.ProfilePicture, opt => opt.Ignore());  // We will handle this in the controller
+            .ForMember(dest => dest.UserId, opt => opt.Ignore())
+            .ForMember(dest => dest.ConnectedUserName, opt => opt.Ignore())  
+            .ForMember(dest => dest.ProfilePicture, opt => opt.Ignore());  
 
             CreateMap<User, ConnectionDTO>()
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id))

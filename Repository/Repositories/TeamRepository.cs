@@ -40,6 +40,17 @@ namespace Repository.Repositories
             return teams;
         }
 
+        public async Task<Team> GetTeamByIdAsync(string teamId)
+        {
+            var team = await _appDbContext.Teams
+                .Where(t => t.Id.Equals(teamId))
+                .Include(t => t.Projects)
+                .Include(t => t.TeamLeader)
+                .Include(t => t.TeamUsers)
+                .ThenInclude(tu => tu.User).FirstOrDefaultAsync();
+            return team;
+        }
+
         public async Task<IEnumerable<Team>> GetTeamsByUserIdAsync(string userId)
         {
             var teams = await _appDbContext.Teams

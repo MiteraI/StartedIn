@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using AutoMapper;
 using CrossCutting.DTOs.ResponseDTO;
+using Domain.Entities;
+using Domain.Migrations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interface;
@@ -25,13 +27,14 @@ namespace StartedIn.Controllers;
 
         [Authorize]
         [HttpPost("connect/{receiverId}")]
-        public async Task<IActionResult> CreateConnection(string receiverId)
+        public async Task<ActionResult<PendingConnectionDTO>> CreateConnection(string receiverId)
         {
             try
             {
                 var senderId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-                await _connectionService.CreateConnection(senderId, receiverId);
-                return StatusCode(201, "Gửi lời mời kết nối thành công");
+                var connection = await _connectionService.CreateConnection(senderId, receiverId);
+                var pendingConnectionResponse = _mapper.Map<PendingConnectionDTO>(connection);
+                return StatusCode(201, pendingConnectionResponse);
             }
             catch (Exception ex)
             {
@@ -41,26 +44,31 @@ namespace StartedIn.Controllers;
 
         [Authorize]
         [HttpPut("connect/{connectionId}")]
-        public async Task<IActionResult> AcceptConnection(string connectionId)
+        public async Task<ActionResult<ConnectionDTO>> AcceptConnection([FromRoute] string connectionId)
         {
-        try
-        {
-            await _connectionService.AcceptConnection(connectionId);
-            return StatusCode(200, "Kết nối thành công");
-        }
-        catch (NotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest("Kết nối thất bại");
-        }
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            try
+            {
+
+                var connection = await _connectionService.AcceptConnection(connectionId);
+                var connectedUser = connection.SenderId == userId ? connection.Receiver : connection.Sender;
+                var connectionResponse = _mapper.Map<ConnectionDTO>(connectedUser);
+                connectionResponse.Id = connection.Id;
+                return StatusCode(200, connectionResponse);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Kết nối thất bại");
+            }
         }
 
         [Authorize]
         [HttpGet("connect/pending-connection-receiving-request")]
-        public async Task<IActionResult> GetPendingConnections([FromQuery] int pageIndex, int pageSize)
+        public async Task<ActionResult<List<PendingConnectionDTO>>> GetPendingConnections([FromQuery] int pageIndex, int pageSize)
         {
             var receiverId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
             try
@@ -80,7 +88,7 @@ namespace StartedIn.Controllers;
         }
     [Authorize]
     [HttpGet("connect/pending-connection-sending-request")]
-    public async Task<IActionResult> GetConnectionSendingRequest([FromQuery] int pageIndex, int pageSize)
+    public async Task<ActionResult<List<PendingSendingRequestDTO>>> GetConnectionSendingRequest([FromQuery] int pageIndex, int pageSize)
     {
         var senderId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
         try
@@ -100,7 +108,7 @@ namespace StartedIn.Controllers;
     }
     [Authorize]
     [HttpGet("connect/user-connection-list")]
-    public async Task<IActionResult> GetUserConnectionList([FromQuery] int pageIndex, int pageSize)
+    public async Task<ActionResult<List<ConnectionDTO>>> GetUserConnectionList([FromQuery] int pageIndex, int pageSize)
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
         try
@@ -115,7 +123,7 @@ namespace StartedIn.Controllers;
                 return connectionDto;
             }).ToList();
 
-            return Ok(response);
+            return StatusCode(200, response);
         }
         catch (NotFoundException ex)
         {

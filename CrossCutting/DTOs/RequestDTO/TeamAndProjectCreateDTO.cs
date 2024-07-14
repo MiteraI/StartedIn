@@ -8,7 +8,7 @@ namespace CrossCutting.DTOs.RequestDTO
 {
     public class TeamAndProjectCreateDTO
     {
-        public TeamCreateRequestDTO TeamCreateRequestDTO { get; set; }
-        public ProjectCreateDTO ProjectCreateDTO { get; set; }
+        public TeamCreateRequestDTO Team { get; set; }
+        public ProjectCreateDTO Project { get; set; }
     }
 }
