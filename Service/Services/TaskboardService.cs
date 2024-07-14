@@ -1,8 +1,10 @@
-using CrossCutting.DTOs.RequestDTO;
+﻿using CrossCutting.DTOs.RequestDTO;
 using Domain.Entities;
 using Microsoft.Extensions.Logging;
+using Repository.Repositories;
 using Repository.Repositories.Interface;
 using Service.Services.Interface;
+using Services.Exceptions;
 
 namespace Service.Services;
 
@@ -38,6 +40,51 @@ public class TaskboardService : ITaskboardService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while creating Taskboard");
+            await _unitOfWork.RollbackAsync();
+            throw;
+        }
+    }
+
+    public async Task<Taskboard> MoveTaskBoard(string taskBoardId, int position, bool needsReposition)
+    {
+        var chosenTaskBoard = await _taskboardRepository.GetOneAsync(taskBoardId);
+        if (chosenTaskBoard == null)
+        {
+            throw new NotFoundException("Không có bảng công việc được tìm thấy");
+        }
+        try
+        {
+            chosenTaskBoard.Position = position;
+            _taskboardRepository.Update(chosenTaskBoard);
+            await _unitOfWork.SaveChangesAsync();
+            if (needsReposition)
+            {
+                _unitOfWork.BeginTransaction();
+                // Get all phases for the project and sort them by position
+                var taskBoards = await _taskboardRepository.QueryHelper()
+                    .Filter(p => p.PhaseId.Equals(chosenTaskBoard.PhaseId))
+                    .OrderBy(p => p.OrderBy(p => p.Position))
+                    .GetAllAsync();
+
+                // Update positions starting from 2^16 (65536)
+                int increment = (int)Math.Pow(2, 16);
+                int currentPosition = (int)Math.Pow(2, 16);
+
+                foreach (var taskBoard in taskBoards)
+                {
+                    taskBoard.Position = currentPosition;
+                    _taskboardRepository.Update(taskBoard);
+                    currentPosition += increment;
+                    await _unitOfWork.SaveChangesAsync();
+                }
+                await _unitOfWork.CommitAsync();
+            }
+            return chosenTaskBoard;
+        }
+
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while moving task board");
             await _unitOfWork.RollbackAsync();
             throw;
         }

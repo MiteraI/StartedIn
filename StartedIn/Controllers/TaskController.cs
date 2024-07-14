@@ -89,8 +89,42 @@ public class TaskController : ControllerBase
         }
         catch (Exception ex)
         {
-            return BadRequest("Di chuyển giai đoạn thất bại");
+            return BadRequest("Di chuyển Task lớn thất bại");
         }
     }
-    
+    [HttpPut("taskboard/move")]
+    public async Task<ActionResult<TaskboardResponseDTO>> MoveTaskBoard(UpdateTaskBoardPositionDTO updatetaskBoardPositionDTO)
+    {
+        try
+        {
+            var responseTaskBoard = _mapper.Map<TaskboardResponseDTO>(await _taskboardService.MoveTaskBoard(updatetaskBoardPositionDTO.Id, updatetaskBoardPositionDTO.Position, updatetaskBoardPositionDTO.NeedsReposition));
+            return Ok(responseTaskBoard);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Di chuyển bảng làm việc thất bại");
+        }
+    }
+    [HttpPut("minortask/move")]
+    public async Task<ActionResult<MinorTaskResponseDTO>> MoveMinorTask(UpdateMinorTaskPositionDTO updateMinorTaskPositionDTO)
+    {
+        try
+        {
+            var responseMinorTask = _mapper.Map<MinorTaskResponseDTO>(await _minorTaskService.MoveMinorTask(updateMinorTaskPositionDTO.Id, updateMinorTaskPositionDTO.TaskBoardId, updateMinorTaskPositionDTO.Position, updateMinorTaskPositionDTO.NeedsReposition));
+            return Ok(responseMinorTask);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Di chuyển Task nhỏ thất bại");
+        }
+    }
+
 }
