@@ -3,6 +3,7 @@ using Domain.Entities;
 using Microsoft.Extensions.Logging;
 using Repository.Repositories.Interface;
 using Service.Services.Interface;
+using Services.Exceptions;
 
 namespace Service.Services;
 
@@ -40,5 +41,16 @@ public class PhaseService : IPhaseService
             await _unitOfWork.RollbackAsync();
             throw;
         }
+    }
+
+    public async Task<Phase> GetPhaseDetailById(string id)
+    {
+        var phase = await _phaseRepository.GetPhaseDetailById(id);
+        if (phase == null)
+        {
+            throw new NotFoundException("Không có phase nào");
+        }
+
+        return phase;
     }
 }

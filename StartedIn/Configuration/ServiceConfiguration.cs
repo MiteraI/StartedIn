@@ -17,6 +17,8 @@ namespace StartedIn.Configuration
             services.AddScoped<IProjectService, ProjectService>();
             services.AddScoped<IMajorTaskService, MajorTaskService>();
             services.AddScoped<IPhaseService, PhaseService>();
+            services.AddScoped<IMinorTaskService, MinorTaskService>();
+            services.AddScoped<ITaskboardService, TaskboardService>();
             return services;
         }
     }

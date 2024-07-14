@@ -15,6 +15,8 @@ namespace StartedIn.Configuration
             services.AddScoped<IConnectionRepository, ConnectionRepository>();
             services.AddScoped<IPhaseRepository, PhaseRepository>();
             services.AddScoped<IMajorTaskRepository, MajorTaskRepository>();
+            services.AddScoped<IMinorTaskRepository, MinorTaskRepository>();
+            services.AddScoped<ITaskboardRepository, TaskboardRepository>();
             return services;
         }
     }

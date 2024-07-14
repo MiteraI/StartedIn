@@ -24,12 +24,13 @@ namespace StartedIn.Controllers
         }
 
         [HttpGet("team/{id}/projects")]
-        public async Task<IActionResult> GetProjectsByTeamId(string id)
+        public async Task<ActionResult<List<ProjectResponseDTO>>> GetProjectsByTeamId(string id)
         {
             try
             {
                 var projects = await _projectService.GetProjectsByTeamId(id);
-                return Ok(projects);
+                var response = _mapper.Map<List<ProjectResponseDTO>>(projects);
+                return Ok(response);
             }
             catch (NotFoundException ex)
             {
@@ -43,12 +44,13 @@ namespace StartedIn.Controllers
         }
 
         [HttpPost("project/create")]
-        public async Task<IActionResult> CreateNewProject(NewProjectCreateDTO projectCreateDto)
+        public async Task<ActionResult<ProjectResponseDTO>> CreateNewProject(NewProjectCreateDTO projectCreateDto)
         {
             try
             {
-                await _projectService.CreateNewProject(projectCreateDto);
-                return StatusCode(201, "Tạo project thành công");
+                var project = await _projectService.CreateNewProject(projectCreateDto);
+                var response = _mapper.Map<ProjectResponseDTO>(project);
+                return Ok(response);
             }
             catch (ExistedRecordException ex)
             {
