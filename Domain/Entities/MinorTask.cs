@@ -8,11 +8,13 @@ public class MinorTask : BaseAuditEntity<string>
     public int Position { get; set; }
     public string TaskTitle { get; set; }
     public string Description { get; set; }
-    public DateTime DeadLine { get; set; }
+    public string Status { get; set; }
     
     [ForeignKey(nameof(MajorTask))]
-    public string MajorTaskId { get; set; }
+    public string? MajorTaskId { get; set; }
     
-    public MajorTask MajorTask { get; set; } = null!;
+    [ForeignKey(nameof(Taskboard))]
+    public string TaskboardId { get; set; }
+    public MajorTask MajorTask { get; set; }
     public Taskboard Taskboard { get; set; } = null!;
 }

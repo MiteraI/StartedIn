@@ -91,12 +91,13 @@ namespace StartedIn.Controllers
             }
         }
 
-        [HttpPost("invite/add/{teamId}/{userId}")]
+        [HttpPost("invite/add/{teamId}")]
         [Authorize]
-        public async Task<IActionResult> AddUserToTeam([FromRoute] string teamId, string userId)
+        public async Task<IActionResult> AddUserToTeam([FromRoute] string teamId)
         {
             try
             {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
                 await _teamService.AddUserToTeam(teamId,userId);
                 return Ok("Bạn đã được tham gia nhóm!");
             }

@@ -28,18 +28,22 @@ public class ProjectService : IProjectService
         _userManager = userManager;
         _logger = logger;
     }
-    public async Task CreateNewProject(NewProjectCreateDTO projectCreateDto)
+    public async Task<Project> CreateNewProject(NewProjectCreateDTO projectCreateDto)
     {
         var team = await _teamRepository.GetOneAsync(projectCreateDto.TeamId);
         var teamLeaderId = team.TeamLeaderId;
         var leader = await _userManager.FindByIdAsync(teamLeaderId);
         var leaderName = leader.FullName;
         var teamProjects = await _projectRepository.GetProjectsByTeamIdAsync(projectCreateDto.TeamId);
-        var existingProject = teamProjects.Where(p => p.ProjectName.Equals(projectCreateDto.ProjectName));
-        if (existingProject != null)
+        if (teamProjects.Any())
         {
-            throw new ExistedRecordException("Trùng tên dự án");
+            var existingProject = teamProjects.FirstOrDefault(p => p.ProjectName.ToLower().Equals(projectCreateDto.ProjectName.ToLower()));
+            if (existingProject != null)
+            {
+                throw new ExistedRecordException("Trùng tên dự án");
+            }
         }
+
         try
         {
             _unitOfWork.BeginTransaction();
@@ -52,6 +56,7 @@ public class ProjectService : IProjectService
             var projectEntity = _projectRepository.Add(project);
             await _unitOfWork.SaveChangesAsync();
             await _unitOfWork.CommitAsync();
+            return project;
         }
         catch (Exception ex) 
         {

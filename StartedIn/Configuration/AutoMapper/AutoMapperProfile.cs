@@ -16,6 +16,22 @@ namespace Service.AutoMappingProfile
             ConnectionMappingProfile();
             PhaseMappingProfile();
             MajorTaskMappingProfile();
+            TaskboardMappingProfile();
+            MinorTaskMappingProfile();
+        }
+
+        private void TaskboardMappingProfile()
+        {
+            CreateMap<Taskboard, TaskboardResponseDTO>()
+                .ForMember(dest => dest.MinorTasks, 
+                    opt => opt.MapFrom(src => src.MinorTasks))
+                .ReverseMap();
+        }
+
+        private void MinorTaskMappingProfile()
+        {
+            CreateMap<MinorTask, MinorTaskInTaskboardResponseDTO>().ReverseMap();
+            CreateMap<MinorTask, MinorTaskResponseDTO>().ReverseMap();
         }
 
         private void MajorTaskMappingProfile()
@@ -26,6 +42,10 @@ namespace Service.AutoMappingProfile
         private void PhaseMappingProfile()
         {
             CreateMap<Phase, PhaseResponseDTO>();
+            CreateMap<Phase, PhaseDetailResponseDTO>()
+                .ForMember(dest => dest.Taskboards,
+                    opt => opt.MapFrom(src => src.Taskboards))
+                .ReverseMap();
         }
 
         private void UserMappingProfile() {
@@ -89,6 +109,7 @@ namespace Service.AutoMappingProfile
                 .ForMember(dest => dest.Leader, 
                     opt => opt.MapFrom(src => src.Team.TeamLeader))
                 .ReverseMap();
+            CreateMap<ProjectResponseDTO, ProjectCreateDTO>().ReverseMap();
         }
 
         private void ConnectionMappingProfile()

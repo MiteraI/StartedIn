@@ -3,6 +3,7 @@ using System;
 using Domain.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240714090319_addStatusForMinorTask")]
+    partial class addStatusForMinorTask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -185,6 +188,7 @@ namespace Domain.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("MajorTaskId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Position")
@@ -199,7 +203,6 @@ namespace Domain.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("TaskboardId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -737,13 +740,13 @@ namespace Domain.Migrations
                 {
                     b.HasOne("Domain.Entities.MajorTask", "MajorTask")
                         .WithMany("MinorTasks")
-                        .HasForeignKey("MajorTaskId");
+                        .HasForeignKey("MajorTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.Entities.Taskboard", "Taskboard")
                         .WithMany("MinorTasks")
-                        .HasForeignKey("TaskboardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TaskboardId");
 
                     b.Navigation("MajorTask");
 
