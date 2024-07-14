@@ -12,6 +12,6 @@ public class Phase : BaseAuditEntity<string>
     public string ProjectId { get; set; }
     
     public Project Project { get; set; } = null!;
-    public IEnumerable<MajorTask> MajorTasks { get; set; }
+    public ICollection<MajorTask> MajorTasks { get; set; }
     public IEnumerable<Taskboard> Taskboards { get; set; }
 }

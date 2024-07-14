@@ -57,46 +57,85 @@ public class MinorTaskService : IMinorTaskService
         {
             throw new NotFoundException("Không có Task nhỏ được tìm thấy");
         }
-        var chosenTaskBoard = await _taskboardRepository.GetOneAsync(taskBoardId);
+
+        var chosenTaskBoard = await _taskboardRepository.QueryHelper()
+            .Filter(p => p.Id.Equals(taskBoardId))
+            .Include(p => p.MinorTasks)
+            .GetOneAsync();
         if (chosenTaskBoard == null)
         {
             throw new NotFoundException("Không có bảng công việc được tìm thấy");
         }
+
+        var oldTaskBoard = await _taskboardRepository.GetOneAsync(chosenMinorTask.TaskboardId);
+        if (oldTaskBoard == null)
+        {
+            throw new NotFoundException("Không có bảng công việc cũ được tìm thấy");
+        }
+
         try
         {
+            // Remove the task from the old phase's task list
+            oldTaskBoard.MinorTasks.Remove(chosenMinorTask);
+            _taskboardRepository.Update(oldTaskBoard);
+
+            // Update the chosen major task's new phase information
             chosenMinorTask.Position = position;
             chosenMinorTask.TaskboardId = taskBoardId;
             chosenMinorTask.Taskboard = chosenTaskBoard;
             _minorTaskRepository.Update(chosenMinorTask);
+
+            // Add the task to the new phase's task list
+            chosenTaskBoard.MinorTasks.Add(chosenMinorTask);
+            _taskboardRepository.Update(chosenTaskBoard);
+
             await _unitOfWork.SaveChangesAsync();
+
             if (needsReposition)
             {
                 _unitOfWork.BeginTransaction();
-                // Get all phases for the project and sort them by position
-                var minorTasks = await _minorTaskRepository.QueryHelper()
+
+                // Reposition tasks in the old phase
+                var oldTaskBoardTasks = await _minorTaskRepository.QueryHelper()
+                    .Filter(p => p.TaskboardId.Equals(oldTaskBoard.Id))
+                    .OrderBy(p => p.OrderBy(p => p.Position))
+                    .GetAllAsync();
+
+                int oldTaskBoardIncrement = (int)Math.Pow(2, 16);
+                int oldTaskBoardCurrentPosition = (int)Math.Pow(2, 16);
+
+                foreach (var minorTask in oldTaskBoardTasks)
+                {
+                    minorTask.Position = oldTaskBoardCurrentPosition;
+                    _minorTaskRepository.Update(minorTask);
+                    oldTaskBoardCurrentPosition += oldTaskBoardIncrement;
+                }
+
+                // Reposition tasks in the new phase
+                var newTaskBoardTasks = await _minorTaskRepository.QueryHelper()
                     .Filter(p => p.TaskboardId.Equals(chosenTaskBoard.Id))
                     .OrderBy(p => p.OrderBy(p => p.Position))
                     .GetAllAsync();
 
-                // Update positions starting from 2^16 (65536)
-                int increment = (int)Math.Pow(2, 16);
-                int currentPosition = (int)Math.Pow(2, 16);
+                int newTaskBoardIncrement = (int)Math.Pow(2, 16);
+                int newTaskBoardCurrentPosition = (int)Math.Pow(2, 16);
 
-                foreach (var minorTask in minorTasks)
+                foreach (var minorTask in newTaskBoardTasks)
                 {
-                    minorTask.Position = currentPosition;
+                    minorTask.Position = newTaskBoardCurrentPosition;
                     _minorTaskRepository.Update(minorTask);
-                    currentPosition += increment;
-                    await _unitOfWork.SaveChangesAsync();
+                    newTaskBoardCurrentPosition += newTaskBoardIncrement;
                 }
+
+                await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitAsync();
             }
+
             return chosenMinorTask;
         }
-
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error while moving minor task");
+            _logger.LogError(ex, "Error while moving major task");
             await _unitOfWork.RollbackAsync();
             throw;
         }

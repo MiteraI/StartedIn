@@ -50,47 +50,86 @@ public class MajorTaskService : IMajorTaskService
     public async Task<MajorTask> MoveMajorTask(string mjTaskId, string phaseId, int position, bool needsReposition)
     {
         var chosenMajorTask = await _majorTaskRepository.GetOneAsync(mjTaskId);
-        if(chosenMajorTask == null)
+        if (chosenMajorTask == null)
         {
             throw new NotFoundException("Không có Task lớn được tìm thấy");
         }
-        var chosenPhase = await _phaseRepository.GetOneAsync(phaseId);
+
+        var chosenPhase = await _phaseRepository.QueryHelper()
+            .Filter(p => p.Id.Equals(phaseId))
+            .Include(p => p.MajorTasks)
+            .GetOneAsync();
         if (chosenPhase == null)
         {
             throw new NotFoundException("Không có giai đoạn được tìm thấy");
         }
+
+        var oldPhase = await _phaseRepository.GetOneAsync(chosenMajorTask.PhaseId);
+        if (oldPhase == null)
+        {
+            throw new NotFoundException("Không có giai đoạn cũ được tìm thấy");
+        }
+
         try
         {
+            // Remove the task from the old phase's task list
+            oldPhase.MajorTasks.Remove(chosenMajorTask);
+            _phaseRepository.Update(oldPhase);
+
+            // Update the chosen major task's new phase information
             chosenMajorTask.Position = position;
             chosenMajorTask.PhaseId = phaseId;
             chosenMajorTask.Phase = chosenPhase;
             _majorTaskRepository.Update(chosenMajorTask);
+
+            // Add the task to the new phase's task list
+            chosenPhase.MajorTasks.Add(chosenMajorTask);
+            _phaseRepository.Update(chosenPhase);
+
             await _unitOfWork.SaveChangesAsync();
+
             if (needsReposition)
             {
                 _unitOfWork.BeginTransaction();
-                // Get all phases for the project and sort them by position
-                var majorTasks = await _majorTaskRepository.QueryHelper()
+
+                // Reposition tasks in the old phase
+                var oldPhaseTasks = await _majorTaskRepository.QueryHelper()
+                    .Filter(p => p.PhaseId.Equals(oldPhase.Id))
+                    .OrderBy(p => p.OrderBy(p => p.Position))
+                    .GetAllAsync();
+
+                int oldPhaseIncrement = (int)Math.Pow(2, 16);
+                int oldPhaseCurrentPosition = (int)Math.Pow(2, 16);
+
+                foreach (var majorTask in oldPhaseTasks)
+                {
+                    majorTask.Position = oldPhaseCurrentPosition;
+                    _majorTaskRepository.Update(majorTask);
+                    oldPhaseCurrentPosition += oldPhaseIncrement;
+                }
+
+                // Reposition tasks in the new phase
+                var newPhaseTasks = await _majorTaskRepository.QueryHelper()
                     .Filter(p => p.PhaseId.Equals(chosenPhase.Id))
                     .OrderBy(p => p.OrderBy(p => p.Position))
                     .GetAllAsync();
 
-                // Update positions starting from 2^16 (65536)
-                int increment = (int)Math.Pow(2, 16);
-                int currentPosition = (int)Math.Pow(2, 16);
+                int newPhaseIncrement = (int)Math.Pow(2, 16);
+                int newPhaseCurrentPosition = (int)Math.Pow(2, 16);
 
-                foreach (var majorTask in majorTasks)
+                foreach (var majorTask in newPhaseTasks)
                 {
-                    majorTask.Position = currentPosition;
+                    majorTask.Position = newPhaseCurrentPosition;
                     _majorTaskRepository.Update(majorTask);
-                    currentPosition += increment;
-                    await _unitOfWork.SaveChangesAsync();
+                    newPhaseCurrentPosition += newPhaseIncrement;
                 }
+
+                await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitAsync();
             }
+
             return chosenMajorTask;
         }
-
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while moving major task");
