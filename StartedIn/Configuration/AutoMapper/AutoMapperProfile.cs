@@ -89,6 +89,7 @@ namespace Service.AutoMappingProfile
                 .ForMember(dest => dest.Leader, 
                     opt => opt.MapFrom(src => src.Team.TeamLeader))
                 .ReverseMap();
+            CreateMap<ProjectResponseDTO, ProjectCreateDTO>().ReverseMap();
         }
 
         private void ConnectionMappingProfile()
