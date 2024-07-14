@@ -14,11 +14,14 @@ public class TaskController : ControllerBase
     private readonly IMapper _mapper;
     private readonly ILogger<TaskController> _logger;
     private readonly IMinorTaskService _minorTaskService;
+    private readonly ITaskboardService _taskboardService;
 
-    public TaskController(IMajorTaskService majorTaskService, IMapper mapper, ILogger<TaskController> logger, IMinorTaskService minorTaskService)
+    public TaskController(IMajorTaskService majorTaskService, IMapper mapper, ILogger<TaskController> logger, IMinorTaskService minorTaskService,
+        ITaskboardService taskboardService)
     {
         _majorTaskService = majorTaskService;
         _minorTaskService = minorTaskService;
+        _taskboardService = taskboardService;
         _mapper = mapper;
         _logger = logger;
     }
@@ -50,6 +53,22 @@ public class TaskController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while creating new minor task.");
+            return StatusCode(500,"Lỗi server");
+        }
+    }
+
+    [HttpPost("taskboard/create")]
+    public async Task<ActionResult<TaskboardResponseDTO>> CreateNewTaskboard(TaskboardCreateDTO taskboardCreateDto)
+    {
+        try
+        {
+            var taskboard = await _taskboardService.CreateNewTaskboard(taskboardCreateDto);
+            var response = _mapper.Map<TaskboardResponseDTO>(taskboard);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while creating new taskboard.");
             return StatusCode(500,"Lỗi server");
         }
     }

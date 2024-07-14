@@ -23,7 +23,7 @@ namespace Service.AutoMappingProfile
         private void TaskboardMappingProfile()
         {
             CreateMap<Taskboard, TaskboardResponseDTO>()
-                .ForMember(dest => dest.MinorTaskInTaskboardResponseDto, 
+                .ForMember(dest => dest.MinorTasks, 
                     opt => opt.MapFrom(src => src.MinorTasks))
                 .ReverseMap();
         }
@@ -43,7 +43,7 @@ namespace Service.AutoMappingProfile
         {
             CreateMap<Phase, PhaseResponseDTO>();
             CreateMap<Phase, PhaseDetailResponseDTO>()
-                .ForMember(dest => dest.taskboardResponseDto,
+                .ForMember(dest => dest.Taskboards,
                     opt => opt.MapFrom(src => src.Taskboards))
                 .ReverseMap();
         }

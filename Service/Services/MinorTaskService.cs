@@ -40,7 +40,7 @@ public class MinorTaskService : IMinorTaskService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error while creating Major Task");
+            _logger.LogError(ex, "Error while creating Minor Task");
             await _unitOfWork.RollbackAsync();
             throw;
         }

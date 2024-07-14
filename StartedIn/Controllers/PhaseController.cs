@@ -1,6 +1,7 @@
 using AutoMapper;
 using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Service.Services.Interface;
 using Services.Exceptions;
