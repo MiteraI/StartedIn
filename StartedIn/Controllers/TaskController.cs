@@ -2,7 +2,9 @@ using AutoMapper;
 using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
 using Microsoft.AspNetCore.Mvc;
+using Service.Services;
 using Service.Services.Interface;
+using Services.Exceptions;
 
 namespace StartedIn.Controllers;
 
@@ -72,4 +74,23 @@ public class TaskController : ControllerBase
             return StatusCode(500,"Lỗi server");
         }
     }
+
+    [HttpPut("majortask/move")]
+    public async Task<ActionResult<MajorTaskResponseDTO>> MoveMajorTask(UpdateMajorTaskPositionDTO updateMajorTaskPositionDTO)
+    {
+        try
+        {
+            var responseMajorTask = _mapper.Map<MajorTaskResponseDTO>(await _majorTaskService.MoveMajorTask(updateMajorTaskPositionDTO.Id, updateMajorTaskPositionDTO.PhaseId,updateMajorTaskPositionDTO.Position, updateMajorTaskPositionDTO.NeedsReposition));
+            return Ok(responseMajorTask);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Di chuyển giai đoạn thất bại");
+        }
+    }
+    
 }

@@ -56,4 +56,23 @@ public class PhaseController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpPut("phase/move")]
+    public async Task<ActionResult<PhaseResponseDTO>> MovePhase(UpdatePhasePositionDTO updatePhasePositionDTO)
+    {
+        try
+        {
+            var responsePhase = _mapper.Map<PhaseResponseDTO>(await _phaseService.MovePhase(updatePhasePositionDTO.Id, updatePhasePositionDTO.Position, updatePhasePositionDTO.NeedsReposition));
+            return Ok(responsePhase);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Di chuyển giai đoạn thất bại");
+        }
+    }
+
 }
