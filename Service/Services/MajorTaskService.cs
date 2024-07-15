@@ -121,4 +121,41 @@ public class MajorTaskService : IMajorTaskService
             throw;
         }
     }
+    public async Task<MajorTask> GetMajorTaskById(string id)
+    {
+        var majorTask = await _majorTaskRepository.QueryHelper()
+            .Filter(mj => mj.Id.Equals(id))
+            .Include(mj => mj.MinorTasks)
+            .GetOneAsync();
+        if (majorTask == null)
+        {
+            throw new NotFoundException("Không tìm thấy Task lớn");
+        }
+        return majorTask;
+    }
+
+    public async Task<MajorTask> UpdateMajorTaskInfo(UpdateMajorTaskInfoDTO updateMajorTaskInfoDTO)
+    {
+        var chosenMajorTask = await _majorTaskRepository.GetOneAsync(updateMajorTaskInfoDTO.Id);
+        if (chosenMajorTask == null)
+        {
+            throw new NotFoundException("Không tìm thấy Task lớn");
+        }
+        try
+        {
+            chosenMajorTask.TaskTitle = updateMajorTaskInfoDTO.TaskTitle;
+            chosenMajorTask.Description = updateMajorTaskInfoDTO.Description;
+            chosenMajorTask.LastUpdatedTime = DateTimeOffset.UtcNow;
+            _majorTaskRepository.Update(chosenMajorTask);
+            await _unitOfWork.SaveChangesAsync();
+            return chosenMajorTask;
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackAsync();
+            throw new Exception("Failed while update task"); 
+        }
+        
+
+    }
 }
