@@ -12,6 +12,6 @@ public class Taskboard : BaseAuditEntity<string>
     
     public string Title { get; set; }
     
-    public IEnumerable<MinorTask> MinorTasks { get; set; }
+    public ICollection<MinorTask> MinorTasks { get; set; }
     public Phase Phase { get; set; }
 }

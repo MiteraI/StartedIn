@@ -2,7 +2,9 @@ using AutoMapper;
 using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
 using Microsoft.AspNetCore.Mvc;
+using Service.Services;
 using Service.Services.Interface;
+using Services.Exceptions;
 
 namespace StartedIn.Controllers;
 
@@ -72,4 +74,93 @@ public class TaskController : ControllerBase
             return StatusCode(500,"Lỗi server");
         }
     }
+
+    [HttpPut("majortask/move")]
+    public async Task<ActionResult<MajorTaskResponseDTO>> MoveMajorTask(UpdateMajorTaskPositionDTO updateMajorTaskPositionDTO)
+    {
+        try
+        {
+            var responseMajorTask = _mapper.Map<MajorTaskResponseDTO>(await _majorTaskService.MoveMajorTask(updateMajorTaskPositionDTO.Id, updateMajorTaskPositionDTO.PhaseId,updateMajorTaskPositionDTO.Position, updateMajorTaskPositionDTO.NeedsReposition));
+            return Ok(responseMajorTask);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Di chuyển Task lớn thất bại");
+        }
+    }
+    [HttpPut("taskboard/move")]
+    public async Task<ActionResult<TaskboardResponseDTO>> MoveTaskBoard(UpdateTaskBoardPositionDTO updatetaskBoardPositionDTO)
+    {
+        try
+        {
+            var responseTaskBoard = _mapper.Map<TaskboardResponseDTO>(await _taskboardService.MoveTaskBoard(updatetaskBoardPositionDTO.Id, updatetaskBoardPositionDTO.Position, updatetaskBoardPositionDTO.NeedsReposition));
+            return Ok(responseTaskBoard);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Di chuyển bảng làm việc thất bại");
+        }
+    }
+    [HttpPut("minortask/move")]
+    public async Task<ActionResult<MinorTaskResponseDTO>> MoveMinorTask(UpdateMinorTaskPositionDTO updateMinorTaskPositionDTO)
+    {
+        try
+        {
+            var responseMinorTask = _mapper.Map<MinorTaskResponseDTO>(await _minorTaskService.MoveMinorTask(updateMinorTaskPositionDTO.Id, updateMinorTaskPositionDTO.TaskBoardId, updateMinorTaskPositionDTO.Position, updateMinorTaskPositionDTO.NeedsReposition));
+            return Ok(responseMinorTask);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Di chuyển Task nhỏ thất bại");
+        }
+    }
+
+    [HttpGet("majortask/{mjTaskId}")]
+    public async Task<ActionResult<MajorTaskWithListMinorTasksResponseDTO>> GetMajorTaskById([FromRoute] string mjTaskId)
+    {
+        try
+        {
+            var responseMajorTask = _mapper.Map<MajorTaskWithListMinorTasksResponseDTO>(await _majorTaskService.GetMajorTaskById(mjTaskId));
+            return Ok(responseMajorTask);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Lỗi Server");
+        }
+    }
+
+    [HttpPut("majortask/edit")]
+    public async Task<ActionResult<MajorTaskResponseDTO>> EditInfoMajorTask([FromBody] UpdateMajorTaskInfoDTO updateMajorTaskInfoDTO)
+    {
+        try
+        {
+            var responseMajorTask = _mapper.Map<MajorTaskResponseDTO>(await _majorTaskService.UpdateMajorTaskInfo(updateMajorTaskInfoDTO));
+            return Ok(responseMajorTask);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Cập nhật thất bại");
+        }
+    }
+
 }
