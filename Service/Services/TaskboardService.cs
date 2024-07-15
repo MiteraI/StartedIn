@@ -1,5 +1,6 @@
 ﻿using CrossCutting.DTOs.RequestDTO;
 using Domain.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.Logging;
 using Repository.Repositories;
 using Repository.Repositories.Interface;
@@ -88,5 +89,18 @@ public class TaskboardService : ITaskboardService
             await _unitOfWork.RollbackAsync();
             throw;
         }
+    }
+
+    public async Task<Taskboard> GetTaskboardById(string id)
+    {
+        var taskboard = await _taskboardRepository.QueryHelper()
+            .Filter(t => t.Id.Equals(id))
+            .Include(t => t.MinorTasks.OrderBy(mt => mt.Position))
+            .GetOneAsync();
+        if (taskboard == null)
+        {
+            throw new NotFoundException("Không có taskboard nào");
+        }
+        return taskboard;
     }
 }

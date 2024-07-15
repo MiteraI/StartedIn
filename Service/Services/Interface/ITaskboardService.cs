@@ -7,4 +7,5 @@ public interface ITaskboardService
 {
     Task<Taskboard> CreateNewTaskboard(TaskboardCreateDTO taskboardCreateDto);
     Task<Taskboard> MoveTaskBoard(string taskBoardId, int position, bool needsReposition);
+    Task<Taskboard> GetTaskboardById(string id);
 }
