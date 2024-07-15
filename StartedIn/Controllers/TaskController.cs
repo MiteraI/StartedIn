@@ -163,4 +163,24 @@ public class TaskController : ControllerBase
         }
     }
 
+    [HttpGet("taskboard/{id}")]
+    public async Task<ActionResult<TaskboardResponseDTO>> GetTaskboardById([FromRoute] string id)
+    {
+        try
+        {
+            var response = _mapper.Map<TaskboardResponseDTO>(await _taskboardService.GetTaskboardById(id));
+            return Ok(response);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Lỗi Server");
+        }
+       
+        
+    }
+
 }
