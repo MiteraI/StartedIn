@@ -127,4 +127,40 @@ public class TaskController : ControllerBase
         }
     }
 
+    [HttpGet("majortask/{mjTaskId}")]
+    public async Task<ActionResult<MajorTaskWithListMinorTasksResponseDTO>> GetMajorTaskById([FromRoute] string mjTaskId)
+    {
+        try
+        {
+            var responseMajorTask = _mapper.Map<MajorTaskWithListMinorTasksResponseDTO>(await _majorTaskService.GetMajorTaskById(mjTaskId));
+            return Ok(responseMajorTask);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Lỗi Server");
+        }
+    }
+
+    [HttpPut("majortask/edit")]
+    public async Task<ActionResult<MajorTaskResponseDTO>> EditInfoMajorTask([FromBody] UpdateMajorTaskInfoDTO updateMajorTaskInfoDTO)
+    {
+        try
+        {
+            var responseMajorTask = _mapper.Map<MajorTaskResponseDTO>(await _majorTaskService.UpdateMajorTaskInfo(updateMajorTaskInfoDTO));
+            return Ok(responseMajorTask);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Cập nhật thất bại");
+        }
+    }
+
 }

@@ -37,6 +37,9 @@ namespace Service.AutoMappingProfile
         private void MajorTaskMappingProfile()
         {
             CreateMap<MajorTask, MajorTaskResponseDTO>().ReverseMap();
+            CreateMap<MajorTask, MajorTaskWithListMinorTasksResponseDTO>()
+                .ForMember(rmj => rmj.MajorTask, opt => opt.MapFrom(mj => mj))
+                .ForMember(rmj => rmj.MinorTasks, opt => opt.MapFrom(mj => mj.MinorTasks));
         }
 
         private void PhaseMappingProfile()
