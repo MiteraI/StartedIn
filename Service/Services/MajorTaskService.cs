@@ -125,7 +125,7 @@ public class MajorTaskService : IMajorTaskService
     {
         var majorTask = await _majorTaskRepository.QueryHelper()
             .Filter(mj => mj.Id.Equals(id))
-            .Include(mj => mj.MinorTasks)
+            .Include(mj => mj.MinorTasks.OrderBy(mt => mt.Position))
             .GetOneAsync();
         if (majorTask == null)
         {
