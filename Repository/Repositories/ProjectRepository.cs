@@ -35,7 +35,7 @@ namespace Repository.Repositories
             var project = await _appDbContext.Projects.Where(p => p.Id.Equals(id))
                 .Include(p => p.Team)
                 .ThenInclude(t => t.TeamLeader)
-                .Include(p => p.Phases)
+                .Include(p => p.Phases.OrderBy(phase => phase.Position))
                 .ThenInclude(p => p.MajorTasks)
                 .FirstOrDefaultAsync();
             return project;
