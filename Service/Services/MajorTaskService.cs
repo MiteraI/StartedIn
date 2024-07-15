@@ -69,17 +69,17 @@ public class MajorTaskService : IMajorTaskService
         {
             throw new NotFoundException("Không có giai đoạn cũ được tìm thấy");
         }
+        if (oldPhase.ProjectId != chosenPhase.ProjectId)
+        {
+            throw new Exception("Giai đoạn cũ và gia đoạn mới không khớp");
+        }
 
         try
         {
-            // Remove the task from the old phase's task list
-            oldPhase.MajorTasks.Remove(chosenMajorTask);
-            _phaseRepository.Update(oldPhase);
 
             // Update the chosen major task's new phase information
             chosenMajorTask.Position = position;
             chosenMajorTask.PhaseId = phaseId;
-            chosenMajorTask.Phase = chosenPhase;
             _majorTaskRepository.Update(chosenMajorTask);
 
             // Add the task to the new phase's task list
@@ -91,22 +91,6 @@ public class MajorTaskService : IMajorTaskService
             if (needsReposition)
             {
                 _unitOfWork.BeginTransaction();
-
-                // Reposition tasks in the old phase
-                var oldPhaseTasks = await _majorTaskRepository.QueryHelper()
-                    .Filter(p => p.PhaseId.Equals(oldPhase.Id))
-                    .OrderBy(p => p.OrderBy(p => p.Position))
-                    .GetAllAsync();
-
-                int oldPhaseIncrement = (int)Math.Pow(2, 16);
-                int oldPhaseCurrentPosition = (int)Math.Pow(2, 16);
-
-                foreach (var majorTask in oldPhaseTasks)
-                {
-                    majorTask.Position = oldPhaseCurrentPosition;
-                    _majorTaskRepository.Update(majorTask);
-                    oldPhaseCurrentPosition += oldPhaseIncrement;
-                }
 
                 // Reposition tasks in the new phase
                 var newPhaseTasks = await _majorTaskRepository.QueryHelper()

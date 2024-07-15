@@ -72,17 +72,16 @@ public class MinorTaskService : IMinorTaskService
         {
             throw new NotFoundException("Không có bảng công việc cũ được tìm thấy");
         }
+        if (oldTaskBoard.PhaseId != chosenTaskBoard.PhaseId)
+        {
+            throw new Exception("Bảng công việc cũ không cùng giai đoạn với bảng công việc mới");
+        }
 
         try
         {
-            // Remove the task from the old phase's task list
-            oldTaskBoard.MinorTasks.Remove(chosenMinorTask);
-            _taskboardRepository.Update(oldTaskBoard);
-
             // Update the chosen major task's new phase information
             chosenMinorTask.Position = position;
             chosenMinorTask.TaskboardId = taskBoardId;
-            chosenMinorTask.Taskboard = chosenTaskBoard;
             _minorTaskRepository.Update(chosenMinorTask);
 
             // Add the task to the new phase's task list
@@ -94,22 +93,6 @@ public class MinorTaskService : IMinorTaskService
             if (needsReposition)
             {
                 _unitOfWork.BeginTransaction();
-
-                // Reposition tasks in the old phase
-                var oldTaskBoardTasks = await _minorTaskRepository.QueryHelper()
-                    .Filter(p => p.TaskboardId.Equals(oldTaskBoard.Id))
-                    .OrderBy(p => p.OrderBy(p => p.Position))
-                    .GetAllAsync();
-
-                int oldTaskBoardIncrement = (int)Math.Pow(2, 16);
-                int oldTaskBoardCurrentPosition = (int)Math.Pow(2, 16);
-
-                foreach (var minorTask in oldTaskBoardTasks)
-                {
-                    minorTask.Position = oldTaskBoardCurrentPosition;
-                    _minorTaskRepository.Update(minorTask);
-                    oldTaskBoardCurrentPosition += oldTaskBoardIncrement;
-                }
 
                 // Reposition tasks in the new phase
                 var newTaskBoardTasks = await _minorTaskRepository.QueryHelper()
