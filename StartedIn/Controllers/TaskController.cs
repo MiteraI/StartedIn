@@ -114,7 +114,7 @@ public class TaskController : ControllerBase
     {
         try
         {
-            var responseMinorTask = _mapper.Map<MinorTaskResponseDTO>(await _minorTaskService.MoveMinorTask(updateMinorTaskPositionDTO.Id, updateMinorTaskPositionDTO.TaskBoardId, updateMinorTaskPositionDTO.Position, updateMinorTaskPositionDTO.NeedsReposition));
+            var responseMinorTask = _mapper.Map<MinorTaskResponseDTO>(await _minorTaskService.MoveMinorTask(updateMinorTaskPositionDTO.Id, updateMinorTaskPositionDTO.TaskboardId, updateMinorTaskPositionDTO.Position, updateMinorTaskPositionDTO.NeedsReposition));
             return Ok(responseMinorTask);
         }
         catch (NotFoundException ex)
