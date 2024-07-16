@@ -30,11 +30,11 @@ public class MinorTaskService : IMinorTaskService
             MinorTask minorTask = new MinorTask
             {
                 Position = minorTaskCreateDto.Position,
-                MajorTaskId = minorTaskCreateDto.MajorTaskId,
+                MajorTaskId = null,
                 TaskboardId = minorTaskCreateDto.TaskboardId,
                 TaskTitle = minorTaskCreateDto.TaskTitle,
                 Description = minorTaskCreateDto.Description,
-                Status = minorTaskCreateDto.Status
+                Status = "Pending"
                 
             };
             var minorTaskEntity = _minorTaskRepository.Add(minorTask);
