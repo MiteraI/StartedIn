@@ -36,7 +36,7 @@ namespace Repository.Repositories
                 .Include(p => p.Team)
                 .ThenInclude(t => t.TeamLeader)
                 .Include(p => p.Phases.OrderBy(phase => phase.Position))
-                .ThenInclude(p => p.MajorTasks)
+                .ThenInclude(p => p.MajorTasks.OrderBy(mjTask => mjTask.Position))
                 .FirstOrDefaultAsync();
             return project;
         }
