@@ -124,4 +124,29 @@ public class MinorTaskService : IMinorTaskService
             throw;
         }
     }
+
+    public async Task<MinorTask> UpdateMinorTaskInfo(string id, UpdateMinorTaskInfoDTO updateMinorTaskInfoDTO)
+    {
+        var chosenMinorTask = await _minorTaskRepository.GetOneAsync(id);
+        if (chosenMinorTask == null)
+        {
+            throw new NotFoundException("Không tìm thấy Task nhỏ");
+        }
+        try
+        {
+            chosenMinorTask.TaskTitle = updateMinorTaskInfoDTO.TaskTitle;
+            chosenMinorTask.Description = updateMinorTaskInfoDTO.Description;
+            chosenMinorTask.MajorTaskId = updateMinorTaskInfoDTO.MajorTaskId;
+            chosenMinorTask.Status = updateMinorTaskInfoDTO.Status;
+            chosenMinorTask.LastUpdatedTime = DateTimeOffset.UtcNow;
+            _minorTaskRepository.Update(chosenMinorTask);
+            await _unitOfWork.SaveChangesAsync();
+            return chosenMinorTask;
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackAsync();
+            throw new Exception("Failed while update task"); 
+        }
+    }
 }

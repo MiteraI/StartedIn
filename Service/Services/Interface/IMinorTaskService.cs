@@ -7,4 +7,5 @@ public interface IMinorTaskService
 {
     Task<MinorTask> CreateMinorTask(MinorTaskCreateDTO minorTaskCreateDto);
     Task<MinorTask> MoveMinorTask(string mnTaskId, string taskBoardId, int position, bool needsReposition);
+    Task<MinorTask> UpdateMinorTaskInfo(string id, UpdateMinorTaskInfoDTO updateMinorTaskInfoDTO);
 }
