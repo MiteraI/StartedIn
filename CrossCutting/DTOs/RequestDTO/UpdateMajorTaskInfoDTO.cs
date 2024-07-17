@@ -8,7 +8,6 @@ namespace CrossCutting.DTOs.RequestDTO
 {
     public class UpdateMajorTaskInfoDTO
     {
-        public string Id { get; set; }
         public string TaskTitle { get; set; }
         public string Description { get; set; }
     }

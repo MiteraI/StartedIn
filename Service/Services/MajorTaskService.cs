@@ -134,9 +134,9 @@ public class MajorTaskService : IMajorTaskService
         return majorTask;
     }
 
-    public async Task<MajorTask> UpdateMajorTaskInfo(UpdateMajorTaskInfoDTO updateMajorTaskInfoDTO)
+    public async Task<MajorTask> UpdateMajorTaskInfo(string id, UpdateMajorTaskInfoDTO updateMajorTaskInfoDTO)
     {
-        var chosenMajorTask = await _majorTaskRepository.GetOneAsync(updateMajorTaskInfoDTO.Id);
+        var chosenMajorTask = await _majorTaskRepository.GetOneAsync(id);
         if (chosenMajorTask == null)
         {
             throw new NotFoundException("Không tìm thấy Task lớn");

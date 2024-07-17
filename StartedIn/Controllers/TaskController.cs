@@ -145,12 +145,12 @@ public class TaskController : ControllerBase
         }
     }
 
-    [HttpPut("majortask/edit")]
-    public async Task<ActionResult<MajorTaskResponseDTO>> EditInfoMajorTask([FromBody] UpdateMajorTaskInfoDTO updateMajorTaskInfoDTO)
+    [HttpPut("majortask/edit/{id}")]
+    public async Task<ActionResult<MajorTaskResponseDTO>> EditInfoMajorTask(string id, [FromBody] UpdateMajorTaskInfoDTO updateMajorTaskInfoDTO)
     {
         try
         {
-            var responseMajorTask = _mapper.Map<MajorTaskResponseDTO>(await _majorTaskService.UpdateMajorTaskInfo(updateMajorTaskInfoDTO));
+            var responseMajorTask = _mapper.Map<MajorTaskResponseDTO>(await _majorTaskService.UpdateMajorTaskInfo(id, updateMajorTaskInfoDTO));
             return Ok(responseMajorTask);
         }
         catch (NotFoundException ex)
@@ -181,6 +181,24 @@ public class TaskController : ControllerBase
         }
        
         
+    }
+    
+    [HttpPut("minortask/edit/{id}")]
+    public async Task<ActionResult<MinorTaskResponseDTO>> EditInfoMinorTask(string id, [FromBody] UpdateMinorTaskInfoDTO updateMinorTaskInfoDTO)
+    {
+        try
+        {
+            var responseMinorTask = _mapper.Map<MinorTaskResponseDTO>(await _minorTaskService.UpdateMinorTaskInfo(id, updateMinorTaskInfoDTO));
+            return Ok(responseMinorTask);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest("Cập nhật thất bại");
+        }
     }
 
 }

@@ -108,6 +108,11 @@ public class AppDbContext : IdentityDbContext<User, Role, string,
                 v => v.ToString(),
                 v => (ConnectionStatus)Enum.Parse(typeof(ConnectionStatus), v));
 
+        modelBuilder.Entity<MinorTask>()
+            .Property(u => u.Status)
+            .HasConversion(v => v.ToString(),
+                v => (MinorTaskStatus)Enum.Parse(typeof(MinorTaskStatus), v));
+        
         modelBuilder.Entity<Connection>()
             .HasOne(c => c.Sender)
             .WithMany(c => c.SentConnections)

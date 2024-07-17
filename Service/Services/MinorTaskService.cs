@@ -1,4 +1,5 @@
 ﻿using CrossCutting.DTOs.RequestDTO;
+using CrossCutting.Enum;
 using Domain.Entities;
 using Microsoft.Extensions.Logging;
 using Repository.Repositories;
@@ -34,7 +35,7 @@ public class MinorTaskService : IMinorTaskService
                 TaskboardId = minorTaskCreateDto.TaskboardId,
                 TaskTitle = minorTaskCreateDto.TaskTitle,
                 Description = minorTaskCreateDto.Description,
-                Status = "Pending"
+                Status = MinorTaskStatus.Pending
                 
             };
             var minorTaskEntity = _minorTaskRepository.Add(minorTask);
@@ -121,6 +122,31 @@ public class MinorTaskService : IMinorTaskService
             _logger.LogError(ex, "Error while moving minor task");
             await _unitOfWork.RollbackAsync();
             throw;
+        }
+    }
+
+    public async Task<MinorTask> UpdateMinorTaskInfo(string id, UpdateMinorTaskInfoDTO updateMinorTaskInfoDTO)
+    {
+        var chosenMinorTask = await _minorTaskRepository.GetOneAsync(id);
+        if (chosenMinorTask == null)
+        {
+            throw new NotFoundException("Không tìm thấy Task nhỏ");
+        }
+        try
+        {
+            chosenMinorTask.TaskTitle = updateMinorTaskInfoDTO.TaskTitle;
+            chosenMinorTask.Description = updateMinorTaskInfoDTO.Description;
+            chosenMinorTask.MajorTaskId = updateMinorTaskInfoDTO.MajorTaskId;
+            chosenMinorTask.Status = updateMinorTaskInfoDTO.Status;
+            chosenMinorTask.LastUpdatedTime = DateTimeOffset.UtcNow;
+            _minorTaskRepository.Update(chosenMinorTask);
+            await _unitOfWork.SaveChangesAsync();
+            return chosenMinorTask;
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackAsync();
+            throw new Exception("Failed while update task"); 
         }
     }
 }
