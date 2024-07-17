@@ -1,4 +1,5 @@
 ﻿using CrossCutting.DTOs.RequestDTO;
+using CrossCutting.Enum;
 using Domain.Entities;
 using Microsoft.Extensions.Logging;
 using Repository.Repositories;
@@ -34,7 +35,7 @@ public class MinorTaskService : IMinorTaskService
                 TaskboardId = minorTaskCreateDto.TaskboardId,
                 TaskTitle = minorTaskCreateDto.TaskTitle,
                 Description = minorTaskCreateDto.Description,
-                Status = "Pending"
+                Status = MinorTaskStatus.Pending
                 
             };
             var minorTaskEntity = _minorTaskRepository.Add(minorTask);
