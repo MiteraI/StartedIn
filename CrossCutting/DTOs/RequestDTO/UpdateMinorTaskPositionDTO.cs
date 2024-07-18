@@ -9,7 +9,7 @@ namespace CrossCutting.DTOs.RequestDTO
     public class UpdateMinorTaskPositionDTO
     {
         public string Id { get; set; }
-        public string TaskBoardId { get; set; }
+        public string TaskboardId { get; set; }
         public int Position { get; set; }
         public bool NeedsReposition { get; set; }
     }

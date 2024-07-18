@@ -16,8 +16,10 @@ public class PhaseRepository : GenericRepository<Phase, string>, IPhaseRepositor
     public async Task<Phase> GetPhaseDetailById(string id)
     {
         var phase = await _appDbContext.Phases
-            .Include(t => t.Taskboards)
+            .Include(p => p.Taskboards)
             .ThenInclude(t => t.MinorTasks)
+            .Include(p => p.Taskboards.OrderBy(t => t.Position))
+            .ThenInclude(t => t.MinorTasks.OrderBy(t => t.Position))
             .FirstOrDefaultAsync(p => p.Id.Equals(id));
         return phase;
     }

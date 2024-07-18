@@ -143,7 +143,8 @@ namespace Service.AutoMappingProfile
             CreateMap<User, ConnectionDTO>()
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.ConnectedUserName, opt => opt.MapFrom(src => src.FullName))
-            .ForMember(dest => dest.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture));
+            .ForMember(dest => dest.ProfilePicture, opt => opt.MapFrom(src => src.ProfilePicture))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email));
 
         }
     }
