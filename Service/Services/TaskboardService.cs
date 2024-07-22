@@ -103,4 +103,27 @@ public class TaskboardService : ITaskboardService
         }
         return taskboard;
     }
+
+    public async Task<Taskboard> UpdateTaskboard(string id, TaskboardInfoUpdateDTO taskboardInfoUpdateDTO)
+    {
+        var taskboard = await _taskboardRepository.GetOneAsync(id);
+        if (taskboard == null)
+        {
+            throw new NotFoundException("Không tìm thấy bảng công việc");
+        }
+        try
+        {
+            taskboard.Title = taskboardInfoUpdateDTO.Title;
+            taskboard.LastUpdatedTime = DateTimeOffset.UtcNow;
+            _taskboardRepository.Update(taskboard);
+            await _unitOfWork.SaveChangesAsync();
+            return taskboard;
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackAsync();
+            throw new Exception("Failed while update taskboard");
+        }
+
+    }
 }

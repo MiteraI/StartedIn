@@ -3,6 +3,7 @@ using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Service.Services;
 using Service.Services.Interface;
 using Services.Exceptions;
 
@@ -73,6 +74,26 @@ public class PhaseController : ControllerBase
         {
             return BadRequest("Di chuyển giai đoạn thất bại");
         }
+    }
+
+    [HttpPut("phase/edit/{id}")]
+    public async Task<ActionResult<PhaseResponseDTO>> UpdatePhase([FromRoute] string id, [FromBody] PhaseInfoUpdateDTO phaseInfoUpdateDTO)
+    {
+        try
+        {
+            var response = _mapper.Map<PhaseResponseDTO>(await _phaseService.UpdatePhase(id, phaseInfoUpdateDTO));
+            return Ok(response);
+        }
+        catch (NotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Lỗi Server");
+        }
+
+
     }
 
 }

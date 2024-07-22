@@ -10,4 +10,6 @@ public interface IPhaseService
     Task<Phase> GetPhaseDetailById(string id);
 
     Task<Phase> MovePhase(string phaseId, int position, bool needsReposition);
+
+    Task<Phase> UpdatePhase(string id, PhaseInfoUpdateDTO phaseInfoUpdateDTO);
 }
