@@ -98,4 +98,25 @@ public class PhaseService : IPhaseService
         }
        
     }
+
+    public async Task<Phase> UpdatePhase(string id, PhaseInfoUpdateDTO phaseInfoUpdateDTO)
+    {
+        var chosenPhase = await _phaseRepository.GetOneAsync(id);
+        if (chosenPhase == null) 
+        {
+            throw new NotFoundException("Không tìm thấy giai đoạn");
+        }
+        try {
+            chosenPhase.PhaseName = phaseInfoUpdateDTO.PhaseName;
+            chosenPhase.LastUpdatedTime = DateTimeOffset.UtcNow;
+            _phaseRepository.Update(chosenPhase);
+            await _unitOfWork.SaveChangesAsync();
+            return chosenPhase;
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackAsync();
+            throw new Exception("Failed while update phase");
+        }
+    }
 }

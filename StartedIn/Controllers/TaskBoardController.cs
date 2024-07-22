@@ -73,8 +73,24 @@ namespace StartedIn.Controllers
             {
                 return StatusCode(500, "Lỗi Server");
             }
+        }
 
-
+        [HttpPut("taskboard/edit/{id}")]
+        public async Task<ActionResult<TaskboardResponseDTO>> UpdateTaskboard([FromRoute] string id, [FromBody] TaskboardInfoUpdateDTO taskboardInfoUpdateDTO)
+        {
+            try
+            {
+                var response = _mapper.Map<TaskboardResponseDTO>(await _taskboardService.UpdateTaskboard(id, taskboardInfoUpdateDTO));
+                return Ok(response);
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Lỗi Server");
+            }
         }
     }
 }
