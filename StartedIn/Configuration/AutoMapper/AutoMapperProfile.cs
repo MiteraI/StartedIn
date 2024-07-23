@@ -40,6 +40,7 @@ namespace Service.AutoMappingProfile
             CreateMap<MajorTask, MajorTaskWithListMinorTasksResponseDTO>()
                 .ForMember(rmj => rmj.MajorTask, opt => opt.MapFrom(mj => mj))
                 .ForMember(rmj => rmj.MinorTasks, opt => opt.MapFrom(mj => mj.MinorTasks));
+            CreateMap<MajorTask, AssignableMajorTaskResponseDTO>();
         }
 
         private void PhaseMappingProfile()

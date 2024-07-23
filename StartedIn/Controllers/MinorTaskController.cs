@@ -74,5 +74,19 @@ namespace StartedIn.Controllers
                 return BadRequest("Cập nhật thất bại");
             }
         }
+
+        [HttpGet("minortask/{id}/get-assignable-major-tasks")]
+        public async Task<ActionResult<IEnumerable<AssignableMajorTaskResponseDTO>>> GetAssignableMajorTasks(string id)
+        {
+            try
+            {
+                var response = _mapper.Map<IEnumerable<AssignableMajorTaskResponseDTO>>(await _minorTaskService.GetAssignableMajorTasks(id));
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Truy xuất dữ liệu thất bại");
+            }
+        }
     }
 }

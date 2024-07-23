@@ -1,4 +1,5 @@
 ﻿using CrossCutting.DTOs.RequestDTO;
+using CrossCutting.DTOs.ResponseDTO;
 using CrossCutting.Enum;
 using Domain.Entities;
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,11 @@ public class MinorTaskService : IMinorTaskService
     private readonly ILogger<MinorTask> _logger;
     private readonly ITaskboardRepository _taskboardRepository;
 
-    public MinorTaskService(IUnitOfWork unitOfWork, IMinorTaskRepository minorTaskRepository, ILogger<MinorTask> logger, ITaskboardRepository taskboardRepository)
+    public MinorTaskService(
+        IUnitOfWork unitOfWork, 
+        IMinorTaskRepository minorTaskRepository, 
+        ILogger<MinorTask> logger, 
+        ITaskboardRepository taskboardRepository)
     {
         _unitOfWork = unitOfWork;
         _minorTaskRepository = minorTaskRepository;
@@ -148,5 +153,10 @@ public class MinorTaskService : IMinorTaskService
             await _unitOfWork.RollbackAsync();
             throw new Exception("Failed while update task"); 
         }
+    }
+
+    public async Task<IEnumerable<MajorTask>> GetAssignableMajorTasks(string id)
+    {
+        return await _minorTaskRepository.GetAssignableMajorTasks(id);
     }
 }
