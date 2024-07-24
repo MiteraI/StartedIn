@@ -3,6 +3,7 @@ using CrossCutting.DTOs.RequestDTO;
 using CrossCutting.DTOs.ResponseDTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Service.Services;
 using Service.Services.Interface;
 using Services.Exceptions;
 
@@ -89,6 +90,20 @@ namespace StartedIn.Controllers
             catch (Exception ex)
             {
                 return BadRequest("Cập nhật thất bại");
+            }
+        }
+
+        [HttpGet("majortask/{id}/get-assignable-minor-tasks")]
+        public async Task<ActionResult<IEnumerable<AssignableMinorTaskResponseDTO>>> GetAssignableMinorTasks(string id)
+        {
+            try
+            {
+                var response = _mapper.Map<IEnumerable<AssignableMinorTaskResponseDTO>>(await _majorTaskService.GetAssignableMinorTasks(id));
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Truy xuất dữ liệu thất bại");
             }
         }
     }

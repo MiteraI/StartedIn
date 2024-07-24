@@ -32,6 +32,7 @@ namespace Service.AutoMappingProfile
         {
             CreateMap<MinorTask, MinorTaskInTaskboardResponseDTO>().ReverseMap();
             CreateMap<MinorTask, MinorTaskResponseDTO>().ReverseMap();
+            CreateMap<MinorTask, AssignableMinorTaskResponseDTO>();
         }
 
         private void MajorTaskMappingProfile()

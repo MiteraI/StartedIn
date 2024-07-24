@@ -9,4 +9,5 @@ public interface IMajorTaskService
     Task<MajorTask> MoveMajorTask(string mjTaskId, string phaseId, int position, bool needsReposition);
     Task<MajorTask> GetMajorTaskById(string id);
     Task<MajorTask> UpdateMajorTaskInfo(string id, UpdateMajorTaskInfoDTO updateMajorTaskInfoDTO);
+    Task<IEnumerable<MinorTask>> GetAssignableMinorTasks(string id);
 }

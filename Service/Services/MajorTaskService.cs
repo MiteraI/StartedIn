@@ -155,7 +155,10 @@ public class MajorTaskService : IMajorTaskService
             await _unitOfWork.RollbackAsync();
             throw new Exception("Failed while update task"); 
         }
-        
+    }
 
+    public async Task<IEnumerable<MinorTask>> GetAssignableMinorTasks(string id)
+    {
+        return await _majorTaskRepository.GetAssignableMinorTasks(id);
     }
 }
