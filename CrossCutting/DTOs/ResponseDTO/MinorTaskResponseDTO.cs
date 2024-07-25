@@ -1,6 +1,6 @@
 namespace CrossCutting.DTOs.ResponseDTO;
 
-public class MinorTaskResponseDTO
+public class MinorTaskResponseDTO : IdentityResponseDTO
 {
     public int Position { get; set; }
     public string TaskTitle { get; set; }
