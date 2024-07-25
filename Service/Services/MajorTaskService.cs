@@ -12,15 +12,22 @@ public class MajorTaskService : IMajorTaskService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMajorTaskRepository _majorTaskRepository;
+    private readonly IMinorTaskRepository _minorTaskRepository;
     private readonly IPhaseRepository _phaseRepository;
     private readonly ILogger<MajorTask> _logger;
 
-    public MajorTaskService(IUnitOfWork unitOfWork, IMajorTaskRepository majorTaskRepository, ILogger<MajorTask> logger, IPhaseRepository phaseRepository)
+    public MajorTaskService(
+        IUnitOfWork unitOfWork, 
+        IMajorTaskRepository majorTaskRepository, 
+        ILogger<MajorTask> logger, 
+        IPhaseRepository phaseRepository,
+        IMinorTaskRepository minorTaskRepository)
     {
         _unitOfWork = unitOfWork;
         _majorTaskRepository = majorTaskRepository;
         _logger = logger;
         _phaseRepository = phaseRepository;
+        _minorTaskRepository = minorTaskRepository;
     }
     public async Task<string> CreateNewMajorTask(MajorTaskCreateDTO majorTaskCreateDto)
     {
@@ -147,6 +154,7 @@ public class MajorTaskService : IMajorTaskService
             chosenMajorTask.Description = updateMajorTaskInfoDTO.Description;
             chosenMajorTask.LastUpdatedTime = DateTimeOffset.UtcNow;
             _majorTaskRepository.Update(chosenMajorTask);
+            await _minorTaskRepository.BatchUpdateMajorTaskId(updateMajorTaskInfoDTO.MinorTaskIds, id);
             await _unitOfWork.SaveChangesAsync();
             return chosenMajorTask;
         }
