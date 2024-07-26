@@ -28,10 +28,12 @@ public class MinorTaskRepository : GenericRepository<MinorTask, string>, IMinorT
         return task.Taskboard.Phase.MajorTasks;
     }
 
-    public async Task BatchUpdateMajorTaskId(IEnumerable<string> ids, string majorTaskId)
+    public async Task BatchUpdateMajorTaskId(IEnumerable<string> ids, string? majorTaskId)
     {
         await _dbSet
             .Where(mt => ids.Contains(mt.Id))
-            .ExecuteUpdateAsync(s => s.SetProperty(mt => mt.MajorTaskId, mt => majorTaskId));
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(mt => mt.MajorTaskId, mt => majorTaskId)
+                .SetProperty(mt => mt.LastUpdatedTime, mt => DateTimeOffset.UtcNow));
     }
 }

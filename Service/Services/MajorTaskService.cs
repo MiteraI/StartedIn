@@ -1,7 +1,6 @@
 ﻿using CrossCutting.DTOs.RequestDTO;
 using Domain.Entities;
 using Microsoft.Extensions.Logging;
-using Repository.Repositories;
 using Repository.Repositories.Interface;
 using Service.Services.Interface;
 using Services.Exceptions;
@@ -154,7 +153,11 @@ public class MajorTaskService : IMajorTaskService
             chosenMajorTask.Description = updateMajorTaskInfoDTO.Description;
             chosenMajorTask.LastUpdatedTime = DateTimeOffset.UtcNow;
             _majorTaskRepository.Update(chosenMajorTask);
-            await _minorTaskRepository.BatchUpdateMajorTaskId(updateMajorTaskInfoDTO.MinorTaskIds, id);
+            await _minorTaskRepository.BatchUpdateMajorTaskId(updateMajorTaskInfoDTO.AddMinorTaskIds, id);
+            if (updateMajorTaskInfoDTO.RemoveMinorTaskId != null)
+            {
+                await _minorTaskRepository.BatchUpdateMajorTaskId([updateMajorTaskInfoDTO.RemoveMinorTaskId], null);
+            }
             await _unitOfWork.SaveChangesAsync();
             return chosenMajorTask;
         }
